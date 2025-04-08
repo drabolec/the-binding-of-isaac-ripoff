@@ -1,8 +1,13 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include <vector>
 
 #include "Player.h"
+#include "Bullet.h"
+#include "RoundBullet.h"
+#include "Item.h"
+#include "FirstWeapon.h"
 
 class Game{
 private:
@@ -10,6 +15,9 @@ private:
     sf::VideoMode videoMode;
     std::optional<sf::Event> event;
     Player player;
+    Item* currentWeapon;
+    Bullet* currentBullet;
+    std::vector<Bullet*> playerBullets;
 public:
     Game();
     virtual ~Game();
@@ -17,6 +25,8 @@ public:
     void events();
     void update();
     void render();
+    
+
 };
 Game::Game(){
     this->videoMode.size = {1000, 1000};
@@ -24,6 +34,8 @@ Game::Game(){
     sf::Vector2f pos(100.f, 100.f);
     this->player.setPosition(pos);
     this->window->setFramerateLimit(60);
+    this->currentWeapon = new FirstWeapon;
+    this->currentBullet = new RoundBullet;
 }
 Game::~Game(){
     delete this->window;
@@ -50,7 +62,17 @@ void Game::events(){
 }
 void Game::update(){
     this->events();
-    this->player.update(this->window);
+    this->player.update();
+    this->currentWeapon->setCurrentBullet(this->currentBullet);
+    this->currentWeapon->setCurrentPlayerBullets(this->playerBullets);
+    this->currentWeapon->setPlayerPos(this->player.getPosition());
+    this->currentWeapon->update();
+    this->currentWeapon->updatePos(this->player.getPosition());
+    this->playerBullets = this->currentWeapon->getCurrentPlayerBullets();
+
+    for(Bullet* bullet: this->playerBullets){
+        bullet->update();
+    }
     
 }
 void Game::render(){
@@ -58,9 +80,14 @@ void Game::render(){
     //magic happend right here
 
     this->player.render(this->window);
+    this->currentWeapon->render(this->window);
+    for(Bullet* bullet: this->playerBullets){
+        bullet->render(this->window);
+    }
 
     this->window->display();
 }
+
 
 
 #endif

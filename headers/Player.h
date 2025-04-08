@@ -1,43 +1,43 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include <SFML/Graphics.hpp>
-#include <SFML/Window.hpp>
-#include <SFML/System.hpp>
-#include <SFML/Network.hpp>
-#include <SFML/Audio.hpp>
+
 
 #include "Item.h"
 #include "FirstWeapon.h"
+#include "Entity.h"
 
-class Player{
+class Player: public Entity{
 
 public:
     Player();
     virtual ~Player();
 
-    void update(sf::RenderTarget* target);
+    void update();
     void move();
     void setPosition(sf::Vector2f pos);
+    sf::Vector2f getPosition();
     void render(sf::RenderTarget* target);
     
 private:
     sf::RectangleShape shape;
     float movespeed;
-    Item *item;
 };
 
 Player::Player(){
     this->shape.setFillColor(sf::Color::Green);
     this->shape.setSize(sf::Vector2f(30.f, 30.f));
     this->movespeed = 10.f;
-    this->item = new FirstWeapon;
+    this->hitbox.setSize({30.f, 30.f});
 }
 Player::~Player(){
 
 }
 void Player::setPosition(sf::Vector2f pos){
     this->shape.setPosition(pos);
+}
+sf::Vector2f Player::getPosition(){
+    return this->shape.getPosition();
 }
 void Player::move(){
     
@@ -57,13 +57,12 @@ void Player::move(){
     
 }
 
-void Player::update(sf::RenderTarget* target){
+void Player::update(){
     this->move();
-    this->item->update(this->shape.getPosition());
 }
 void Player::render(sf::RenderTarget* target){
     target->draw(this->shape);
-    this->item->render(target);
+    
 }
 
 #endif
