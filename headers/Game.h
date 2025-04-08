@@ -42,7 +42,6 @@ void Game::events(){
                 if(keyPressed->scancode == sf::Keyboard::Scan::Escape){
                     this->window->close();
                 }
-                //sterowanie graczem
                 
             }
                 
@@ -51,7 +50,7 @@ void Game::events(){
 }
 void Game::update(){
     this->events();
-    this->player.update();
+    this->player.update(this->window);
     
 }
 void Game::render(){
