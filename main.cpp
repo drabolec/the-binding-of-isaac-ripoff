@@ -1,8 +1,8 @@
 //needed to hide a console window
 #define _WIN32_WINNT 0x0500
 #include <windows.h>
+#include "headers/Game.h"
 
-#include <SFML/Graphics.hpp>
 
 int main()
 {
@@ -10,20 +10,13 @@ int main()
     HWND hWnd = GetConsoleWindow();
     ShowWindow( hWnd, SW_HIDE );
 
-    sf::RenderWindow window(sf::VideoMode({200, 200}), "SFML works!");
-    sf::CircleShape shape(50.f);
-    shape.setFillColor(sf::Color::Green);
+    
+    Game game;
 
-    while (window.isOpen())
+    while (game.running())
     {
-        while (const std::optional event = window.pollEvent())
-        {
-            if (event->is<sf::Event::Closed>())
-                window.close();
-        }
+        game.update();
 
-        window.clear();
-        window.draw(shape);
-        window.display();
+       
     }
 }

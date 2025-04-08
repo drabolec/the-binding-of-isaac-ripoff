@@ -4,7 +4,7 @@ compile:
 	g++ -c main.cpp -I"./SFML-3.0.0/include"
 
 link:
-	g++ main.o -o sfml-app -L".\SFML-3.0.0\lib" -lsfml-graphics -lsfml-window -lsfml-system 
+	g++ main.o -o sfml-app -L".\SFML-3.0.0\lib" -lsfml-graphics -lsfml-window -lsfml-system -lsfml-network -lsfml-audio
 
 clear:
-	rm -f main*.o
+	rm main*.o
