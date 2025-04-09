@@ -9,6 +9,7 @@
 
 class Entity{
 public:
+    //hitbox should be set in every entity whichc we want to be able to colide
     sf::RectangleShape hitbox;
     virtual void update();
     virtual void render(sf::RenderTarget* target);
