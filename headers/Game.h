@@ -69,9 +69,13 @@ void Game::update(){
     this->currentWeapon->update();
     this->currentWeapon->updatePos(this->player.getPosition());
     this->playerBullets = this->currentWeapon->getCurrentPlayerBullets();
-
+    auto i = playerBullets.begin();
     for(Bullet* bullet: this->playerBullets){
         bullet->update();
+        if(bullet->isVisible==false){
+            playerBullets.erase(i);
+        }
+        i++;
     }
     
 }
