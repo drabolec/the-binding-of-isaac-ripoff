@@ -27,9 +27,15 @@ FirstWeapon::FirstWeapon(){
     shape.setFillColor(sf::Color::Red);
     shape.setSize({30.f, 10.f});
     
+    this->hitbox.setSize({30.f,10.f});
+    this->hitbox.setPosition(this->shape.getPosition());
+
     counter = this->shootingSpeed;
 }
 void FirstWeapon::update(){
+
+    
+
     if(this->counter >=shootingSpeed){
         
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up))
@@ -59,6 +65,7 @@ void FirstWeapon::update(){
 }
 void FirstWeapon::updatePos(sf::Vector2f pos){
     this->shape.setPosition(pos);
+    this->hitbox.setPosition(pos);
 }
 void FirstWeapon::render(sf::RenderTarget* target){
     target->draw(this->shape);
