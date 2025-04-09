@@ -12,12 +12,16 @@ class Player: public Entity{
 public:
     Player();
     virtual ~Player();
-
+    
     void update();
     void move();
     void setPosition(sf::Vector2f pos);
     sf::Vector2f getPosition();
     void render(sf::RenderTarget* target);
+
+    bool changeWeapon;
+    const int clickSpeed = 10;
+    int counter;
     
 private:
     sf::RectangleShape shape;
@@ -29,6 +33,8 @@ Player::Player(){
     this->shape.setSize(sf::Vector2f(30.f, 30.f));
     this->movespeed = 10.f;
     this->hitbox.setSize({30.f, 30.f});
+    this->changeWeapon = false;
+    this->counter = 10;
 }
 Player::~Player(){
 
@@ -55,10 +61,20 @@ void Player::move(){
         this->shape.move({this->movespeed, 0.f});
     }
     
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::E)&&counter >= this->clickSpeed)
+    {
+        this->changeWeapon = true;
+        counter = 0;
+    }else{
+        this->changeWeapon = false;
+    }
+    
 }
 
 void Player::update(){
+    this->counter ++;
     this->move();
+    this->hitbox.setPosition(this->shape.getPosition());
 }
 void Player::render(sf::RenderTarget* target){
     target->draw(this->shape);

@@ -18,6 +18,8 @@ private:
     Item* currentWeapon;
     Bullet* currentBullet;
     std::vector<Bullet*> playerBullets;
+    //temporary for testing
+    std::vector<Item*> weapons;
 public:
     Game();
     virtual ~Game();
@@ -25,17 +27,23 @@ public:
     void events();
     void update();
     void render();
+    bool isColision(Entity* e1, Entity* e2);
     
 
 };
 Game::Game(){
-    this->videoMode.size = {1000, 1000};
+    this->videoMode.size = {1600, 900};
     this->window = new sf::RenderWindow(this->videoMode, "The binding of isaac ultimate ripoff");
     sf::Vector2f pos(100.f, 100.f);
     this->player.setPosition(pos);
     this->window->setFramerateLimit(60);
     this->currentWeapon = new FirstWeapon;
     this->currentBullet = new RoundBullet;
+
+    //temporary for testing
+    this->weapons.emplace_back(new FirstWeapon);
+    this->weapons.at(0)->updatePos({500.f, 500.f});
+
 }
 Game::~Game(){
     delete this->window;
@@ -62,6 +70,8 @@ void Game::events(){
 }
 void Game::update(){
     this->events();
+
+    //player weapon and shooting
     this->player.update();
     this->currentWeapon->setCurrentBullet(this->currentBullet);
     this->currentWeapon->setCurrentPlayerBullets(this->playerBullets);
@@ -69,23 +79,54 @@ void Game::update(){
     this->currentWeapon->update();
     this->currentWeapon->updatePos(this->player.getPosition());
     this->playerBullets = this->currentWeapon->getCurrentPlayerBullets();
-
+    auto i = playerBullets.begin();
     for(Bullet* bullet: this->playerBullets){
         bullet->update();
+        if(bullet->isVisible==false){
+            playerBullets.erase(i);
+        }
+        i++;
     }
+
+    //updating loot for testing
+    int x = 0;
+    for(Item* weapon:weapons){
+        if(isColision(weapon, &player) && player.changeWeapon==true){
+            
+            Item* droped = currentWeapon;
+            droped->updatePos(this->player.getPosition());
+            this->weapons.at(x) = droped;
+            this->currentWeapon = weapon;
+        }
+        x++;
+    }
+    
     
 }
 void Game::render(){
     this->window->clear();
     //magic happend right here
 
+    //rendering loot for testing
+    for(Item* weapon:weapons){
+        weapon->render(this->window);
+    }
+
     this->player.render(this->window);
     this->currentWeapon->render(this->window);
     for(Bullet* bullet: this->playerBullets){
         bullet->render(this->window);
     }
+    
 
     this->window->display();
+}
+//collision detection
+bool Game::isColision(Entity* e1, Entity* e2){
+    if(e1->hitbox.getGlobalBounds().findIntersection(e2->hitbox.getGlobalBounds())){
+        return true;
+    }
+    return false;
 }
 
 

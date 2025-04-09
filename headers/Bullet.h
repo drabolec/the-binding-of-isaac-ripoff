@@ -9,6 +9,8 @@ public:
     float speed;
     float dmg;
     float range;
+    float rangeControl;
+    bool isVisible=true;
     sf::Vector2f initPos;
     virtual void setInitPos();
 
