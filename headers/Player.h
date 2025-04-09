@@ -59,6 +59,7 @@ void Player::move(){
 
 void Player::update(){
     this->move();
+    this->hitbox.setPosition(this->shape.getPosition());
 }
 void Player::render(sf::RenderTarget* target){
     target->draw(this->shape);

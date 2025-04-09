@@ -25,7 +25,7 @@ class FirstWeapon: public Item{
 };
 FirstWeapon::FirstWeapon(){
     shape.setFillColor(sf::Color::Red);
-    shape.setSize({10.f, 5.f});
+    shape.setSize({30.f, 10.f});
     
     counter = this->shootingSpeed;
 }

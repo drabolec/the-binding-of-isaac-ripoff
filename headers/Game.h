@@ -25,6 +25,7 @@ public:
     void events();
     void update();
     void render();
+    bool isColision(Entity* e1, Entity* e2);
     
 
 };
@@ -90,6 +91,13 @@ void Game::render(){
     }
 
     this->window->display();
+}
+//collision detection
+bool Game::isColision(Entity* e1, Entity* e2){
+    if(e1->hitbox.getLocalBounds().findIntersection(e2->hitbox.getLocalBounds())==std::nullopt){
+        return false;
+    }
+    return true;
 }
 
 
