@@ -20,8 +20,11 @@ RoundBullet::RoundBullet(){
     this->shape.setFillColor(sf::Color::Red);
     this->speed = 10.f;
     this->range = 300.f;
+    this->hitbox.setSize({20.f, 20.f});
 }
 void RoundBullet::update(){
+    //updating hitbox position
+    this->hitbox.setPosition(this->shape.getPosition());
     //range control
     if(rangeControl >= range){
         //makes bullet disapear when out of range and deleted in Game class

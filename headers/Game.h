@@ -8,6 +8,8 @@
 #include "RoundBullet.h"
 #include "Item.h"
 #include "FirstWeapon.h"
+#include "Boost.h"
+#include "SmallHealth.h"
 
 class Game{
 private:
@@ -22,6 +24,7 @@ private:
 
     //temporary for testing
     std::vector<Item*> weapons;
+    std::vector<Boost*> boosts;
 public:
     Game();
     virtual ~Game();
@@ -54,6 +57,10 @@ Game::Game(){
     //temporary for testing
     this->weapons.emplace_back(new FirstWeapon);
     this->weapons.at(0)->updatePos({500.f, 500.f});
+
+    this->boosts.emplace_back(new SmallHealth);
+    this->boosts.at(0)->setPosition({800.f, 800.f});
+    this->boosts.at(0)->update();
 
 }
 Game::~Game(){
@@ -106,8 +113,8 @@ void Game::update(){
     //in the future wepons list will be taken from room object but the rest of the logic stays the same
     int x = 0;
     for(Item* weapon:weapons){
-        //checking for colision and if player pressed E (changeWeapon bool)
-        if(isColision(weapon, &player) && player.changeWeapon==true){
+        //checking for colision and if player pressed E 
+        if(isColision(weapon, &player) && player.pressedE==true){
             //giving a player weapon on the ground and droping current weapon 
             Item* droped = currentWeapon;
             droped->updatePos(this->player.getPosition());
@@ -117,6 +124,19 @@ void Game::update(){
             this->currentWeapon->setCurrentBullet(this->currentBullet);
         }
         x++;
+    }
+    auto y = boosts.begin();
+    for(Boost* boost:boosts){
+        //checking for colision and if player pressed E 
+        if(isColision(boost, &player)){
+            //erasing boost and acordinglyt to its type changing player propertys
+            this->boosts.erase(y);
+            if(dynamic_cast<SmallHealth*>(boost) != NULL){
+                this->player.changeHp(boost->value);  
+            }
+            
+        }
+        y++;
     }
     
     
@@ -129,6 +149,9 @@ void Game::render(){
     //weapons vector should be inside room object
     for(Item* weapon:weapons){
         weapon->render(this->window);
+    }
+    for(Boost* boost:boosts){
+        boost->render(this->window);
     }
 
     //rendering player

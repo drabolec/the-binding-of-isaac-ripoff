@@ -22,7 +22,7 @@ public:
     void move();
     void render(sf::RenderTarget* target);
 
-    bool changeWeapon;
+    bool pressedE;
     
     
 private:
@@ -42,7 +42,7 @@ Player::Player(){
     this->shape.setFillColor(sf::Color::Green);
     this->shape.setSize(sf::Vector2f(30.f, 30.f));
     this->movespeed = 10.f;
-    this->changeWeapon = false;
+    this->pressedE = false;
     this->counter = 10;
     this->setHp(100);
 
@@ -79,10 +79,10 @@ void Player::move(){
     //press E to swap ewapons
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::E)&&counter >= this->clickSpeed)
     {
-        this->changeWeapon = true;
+        this->pressedE = true;
         counter = 0;
     }else{
-        this->changeWeapon = false;
+        this->pressedE = false;
     }
     
 }
