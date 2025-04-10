@@ -13,11 +13,13 @@ class Game{
 private:
     sf::RenderWindow* window;
     sf::VideoMode videoMode;
+    //event handling variable
     std::optional<sf::Event> event;
     Player player;
     Item* currentWeapon;
     Bullet* currentBullet;
     std::vector<Bullet*> playerBullets;
+
     //temporary for testing
     std::vector<Item*> weapons;
 public:
@@ -32,13 +34,22 @@ public:
 
 };
 Game::Game(){
+    //seting game window parameters
     this->videoMode.size = {1600, 900};
     this->window = new sf::RenderWindow(this->videoMode, "The binding of isaac ultimate ripoff");
-    sf::Vector2f pos(100.f, 100.f);
-    this->player.setPosition(pos);
+
+    //seting defaul player parameter
+    this->player.setPosition({100.f, 100.f});
+
+    //seting frame limit
     this->window->setFramerateLimit(60);
-    this->currentWeapon = new FirstWeapon;
+    
+    //seting default bullets
     this->currentBullet = new RoundBullet;
+
+    //setting defaul weapon
+    this->currentWeapon = new FirstWeapon;
+    this->currentWeapon->setCurrentBullet(this->currentBullet);
 
     //temporary for testing
     this->weapons.emplace_back(new FirstWeapon);
@@ -73,15 +84,18 @@ void Game::update(){
 
     //player weapon and shooting
     this->player.update();
-    this->currentWeapon->setCurrentBullet(this->currentBullet);
     this->currentWeapon->setCurrentPlayerBullets(this->playerBullets);
     this->currentWeapon->setPlayerPos(this->player.getPosition());
     this->currentWeapon->update();
     this->currentWeapon->updatePos(this->player.getPosition());
     this->playerBullets = this->currentWeapon->getCurrentPlayerBullets();
+
+    //updating player bullet position
     auto i = playerBullets.begin();
     for(Bullet* bullet: this->playerBullets){
+        //updating position
         bullet->update();
+        //checking if bullet should be deleted for now only by its range
         if(bullet->isVisible==false){
             playerBullets.erase(i);
         }
@@ -89,14 +103,18 @@ void Game::update(){
     }
 
     //updating loot for testing
+    //in the future wepons list will be taken from room object but the rest of the logic stays the same
     int x = 0;
     for(Item* weapon:weapons){
+        //checking for colision and if player pressed E (changeWeapon bool)
         if(isColision(weapon, &player) && player.changeWeapon==true){
-            
+            //giving a player weapon on the ground and droping current weapon 
             Item* droped = currentWeapon;
             droped->updatePos(this->player.getPosition());
             this->weapons.at(x) = droped;
             this->currentWeapon = weapon;
+            //setting current bullets for new weapon
+            this->currentWeapon->setCurrentBullet(this->currentBullet);
         }
         x++;
     }
@@ -105,15 +123,21 @@ void Game::update(){
 }
 void Game::render(){
     this->window->clear();
-    //magic happend right here
+    //magic happens right here
 
     //rendering loot for testing
+    //weapons vector should be inside room object
     for(Item* weapon:weapons){
         weapon->render(this->window);
     }
 
+    //rendering player
     this->player.render(this->window);
+
+    //rendering current weapon
     this->currentWeapon->render(this->window);
+
+    //rendering player bullets
     for(Bullet* bullet: this->playerBullets){
         bullet->render(this->window);
     }
