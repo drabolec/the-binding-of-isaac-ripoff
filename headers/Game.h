@@ -22,6 +22,9 @@ private:
     Bullet* currentBullet;
     std::vector<Bullet*> playerBullets;
 
+    //Game font for now roboto
+    sf::Font* font;
+
     //temporary for testing
     std::vector<Item*> weapons;
     std::vector<Boost*> boosts;
@@ -33,16 +36,21 @@ public:
     void update();
     void render();
     bool isColision(Entity* e1, Entity* e2);
+    sf::Font getFont();
     
 
 };
 Game::Game(){
+    //setting font
+    this->font = new sf::Font("./Fonts/Roboto-Regular.ttf");
     //seting game window parameters
     this->videoMode.size = {1600, 900};
     this->window = new sf::RenderWindow(this->videoMode, "The binding of isaac ultimate ripoff");
 
     //seting defaul player parameter
     this->player.setPosition({100.f, 100.f});
+    this->player.setFont(this->font);
+    this->player.initHp();
 
     //seting frame limit
     this->window->setFramerateLimit(60);
@@ -54,13 +62,14 @@ Game::Game(){
     this->currentWeapon = new FirstWeapon;
     this->currentWeapon->setCurrentBullet(this->currentBullet);
 
+
+    
     //temporary for testing
     this->weapons.emplace_back(new FirstWeapon);
     this->weapons.at(0)->updatePos({500.f, 500.f});
 
     this->boosts.emplace_back(new SmallHealth);
     this->boosts.at(0)->setPosition({800.f, 800.f});
-    this->boosts.at(0)->update();
 
 }
 Game::~Game(){
@@ -153,6 +162,10 @@ void Game::render(){
     for(Boost* boost:boosts){
         boost->render(this->window);
     }
+    //rendering player bullets
+    for(Bullet* bullet: this->playerBullets){
+        bullet->render(this->window);
+    }
 
     //rendering player
     this->player.render(this->window);
@@ -160,13 +173,9 @@ void Game::render(){
     //rendering current weapon
     this->currentWeapon->render(this->window);
 
-    //rendering player bullets
-    for(Bullet* bullet: this->playerBullets){
-        bullet->render(this->window);
-    }
-    
 
     this->window->display();
+
 }
 //collision detection
 bool Game::isColision(Entity* e1, Entity* e2){
@@ -175,6 +184,7 @@ bool Game::isColision(Entity* e1, Entity* e2){
     }
     return false;
 }
+
 
 
 

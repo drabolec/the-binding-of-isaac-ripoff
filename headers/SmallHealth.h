@@ -27,6 +27,7 @@ SmallHealth::SmallHealth(){
 }
 void SmallHealth::setPosition(sf::Vector2f pos){
     this->shape.setPosition(pos);
+    this->hitbox.setPosition(this->shape.getPosition());
 }
 
 void SmallHealth::update(){
