@@ -1,6 +1,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+#include <iostream>
 
 
 #include "Item.h"
@@ -16,13 +17,15 @@ public:
     
     void setPosition(sf::Vector2f pos);
     sf::Vector2f getPosition();
+    void setFont(sf::Font* font);
+    void initHp();
 
     
     void update();
     void move();
     void render(sf::RenderTarget* target);
 
-    bool changeWeapon;
+    bool pressedE;
     
     
 private:
@@ -35,6 +38,10 @@ private:
     sf::RectangleShape shape;
     //movespeed
     float movespeed;
+    //font
+    sf::Font* font;
+    //hp bar
+    sf::Text* hpText;
 };
 
 Player::Player(){
@@ -42,12 +49,20 @@ Player::Player(){
     this->shape.setFillColor(sf::Color::Green);
     this->shape.setSize(sf::Vector2f(30.f, 30.f));
     this->movespeed = 10.f;
-    this->changeWeapon = false;
+    this->pressedE = false;
     this->counter = 10;
     this->setHp(100);
-
     //setting hitbox size
     this->hitbox.setSize({30.f, 30.f});
+}
+//text class does not have and empty construcotr and it has to be creater after the font is set so 
+//this spageti code fixes that 
+void Player::initHp(){
+    this->hpText = new sf::Text(*font);
+    this->hpText->setString(std::to_string(this->getHp())+ " hp");
+    this->hpText->setFillColor(sf::Color::White); //change later
+    this->hpText->setCharacterSize(10);
+    this->hpText->setPosition({this->shape.getPosition().x, this->shape.getPosition().y  - 30.f});
 }
 Player::~Player(){
 
@@ -79,10 +94,10 @@ void Player::move(){
     //press E to swap ewapons
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::E)&&counter >= this->clickSpeed)
     {
-        this->changeWeapon = true;
+        this->pressedE = true;
         counter = 0;
     }else{
-        this->changeWeapon = false;
+        this->pressedE = false;
     }
     
 }
@@ -98,10 +113,19 @@ void Player::update(){
 
     //setting hitbox position to match player position
     this->hitbox.setPosition(this->shape.getPosition());
+
+    //updating hp text box
+    this->hpText->setPosition({this->shape.getPosition().x, this->shape.getPosition().y- 30.f});
+    this->hpText->setString(std::to_string(this->getHp())+ " hp");
 }
 void Player::render(sf::RenderTarget* target){
     target->draw(this->shape);
+    target->draw(*hpText);
     
 }
+void Player::setFont(sf::Font* font){
+    this->font = font;
+}
+
 
 #endif

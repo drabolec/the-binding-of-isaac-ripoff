@@ -8,6 +8,8 @@
 #include "RoundBullet.h"
 #include "Item.h"
 #include "FirstWeapon.h"
+#include "Boost.h"
+#include "SmallHealth.h"
 
 class Game{
 private:
@@ -20,8 +22,12 @@ private:
     Bullet* currentBullet;
     std::vector<Bullet*> playerBullets;
 
+    //Game font for now roboto
+    sf::Font* font;
+
     //temporary for testing
     std::vector<Item*> weapons;
+    std::vector<Boost*> boosts;
 public:
     Game();
     virtual ~Game();
@@ -30,16 +36,21 @@ public:
     void update();
     void render();
     bool isColision(Entity* e1, Entity* e2);
+    sf::Font getFont();
     
 
 };
 Game::Game(){
+    //setting font
+    this->font = new sf::Font("./Fonts/Roboto-Regular.ttf");
     //seting game window parameters
     this->videoMode.size = {1600, 900};
     this->window = new sf::RenderWindow(this->videoMode, "The binding of isaac ultimate ripoff");
 
     //seting defaul player parameter
     this->player.setPosition({100.f, 100.f});
+    this->player.setFont(this->font);
+    this->player.initHp();
 
     //seting frame limit
     this->window->setFramerateLimit(60);
@@ -51,9 +62,14 @@ Game::Game(){
     this->currentWeapon = new FirstWeapon;
     this->currentWeapon->setCurrentBullet(this->currentBullet);
 
+
+    
     //temporary for testing
     this->weapons.emplace_back(new FirstWeapon);
     this->weapons.at(0)->updatePos({500.f, 500.f});
+
+    this->boosts.emplace_back(new SmallHealth);
+    this->boosts.at(0)->setPosition({800.f, 800.f});
 
 }
 Game::~Game(){
@@ -106,8 +122,8 @@ void Game::update(){
     //in the future wepons list will be taken from room object but the rest of the logic stays the same
     int x = 0;
     for(Item* weapon:weapons){
-        //checking for colision and if player pressed E (changeWeapon bool)
-        if(isColision(weapon, &player) && player.changeWeapon==true){
+        //checking for colision and if player pressed E 
+        if(isColision(weapon, &player) && player.pressedE==true){
             //giving a player weapon on the ground and droping current weapon 
             Item* droped = currentWeapon;
             droped->updatePos(this->player.getPosition());
@@ -117,6 +133,19 @@ void Game::update(){
             this->currentWeapon->setCurrentBullet(this->currentBullet);
         }
         x++;
+    }
+    auto y = boosts.begin();
+    for(Boost* boost:boosts){
+        //checking for colision and if player pressed E 
+        if(isColision(boost, &player)){
+            //erasing boost and acordinglyt to its type changing player propertys
+            this->boosts.erase(y);
+            if(dynamic_cast<SmallHealth*>(boost) != NULL){
+                this->player.changeHp(boost->value);  
+            }
+            
+        }
+        y++;
     }
     
     
@@ -130,6 +159,13 @@ void Game::render(){
     for(Item* weapon:weapons){
         weapon->render(this->window);
     }
+    for(Boost* boost:boosts){
+        boost->render(this->window);
+    }
+    //rendering player bullets
+    for(Bullet* bullet: this->playerBullets){
+        bullet->render(this->window);
+    }
 
     //rendering player
     this->player.render(this->window);
@@ -137,13 +173,9 @@ void Game::render(){
     //rendering current weapon
     this->currentWeapon->render(this->window);
 
-    //rendering player bullets
-    for(Bullet* bullet: this->playerBullets){
-        bullet->render(this->window);
-    }
-    
 
     this->window->display();
+
 }
 //collision detection
 bool Game::isColision(Entity* e1, Entity* e2){
@@ -152,6 +184,7 @@ bool Game::isColision(Entity* e1, Entity* e2){
     }
     return false;
 }
+
 
 
 
