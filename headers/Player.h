@@ -5,9 +5,9 @@
 
 #include "Item.h"
 #include "FirstWeapon.h"
-#include "Entity.h"
+#include "DmgEntity.h"
 
-class Player: public Entity{
+class Player: public DmgEntity{
 
 public:
     Player();
@@ -44,6 +44,7 @@ Player::Player(){
     this->movespeed = 10.f;
     this->changeWeapon = false;
     this->counter = 10;
+    this->setHp(100);
 
     //setting hitbox size
     this->hitbox.setSize({30.f, 30.f});
