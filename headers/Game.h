@@ -8,6 +8,8 @@
 #include "RoundBullet.h"
 #include "Item.h"
 #include "FirstWeapon.h"
+#include "rbAmmo.h"
+#include "Ammo.h"
 
 class Game{
 private:
@@ -20,6 +22,7 @@ private:
     std::vector<Bullet*> playerBullets;
     //temporary for testing
     std::vector<Item*> weapons;
+    std::vector<Ammo*> loot;
 public:
     Game();
     virtual ~Game();
@@ -43,6 +46,9 @@ Game::Game(){
     //temporary for testing
     this->weapons.emplace_back(new FirstWeapon);
     this->weapons.at(0)->updatePos({500.f, 500.f});
+
+    this->loot.emplace_back(new rbAmmo);
+    this->loot.at(0)->setPosition({800.f, 400.f});
 
 }
 Game::~Game(){
@@ -110,6 +116,9 @@ void Game::render(){
     //rendering loot for testing
     for(Item* weapon:weapons){
         weapon->render(this->window);
+    }
+    for(Ammo* ammo:loot){
+        ammo->render(this->window);
     }
 
     this->player.render(this->window);
