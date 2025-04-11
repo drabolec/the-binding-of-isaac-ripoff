@@ -32,6 +32,7 @@ rbAmmo::rbAmmo(){
 }
 void rbAmmo::setPosition(sf::Vector2f pos){
     this->shape.setPosition(pos);
+    this->hitbox.setPosition(pos);
 
 }
 void rbAmmo::update(){

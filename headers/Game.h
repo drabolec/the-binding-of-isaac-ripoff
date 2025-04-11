@@ -164,8 +164,18 @@ void Game::update(){
     for(Ammo* ammo:loot){
         if(isColision(ammo, &player)&&player.pressedE==true){
             //change boolets acordingly
+            Bullet* temp = this->currentBullet;
+            Ammo* droped;
+            if(dynamic_cast<RoundBullet*>(temp)!=NULL){
+                droped = new rbAmmo;
+                droped->setPosition(this->player.getPosition());
+            }
+            currentBullet = ammo->getType();
+            loot.erase(a);
+            loot.emplace_back(droped);
             
         }
+        a++;
     }
     
     
