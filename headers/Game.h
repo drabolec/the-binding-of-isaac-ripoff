@@ -160,6 +160,13 @@ void Game::update(){
         }
         y++;
     }
+    auto a = loot.begin();
+    for(Ammo* ammo:loot){
+        if(isColision(ammo, &player)&&player.pressedE==true){
+            //change boolets acordingly
+            
+        }
+    }
     
     
 }

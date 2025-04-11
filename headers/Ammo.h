@@ -8,12 +8,16 @@
 class Ammo:public Entity{
 public:
     virtual void setPosition(sf::Vector2f pos);
+    virtual Bullet* getType();
 private:
 
 
 };
 
 void Ammo::setPosition(sf::Vector2f pos){
+
+}
+Bullet* Ammo::getType(){
     
 }
 

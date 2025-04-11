@@ -12,6 +12,7 @@ class rbAmmo:public Ammo{
         rbAmmo();
         Bullet* type;
         void setPosition(sf::Vector2f pos);
+        Bullet* getType();
 
         void update();
         void render(sf::RenderTarget* target);
@@ -19,6 +20,9 @@ class rbAmmo:public Ammo{
         sf::RectangleShape shape;
 
 };
+Bullet* rbAmmo::getType(){
+    return this->type;
+}
 rbAmmo::rbAmmo(){
     shape.setSize({20.f, 20.f});
     shape.setFillColor(sf::Color::Yellow);
