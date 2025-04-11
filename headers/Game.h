@@ -8,6 +8,10 @@
 #include "RoundBullet.h"
 #include "Item.h"
 #include "FirstWeapon.h"
+
+#include "rbAmmo.h"
+#include "Ammo.h"
+
 #include "Boost.h"
 #include "SmallHealth.h"
 
@@ -27,7 +31,11 @@ private:
 
     //temporary for testing
     std::vector<Item*> weapons;
+
+    std::vector<Ammo*> loot;
+
     std::vector<Boost*> boosts;
+
 public:
     Game();
     virtual ~Game();
@@ -68,8 +76,13 @@ Game::Game(){
     this->weapons.emplace_back(new FirstWeapon);
     this->weapons.at(0)->updatePos({500.f, 500.f});
 
+
+    this->loot.emplace_back(new rbAmmo);
+    this->loot.at(0)->setPosition({800.f, 400.f});
+
     this->boosts.emplace_back(new SmallHealth);
     this->boosts.at(0)->setPosition({800.f, 800.f});
+
 
 }
 Game::~Game(){
@@ -147,6 +160,23 @@ void Game::update(){
         }
         y++;
     }
+    auto a = loot.begin();
+    for(Ammo* ammo:loot){
+        if(isColision(ammo, &player)&&player.pressedE==true){
+            //change boolets acordingly
+            Bullet* temp = this->currentBullet;
+            Ammo* droped;
+            if(dynamic_cast<RoundBullet*>(temp)!=NULL){
+                droped = new rbAmmo;
+                droped->setPosition(this->player.getPosition());
+            }
+            currentBullet = ammo->getType();
+            loot.erase(a);
+            loot.emplace_back(droped);
+            
+        }
+        a++;
+    }
     
     
 }
@@ -159,6 +189,14 @@ void Game::render(){
     for(Item* weapon:weapons){
         weapon->render(this->window);
     }
+
+    for(Ammo* ammo:loot){
+        ammo->render(this->window);
+    }
+
+    this->player.render(this->window);
+    this->currentWeapon->render(this->window);
+
     for(Boost* boost:boosts){
         boost->render(this->window);
     }
