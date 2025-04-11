@@ -53,7 +53,8 @@ Game::Game(){
     this->font = new sf::Font("./Fonts/Roboto-Regular.ttf");
     //seting game window parameters
     this->videoMode.size = {1600, 900};
-    this->window = new sf::RenderWindow(this->videoMode, "The binding of isaac ultimate ripoff");
+    //makes window unresizable and sets its parameters
+    this->window = new sf::RenderWindow(this->videoMode, "The binding of isaac ultimate ripoff", sf::Style::Close);
 
     //seting defaul player parameter
     this->player.setPosition({100.f, 100.f});
