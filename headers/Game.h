@@ -204,7 +204,7 @@ void Game::update(){
     
 }
 void Game::render(){
-    this->window->clear();
+    this->window->clear(sf::Color(120, 120, 120));
     //magic happens right here
 
     //rendering loot for testing
