@@ -39,6 +39,8 @@ private:
     //sounds
     sf::SoundBuffer *buffer;
     sf::Sound *pickupWeapon;
+
+    bool isClosed = false;
     //temporary for testing
     std::vector<Item*> weapons;
 
@@ -59,6 +61,8 @@ public:
     void updateLoot();
     void updateBoosts();
     void updateWeapons();
+    void pause();
+    void renderEntitys();
     
 
 };
@@ -121,6 +125,9 @@ bool Game::running(){
     return this->window->isOpen();
 }
 void Game::events(){
+    if(isClosed){
+        this->window->close();
+    }
     while (this->event = this->window->pollEvent())
         {
             if (this->event->is<sf::Event::Closed>()){
@@ -128,7 +135,7 @@ void Game::events(){
             }else if(const auto* keyPressed = this->event->getIf<sf::Event::KeyPressed>()){
                 //turns of on escape change later
                 if(keyPressed->scancode == sf::Keyboard::Scan::Escape){
-                    this->window->close();
+                    pause();
                 }
                 
             }
@@ -159,7 +166,14 @@ void Game::update(){
 }
 void Game::render(){
     this->window->clear(sf::Color(120, 120, 120));
-    //magic happens right here
+   
+    this->renderEntitys();
+
+    this->window->display();
+
+}
+void Game::renderEntitys(){
+     //magic happens right here
 
     //rendering loot for testing
     //weapons vector should be inside room object
@@ -187,9 +201,6 @@ void Game::render(){
 
     //rendering and updating interface
     interf();
-
-    this->window->display();
-
 }
 //collision detection
 bool Game::isColision(Entity* e1, Entity* e2){
@@ -285,6 +296,46 @@ void Game::updateLoot(){
         
             i++;
         
+    }
+}
+void Game::pause(){
+    sf::Text pause(*(this->font));
+    pause.setString("PAUSE");
+    pause.setCharacterSize(60.f);
+    pause.setPosition({700, 100});
+    pause.setFillColor(sf::Color::Black);
+
+    sf::RectangleShape fog;
+    fog.setFillColor(sf::Color(0, 0, 0, 50));
+    fog.setSize({1600, 900});
+    
+    
+    bool p = true;
+    while(p && !isClosed){
+        while (this->event = this->window->pollEvent())
+        {
+            if (this->event->is<sf::Event::Closed>()){
+                this->isClosed = true;
+                
+            }else if(const auto* keyPressed = this->event->getIf<sf::Event::KeyPressed>()){
+                //turns of on escape change later
+                if(keyPressed->scancode == sf::Keyboard::Scan::Escape){
+                    p = false;
+                }
+                
+            }
+                
+            
+        }
+        
+        this->window->clear(sf::Color(120, 120, 120));
+        this->renderEntitys();
+
+        this->window->draw(fog);
+        this->window->draw(pause);
+        
+        
+        this->window->display();
     }
 }
 
