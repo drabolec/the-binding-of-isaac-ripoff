@@ -14,9 +14,6 @@ class Player: public DmgEntity{
     const int clickSpeed = 10;
     //frame counter for E button might later be used for animations
     int counter;
-
-    //player texture
-    sf::RectangleShape shape;
     //movespeed
     float movespeed;
     //font
@@ -35,10 +32,7 @@ class Player: public DmgEntity{
         idleup = 8
     };
     state st;
-    //texture
-    const sf::Texture *texture = new sf::Texture("./Textures/Prototype_Character.png");
-    //rectagnle that itarates over different frames of animations
-    sf::IntRect * intrect;
+    
     bool animChange;
     //clock for animation 
     sf::Clock clock;
@@ -67,7 +61,6 @@ public:
 
 Player::Player(){
     //seting defaul parameters
-    this->shape.setSize(sf::Vector2f(120.f, 120.f));
     this->movespeed = 7.f;
     this->pressedE = false;
     this->counter = 10;
@@ -76,7 +69,11 @@ Player::Player(){
     this->hitbox.setSize({40.f, 40.f});
     this->hitbox.setPosition({this->shape.getPosition().x+40.f, this->shape.getPosition().y+40.f});
     //setting up intrect and texture
-    intrect = new sf::IntRect({0, 0}, {32, 32});
+    this->intrect = new sf::IntRect({0, 0}, {32, 32});
+    //setting tecture
+    this->texture = new sf::Texture("./Textures/Prototype_Character.png");
+    //shape
+    this->shape.setSize(sf::Vector2f(120.f, 120.f));
     this->shape.setTexture(texture);
     this->shape.setTextureRect(*intrect);
     //settomg defualt state

@@ -1,5 +1,5 @@
-#ifndef FIRSTWEAPON_H
-#define FIRSTWEAPON_H
+#ifndef MINIGUNWEAPON_H
+#define MINIGUNWEAPON_H
 
 #include "Item.h"
 #include "Bullet.h"
@@ -8,14 +8,14 @@
 
 #include "cmath"
 
-class FirstWeapon: public Item{
+class MiniGunWeapon: public Item{
     public:
         
         void update();
         void updatePos(sf::Vector2f pos);
         void render(sf::RenderTarget* target);
-        FirstWeapon();
-        const float time = 0.4f;
+        MiniGunWeapon();
+        const float time = 0.2f;
         
     private:
         
@@ -23,9 +23,9 @@ class FirstWeapon: public Item{
 
     
 };
-FirstWeapon::FirstWeapon(){
+MiniGunWeapon::MiniGunWeapon(){
     //setting texture
-    this->texture = new sf::Texture("./Textures/default_weapon.png");
+    this->texture = new sf::Texture("./Textures/minigun_weapon.png");
     //setting intrect
     this->intrect = new sf::IntRect({0, 0},{64, 18});
     //setting shape
@@ -38,7 +38,7 @@ FirstWeapon::FirstWeapon(){
 
     
 }
-void FirstWeapon::update(){
+void MiniGunWeapon::update(){
 
     
 
@@ -69,11 +69,11 @@ void FirstWeapon::update(){
     this->hitbox.setPosition(this->playerPos);
     
 }
-void FirstWeapon::updatePos(sf::Vector2f pos){
+void MiniGunWeapon::updatePos(sf::Vector2f pos){
     this->shape.setPosition(pos);
     this->hitbox.setPosition(pos);
 }
-void FirstWeapon::render(sf::RenderTarget* target){
+void MiniGunWeapon::render(sf::RenderTarget* target){
     target->draw(this->shape);
 }
 

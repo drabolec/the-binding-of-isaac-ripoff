@@ -11,6 +11,9 @@ class Entity{
 public:
     //hitbox should be set in every entity whichc we want to be able to colide
     sf::RectangleShape hitbox;
+    sf::RectangleShape shape;
+    sf::Texture* texture;
+    sf::IntRect *intrect;
     virtual void update();
     virtual void render(sf::RenderTarget* target);
     

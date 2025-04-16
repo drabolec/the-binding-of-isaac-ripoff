@@ -4,13 +4,19 @@
 #include <vector>
 
 #include "Player.h"
+
 #include "Bullet.h"
 #include "RoundBullet.h"
+#include "FastBullet.h"
+
 #include "Item.h"
 #include "FirstWeapon.h"
+#include "ThreeBulletWeapon.h"
+#include "MiniGunWeapon.h"
 
-#include "rbAmmo.h"
 #include "Ammo.h"
+#include "rbAmmo.h"
+#include "fastAmmo.h"
 
 #include "Boost.h"
 #include "SmallHealth.h"
@@ -75,13 +81,19 @@ Game::Game(){
     //temporary for testing
     this->weapons.emplace_back(new FirstWeapon);
     this->weapons.at(0)->updatePos({500.f, 500.f});
+    this->weapons.emplace_back(new ThreeBulletWeapon);
+    this->weapons.at(1)->updatePos({500.f, 600.f});
+    this->weapons.emplace_back(new MiniGunWeapon);
+    this->weapons.at(2)->updatePos({500.f, 700.f});
 
 
     this->loot.emplace_back(new rbAmmo);
     this->loot.at(0)->setPosition({800.f, 300.f});
+    this->loot.emplace_back(new fastAmmo);
+    this->loot.at(1)->setPosition({800.f, 400.f});
 
     this->boosts.emplace_back(new SmallHealth);
-    this->boosts.at(0)->setPosition({800.f, 400.f});
+    this->boosts.at(0)->setPosition({900.f, 400.f});
 
 
 }
@@ -117,17 +129,20 @@ void Game::update(){
     this->currentWeapon->setPlayerPos({this->player.getPosition().x+45.f,this->player.getPosition().y+45.f});
     this->currentWeapon->update();
     this->playerBullets = this->currentWeapon->getCurrentPlayerBullets();
+    
 
     //updating player bullet position
-    auto i = playerBullets.begin();
-    for(Bullet* bullet: this->playerBullets){
+    for(auto i = playerBullets.begin(); i != playerBullets.end();){
         //updating position
-        bullet->update();
+        (*i)->update();
         //checking if bullet should be deleted for now only by its range
-        if(bullet->isVisible==false){
+        if((*i)->isVisible==false){
             playerBullets.erase(i);
+            
+        }else{
+            i++;
         }
-        i++;
+        
     }
 
     //updating loot for testing
@@ -143,38 +158,47 @@ void Game::update(){
             this->currentWeapon = weapon;
             //setting current bullets for new weapon
             this->currentWeapon->setCurrentBullet(this->currentBullet);
+            break;
         }
         x++;
     }
-    auto y = boosts.begin();
-    for(Boost* boost:boosts){
+
+    for(auto i = boosts.begin(); i != boosts.end();){
         //checking for colision and if player pressed E 
-        if(isColision(boost, &player)){
+        if(isColision((*i), &player)){
             //erasing boost and acordinglyt to its type changing player propertys
-            this->boosts.erase(y);
-            if(dynamic_cast<SmallHealth*>(boost) != NULL){
-                this->player.changeHp(boost->value);  
+            this->boosts.erase(i);
+            if(dynamic_cast<SmallHealth*>((*i)) != NULL){
+                this->player.changeHp((*i)->value);  
             }
             
         }
-        y++;
+        else{
+            i++;
+        }
     }
-    auto a = loot.begin();
-    for(Ammo* ammo:loot){
-        if(isColision(ammo, &player)&&player.pressedE==true){
+    for(auto i = loot.begin(); i != loot.end();){
+        if(isColision((*i), &player)&&player.pressedE==true){
             //change boolets acordingly
             Bullet* temp = this->currentBullet;
             Ammo* droped;
             if(dynamic_cast<RoundBullet*>(temp)!=NULL){
                 droped = new rbAmmo;
                 droped->setPosition({this->player.getPosition().x+45.f, this->player.getPosition().y+45.f});
+            }else if(dynamic_cast<FastBullet*>(temp)!=NULL){
+                droped = new fastAmmo;
+                droped->setPosition({this->player.getPosition().x+45.f, this->player.getPosition().y+45.f});
             }
-            currentBullet = ammo->getType();
-            loot.erase(a);
+            currentBullet = (*i)->getType();
+            this->currentWeapon->setCurrentBullet(this->currentBullet);
+            loot.erase(i);
             loot.emplace_back(droped);
+            break;
             
         }
-        a++;
+        
+            i++;
+        
     }
     
     
