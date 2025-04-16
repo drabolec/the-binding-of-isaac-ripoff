@@ -30,6 +30,9 @@ class Player: public DmgEntity{
         left = 3,
         up = 4,
         down = 5,
+        idleright = 6,
+        idleleft = 7,
+        idleup = 8
     };
     state st;
     //texture
@@ -137,7 +140,19 @@ void Player::move(){
         } 
         
         else{
-            changeState(idle);
+            
+            if(this->st == right){
+                changeState(idleright);
+            }else if(this->st == left){
+                changeState(idleleft);
+            }else if(this->st == up){
+                changeState(idleup);
+            }else if(this->st == down){
+                changeState(idle);
+            }else{
+                this->animChange=0;
+            }
+            
         }
     
     
@@ -173,7 +188,7 @@ void Player::update(){
     this->hitbox.setPosition({this->shape.getPosition().x+40.f, this->shape.getPosition().y+40.f});
 
     //updating hp text box
-    this->hpText->setPosition({this->shape.getPosition().x+50.f, this->shape.getPosition().y- 30.f});
+    this->hpText->setPosition({this->shape.getPosition().x+45.f, this->shape.getPosition().y- 15.f});
     this->hpText->setString(std::to_string(this->getHp())+ " hp");
 }
 void Player::render(sf::RenderTarget* target){
@@ -185,7 +200,7 @@ void Player::setFont(sf::Font* font){
     this->font = font;
 }
 void Player::animation(){
-    if(this->st == idle){
+    if(this->st == idle || this->st == idleright || this->st == idleup){
         if(animChange){
             shape.setTextureRect(*intrect);
         }
@@ -229,6 +244,20 @@ void Player::animation(){
             shape.setTextureRect(*intrect);
             clock.restart();
         }
+    }else if(this->st == idleleft){
+        if(animChange){
+            shape.setTextureRect(*intrect);
+        }
+        else if(clock.getElapsedTime().asSeconds() > 0.5f){
+            
+            if(this->intrect->position.x == 64){
+                this->intrect->position.x = 32;
+            }else{
+                this->intrect->position.x += 32;
+            }
+            shape.setTextureRect(*intrect);
+            clock.restart();
+        }
     }
 }
 void Player::changeState(state st){
@@ -259,6 +288,18 @@ void Player::changeState(state st){
             this->intrect->position = {0, 96};
             
             this->st = down;
+        }else if(st == idleright){
+            this->intrect->size = {32, 32};
+            this->intrect->position = {0, 32};
+            this->st = idleright;
+        }else if(st == idleleft){
+            this->intrect->size = {-32, 32};
+            this->intrect->position = {32, 32};
+            this->st = idleleft;
+        }else if(st == idleup){
+            this->intrect->size = {32, 32};
+            this->intrect->position = {0, 64};
+            this->st = idleup;
         }
     }else{
         animChange = 0;

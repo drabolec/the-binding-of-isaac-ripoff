@@ -27,7 +27,7 @@ class FirstWeapon: public Item{
 };
 FirstWeapon::FirstWeapon(){
     //setting texture
-    this->texture = new sf::Texture("./Textures/defaul_weapon.png");
+    this->texture = new sf::Texture("./Textures/default_weapon.png");
     //setting intrect
     this->intrect = new sf::IntRect({0, 0},{64, 18});
     //setting shape

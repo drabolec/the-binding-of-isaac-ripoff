@@ -18,16 +18,27 @@ class rbAmmo:public Ammo{
         void render(sf::RenderTarget* target);
     private:
         sf::RectangleShape shape;
+        sf::Texture *texture;
+        sf::IntRect *intrect;
 
 };
 Bullet* rbAmmo::getType(){
     return this->type;
 }
 rbAmmo::rbAmmo(){
-    shape.setSize({20.f, 20.f});
-    shape.setFillColor(sf::Color::Yellow);
-    type = new RoundBullet();
-    this->hitbox.setSize({20.f, 20.f});
+    //setting tezture
+    this->texture = new sf::Texture("./Textures/default_ammo.png");
+    //setting intrect
+    this->intrect = new sf::IntRect({0,0},{32, 32});
+    //setting shape
+    this->shape.setSize({50.f, 50.f});
+    this->shape.setTexture(texture);
+    this->shape.setTextureRect(*intrect);
+    this->shape.setFillColor(sf::Color(209, 0, 150));
+    //setting type
+    this->type = new RoundBullet();
+    //setting hitbox
+    this->hitbox.setSize({50.f, 50.f});
     this->hitbox.setPosition(this->shape.getPosition());
 }
 void rbAmmo::setPosition(sf::Vector2f pos){
