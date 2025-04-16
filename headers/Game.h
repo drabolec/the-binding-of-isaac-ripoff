@@ -36,7 +36,9 @@ private:
     sf::Font* font;
     //hp text
     sf::Text *hpText;
-
+    //sounds
+    sf::SoundBuffer *buffer;
+    sf::Sound *pickupWeapon;
     //temporary for testing
     std::vector<Item*> weapons;
 
@@ -82,7 +84,10 @@ Game::Game(){
     //setting defaul weapon
     this->currentWeapon = new FirstWeapon;
     this->currentWeapon->setCurrentBullet(this->currentBullet);
-
+    //sound
+    this->buffer = new sf::SoundBuffer("./Sound/pickupweapon.wav");
+    this->pickupWeapon = new sf::Sound(*(this->buffer));
+    this->pickupWeapon->setVolume(2.f);
 
     
     //temporary for testing
@@ -165,6 +170,7 @@ void Game::update(){
             this->currentWeapon = weapon;
             //setting current bullets for new weapon
             this->currentWeapon->setCurrentBullet(this->currentBullet);
+            this->pickupWeapon->play();
             break;
         }
         x++;
