@@ -61,6 +61,8 @@ void FirstWeapon::update(){
     }else{
         this->counter ++;
     }
+    this->shape.setPosition(this->playerPos);
+    this->hitbox.setPosition(this->playerPos);
     
 }
 void FirstWeapon::updatePos(sf::Vector2f pos){

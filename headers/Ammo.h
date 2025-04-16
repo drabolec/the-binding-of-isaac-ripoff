@@ -18,7 +18,7 @@ void Ammo::setPosition(sf::Vector2f pos){
 
 }
 Bullet* Ammo::getType(){
-    
+    return new Bullet;
 }
 
 #endif
