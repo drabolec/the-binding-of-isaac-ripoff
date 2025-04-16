@@ -12,34 +12,48 @@ class RoundBullet:public Bullet{
         void setInitPos();
         
     private:
-        sf::CircleShape shape;
+        sf::RectangleShape shape;
+        sf::Texture *texture;
+        sf::IntRect *intrect;
 };
 RoundBullet::RoundBullet(){
+    //setting up textrue
+    this->texture = new sf::Texture("./Textures/necrobolt1_strip.png");
+    //setting up int rect
+    this->intrect = new sf::IntRect({0, 0},{10, 10});
     //seting defaul parameters
-    this->shape.setRadius(15.f);
-    this->shape.setFillColor(sf::Color::Red);
+    this->shape.setSize({30.f, 30.f});
+    this->shape.setTexture(texture);
+    this->shape.setTextureRect(*intrect);
+
     this->speed = 10.f;
     this->range = 300.f;
-    this->hitbox.setSize({20.f, 20.f});
+    this->hitbox.setSize({30.f, 30.f});
+    this->rangeControl = 0;
 }
-void RoundBullet::update(){
+void RoundBullet::update(){    
+    //moving bullet in correct direction and speed
+    this->shape.move(this->direction*this->speed);
     //updating hitbox position
     this->hitbox.setPosition(this->shape.getPosition());
+    //incremencting speed to range control
+    this->rangeControl += this->speed;
     //range control
-    if(rangeControl >= range){
+    if(this->rangeControl >= this->range){
         //makes bullet disapear when out of range and deleted in Game class
         this->isVisible = false;
     }
-    //moving bullet in correct direction and speed
-    this->shape.move(this->direction*this->speed);
-    //incremencting speed to range control
-    rangeControl += speed;
 }
 void RoundBullet::render(sf::RenderTarget* target){
+
     target->draw(this->shape);
+    
+
 }
 void RoundBullet::setInitPos(){
     this->shape.setPosition(this->initPos);
+    
+    
 }
 
 

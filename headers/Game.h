@@ -44,7 +44,6 @@ public:
     void update();
     void render();
     bool isColision(Entity* e1, Entity* e2);
-    sf::Font getFont();
     
 
 };
@@ -79,10 +78,10 @@ Game::Game(){
 
 
     this->loot.emplace_back(new rbAmmo);
-    this->loot.at(0)->setPosition({800.f, 400.f});
+    this->loot.at(0)->setPosition({800.f, 300.f});
 
     this->boosts.emplace_back(new SmallHealth);
-    this->boosts.at(0)->setPosition({800.f, 800.f});
+    this->boosts.at(0)->setPosition({800.f, 400.f});
 
 
 }
@@ -115,7 +114,7 @@ void Game::update(){
     //player weapon and shooting
     this->player.update();
     this->currentWeapon->setCurrentPlayerBullets(this->playerBullets);
-    this->currentWeapon->setPlayerPos({this->player.getPosition().x+50.f,this->player.getPosition().y+65.f});
+    this->currentWeapon->setPlayerPos({this->player.getPosition().x+45.f,this->player.getPosition().y+45.f});
     this->currentWeapon->update();
     this->playerBullets = this->currentWeapon->getCurrentPlayerBullets();
 
@@ -139,7 +138,7 @@ void Game::update(){
         if(isColision(weapon, &player) && player.pressedE==true){
             //giving a player weapon on the ground and droping current weapon 
             Item* droped = currentWeapon;
-            droped->updatePos({this->player.getPosition().x+45.f, this->player.getPosition().y+45.f});
+            droped->updatePos({this->player.getPosition().x+20.f, this->player.getPosition().y+80.f});
             this->weapons.at(x) = droped;
             this->currentWeapon = weapon;
             //setting current bullets for new weapon
@@ -195,7 +194,7 @@ void Game::render(){
     }
 
     this->player.render(this->window);
-    this->currentWeapon->render(this->window);
+    
 
     for(Boost* boost:boosts){
         boost->render(this->window);
@@ -209,7 +208,7 @@ void Game::render(){
     this->player.render(this->window);
 
     //rendering current weapon
-    this->currentWeapon->render(this->window);
+    //this->currentWeapon->render(this->window);
 
 
     this->window->display();

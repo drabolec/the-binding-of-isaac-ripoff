@@ -65,7 +65,7 @@ public:
 Player::Player(){
     //seting defaul parameters
     this->shape.setSize(sf::Vector2f(120.f, 120.f));
-    this->movespeed = 10.f;
+    this->movespeed = 7.f;
     this->pressedE = false;
     this->counter = 10;
     this->setHp(100);
