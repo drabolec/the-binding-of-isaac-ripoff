@@ -89,7 +89,7 @@ Game::Game(){
     //seting game window parameters
     this->videoMode.size = {1600, 900};
     //makes window unresizable and sets its parameters
-    this->window = new sf::RenderWindow(this->videoMode, "The binding of isaac ultimate ripoff", sf::Style::Close);
+    this->window = new sf::RenderWindow(this->videoMode, "The binding of isaac ultimate ripoff", sf::Style::Close, sf::State::Fullscreen);
 
     //seting defaul player parameter
     this->player.setPosition({100.f, 100.f});
