@@ -14,9 +14,6 @@ class Player: public DmgEntity{
     const int clickSpeed = 10;
     //frame counter for E button might later be used for animations
     int counter;
-
-    //player texture
-    sf::RectangleShape shape;
     //movespeed
     float movespeed;
     //font
@@ -30,12 +27,12 @@ class Player: public DmgEntity{
         left = 3,
         up = 4,
         down = 5,
+        idleright = 6,
+        idleleft = 7,
+        idleup = 8
     };
     state st;
-    //texture
-    const sf::Texture *texture = new sf::Texture("./Textures/Prototype_Character.png");
-    //rectagnle that itarates over different frames of animations
-    sf::IntRect * intrect;
+    
     bool animChange;
     //clock for animation 
     sf::Clock clock;
@@ -64,7 +61,6 @@ public:
 
 Player::Player(){
     //seting defaul parameters
-    this->shape.setSize(sf::Vector2f(120.f, 120.f));
     this->movespeed = 7.f;
     this->pressedE = false;
     this->counter = 10;
@@ -73,7 +69,11 @@ Player::Player(){
     this->hitbox.setSize({40.f, 40.f});
     this->hitbox.setPosition({this->shape.getPosition().x+40.f, this->shape.getPosition().y+40.f});
     //setting up intrect and texture
-    intrect = new sf::IntRect({0, 0}, {32, 32});
+    this->intrect = new sf::IntRect({0, 0}, {32, 32});
+    //setting tecture
+    this->texture = new sf::Texture("./Textures/Prototype_Character.png");
+    //shape
+    this->shape.setSize(sf::Vector2f(120.f, 120.f));
     this->shape.setTexture(texture);
     this->shape.setTextureRect(*intrect);
     //settomg defualt state
@@ -137,7 +137,19 @@ void Player::move(){
         } 
         
         else{
-            changeState(idle);
+            
+            if(this->st == right){
+                changeState(idleright);
+            }else if(this->st == left){
+                changeState(idleleft);
+            }else if(this->st == up){
+                changeState(idleup);
+            }else if(this->st == down){
+                changeState(idle);
+            }else{
+                this->animChange=0;
+            }
+            
         }
     
     
@@ -173,7 +185,7 @@ void Player::update(){
     this->hitbox.setPosition({this->shape.getPosition().x+40.f, this->shape.getPosition().y+40.f});
 
     //updating hp text box
-    this->hpText->setPosition({this->shape.getPosition().x+50.f, this->shape.getPosition().y- 30.f});
+    this->hpText->setPosition({this->shape.getPosition().x+45.f, this->shape.getPosition().y- 15.f});
     this->hpText->setString(std::to_string(this->getHp())+ " hp");
 }
 void Player::render(sf::RenderTarget* target){
@@ -185,7 +197,7 @@ void Player::setFont(sf::Font* font){
     this->font = font;
 }
 void Player::animation(){
-    if(this->st == idle){
+    if(this->st == idle || this->st == idleright || this->st == idleup){
         if(animChange){
             shape.setTextureRect(*intrect);
         }
@@ -229,6 +241,20 @@ void Player::animation(){
             shape.setTextureRect(*intrect);
             clock.restart();
         }
+    }else if(this->st == idleleft){
+        if(animChange){
+            shape.setTextureRect(*intrect);
+        }
+        else if(clock.getElapsedTime().asSeconds() > 0.5f){
+            
+            if(this->intrect->position.x == 64){
+                this->intrect->position.x = 32;
+            }else{
+                this->intrect->position.x += 32;
+            }
+            shape.setTextureRect(*intrect);
+            clock.restart();
+        }
     }
 }
 void Player::changeState(state st){
@@ -259,6 +285,18 @@ void Player::changeState(state st){
             this->intrect->position = {0, 96};
             
             this->st = down;
+        }else if(st == idleright){
+            this->intrect->size = {32, 32};
+            this->intrect->position = {0, 32};
+            this->st = idleright;
+        }else if(st == idleleft){
+            this->intrect->size = {-32, 32};
+            this->intrect->position = {32, 32};
+            this->st = idleleft;
+        }else if(st == idleup){
+            this->intrect->size = {32, 32};
+            this->intrect->position = {0, 64};
+            this->st = idleup;
         }
     }else{
         animChange = 0;

@@ -1,11 +1,11 @@
-#ifndef ROUNDBULLET_H
-#define ROUNDBULLET_H
+#ifndef FASTBULLET_H
+#define FASTBULLET_H
 
 #include "Bullet.h"
 
-class RoundBullet:public Bullet{
+class FastBullet:public Bullet{
     public:
-        RoundBullet();
+    FastBullet();
         
         void update();
         void render(sf::RenderTarget* targe);
@@ -14,7 +14,7 @@ class RoundBullet:public Bullet{
     private:
         
 };
-RoundBullet::RoundBullet(){
+FastBullet::FastBullet(){
     //setting up textrue
     this->texture = new sf::Texture("./Textures/necrobolt1_strip.png");
     //setting up int rect
@@ -23,13 +23,14 @@ RoundBullet::RoundBullet(){
     this->shape.setSize({30.f, 30.f});
     this->shape.setTexture(texture);
     this->shape.setTextureRect(*intrect);
+    this->shape.setFillColor(sf::Color(200, 0, 0));
 
-    this->speed = 10.f;
-    this->range = 300.f;
+    this->speed = 20.f;
+    this->range = 600.f;
     this->hitbox.setSize({30.f, 30.f});
     this->rangeControl = 0;
 }
-void RoundBullet::update(){    
+void FastBullet::update(){    
     //moving bullet in correct direction and speed
     this->shape.move(this->direction*this->speed);
     //updating hitbox position
@@ -42,13 +43,13 @@ void RoundBullet::update(){
         this->isVisible = false;
     }
 }
-void RoundBullet::render(sf::RenderTarget* target){
+void FastBullet::render(sf::RenderTarget* target){
 
     target->draw(this->shape);
     
 
 }
-void RoundBullet::setInitPos(){
+void FastBullet::setInitPos(){
     this->shape.setPosition(this->initPos);
     
     

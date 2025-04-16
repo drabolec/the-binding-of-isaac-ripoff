@@ -13,9 +13,7 @@ public:
     void update();
 
 private:
-    sf::RectangleShape shape;
-    sf::Texture* texture;
-    sf::IntRect* intrect;
+    
 
 };
 

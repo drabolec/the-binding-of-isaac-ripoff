@@ -1,5 +1,5 @@
-#ifndef FIRSTWEAPON_H
-#define FIRSTWEAPON_H
+#ifndef THREEBULLETWEAPON_H
+#define THREEBULLETWEAPON_H
 
 #include "Item.h"
 #include "Bullet.h"
@@ -8,24 +8,23 @@
 
 #include "cmath"
 
-class FirstWeapon: public Item{
+class ThreeBulletWeapon: public Item{
     public:
         
         void update();
         void updatePos(sf::Vector2f pos);
         void render(sf::RenderTarget* target);
-        FirstWeapon();
-        const float time = 0.4f;
-        
+        ThreeBulletWeapon();
+        const float time = 0.6;
     private:
         
         
 
     
 };
-FirstWeapon::FirstWeapon(){
+ThreeBulletWeapon::ThreeBulletWeapon(){
     //setting texture
-    this->texture = new sf::Texture("./Textures/default_weapon.png");
+    this->texture = new sf::Texture("./Textures/threebullet_weapon.png");
     //setting intrect
     this->intrect = new sf::IntRect({0, 0},{64, 18});
     //setting shape
@@ -36,11 +35,8 @@ FirstWeapon::FirstWeapon(){
     this->hitbox.setSize({80.f,20.f});
     this->hitbox.setPosition(this->shape.getPosition());
 
-    
 }
-void FirstWeapon::update(){
-
-    
+void ThreeBulletWeapon::update(){
 
     if(clock.getElapsedTime().asSeconds() > this->time){
         
@@ -48,19 +44,27 @@ void FirstWeapon::update(){
     {
         //shooting
         this->shoot({0.f, -1.f});
+        this->shoot({-0.1f, -1.f});
+        this->shoot({0.1f, -1.f});
         this->clock.restart();
         
     }else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down))
     {
         this->shoot({0.f, 1.f});
+        this->shoot({-0.1f, 1.f});
+        this->shoot({0.1f, 1.f});
         this->clock.restart();
     }else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
     {
         this->shoot({-1.f, 0.f});
+        this->shoot({-1.f, 0.1f});
+        this->shoot({-1.f, -0.1f});
         this->clock.restart();
     }else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
     {
         this->shoot({1.f, 0.f});
+        this->shoot({1.f, 0.1f});
+        this->shoot({1.f, -0.1f});
         this->clock.restart();
     }
     
@@ -69,13 +73,12 @@ void FirstWeapon::update(){
     this->hitbox.setPosition(this->playerPos);
     
 }
-void FirstWeapon::updatePos(sf::Vector2f pos){
+void ThreeBulletWeapon::updatePos(sf::Vector2f pos){
     this->shape.setPosition(pos);
     this->hitbox.setPosition(pos);
 }
-void FirstWeapon::render(sf::RenderTarget* target){
+void ThreeBulletWeapon::render(sf::RenderTarget* target){
     target->draw(this->shape);
 }
-
 
 #endif

@@ -4,6 +4,8 @@
 
 #include "Entity.h"
 #include "Bullet.h"
+#include "RoundBullet.h"
+#include "FastBullet.h"
 
 class Item: public Entity{
     public:
@@ -20,6 +22,7 @@ class Item: public Entity{
         void update();
         virtual void updatePos(sf::Vector2f pos);
         void render(sf::RenderTarget* target);
+        sf::Clock clock;
 };
 Item::Item(){
 
@@ -49,6 +52,17 @@ void Item::setPlayerPos(sf::Vector2f pos){
     this->playerPos = pos;
 }
 void Item::shoot(sf::Vector2f direction){
-
+    
+        Bullet* bullet;
+        if(dynamic_cast<RoundBullet*>(this->bullet)!=NULL){
+            bullet = new RoundBullet;
+        }else if(dynamic_cast<FastBullet*>(this->bullet)!=NULL){
+            bullet = new FastBullet;
+        }
+        bullet->direction = direction;
+        bullet->initPos = this->playerPos;
+        bullet->setInitPos();
+        this->playerBullets.emplace_back(bullet);
+    
 }
 #endif
