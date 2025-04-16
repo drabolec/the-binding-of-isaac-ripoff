@@ -115,9 +115,8 @@ void Game::update(){
     //player weapon and shooting
     this->player.update();
     this->currentWeapon->setCurrentPlayerBullets(this->playerBullets);
-    this->currentWeapon->setPlayerPos(this->player.getPosition());
+    this->currentWeapon->setPlayerPos({this->player.getPosition().x+50.f,this->player.getPosition().y+65.f});
     this->currentWeapon->update();
-    this->currentWeapon->updatePos(this->player.getPosition());
     this->playerBullets = this->currentWeapon->getCurrentPlayerBullets();
 
     //updating player bullet position
@@ -140,7 +139,7 @@ void Game::update(){
         if(isColision(weapon, &player) && player.pressedE==true){
             //giving a player weapon on the ground and droping current weapon 
             Item* droped = currentWeapon;
-            droped->updatePos(this->player.getPosition());
+            droped->updatePos({this->player.getPosition().x+45.f, this->player.getPosition().y+45.f});
             this->weapons.at(x) = droped;
             this->currentWeapon = weapon;
             //setting current bullets for new weapon
@@ -169,7 +168,7 @@ void Game::update(){
             Ammo* droped;
             if(dynamic_cast<RoundBullet*>(temp)!=NULL){
                 droped = new rbAmmo;
-                droped->setPosition(this->player.getPosition());
+                droped->setPosition({this->player.getPosition().x+45.f, this->player.getPosition().y+45.f});
             }
             currentBullet = ammo->getType();
             loot.erase(a);
