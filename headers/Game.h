@@ -44,7 +44,6 @@ public:
     void update();
     void render();
     bool isColision(Entity* e1, Entity* e2);
-    sf::Font getFont();
     
 
 };
@@ -115,7 +114,7 @@ void Game::update(){
     //player weapon and shooting
     this->player.update();
     this->currentWeapon->setCurrentPlayerBullets(this->playerBullets);
-    this->currentWeapon->setPlayerPos({this->player.getPosition().x+50.f,this->player.getPosition().y+65.f});
+    this->currentWeapon->setPlayerPos({this->player.getPosition().x+45.f,this->player.getPosition().y+45.f});
     this->currentWeapon->update();
     this->playerBullets = this->currentWeapon->getCurrentPlayerBullets();
 
@@ -195,7 +194,7 @@ void Game::render(){
     }
 
     this->player.render(this->window);
-    this->currentWeapon->render(this->window);
+    
 
     for(Boost* boost:boosts){
         boost->render(this->window);
@@ -209,7 +208,7 @@ void Game::render(){
     this->player.render(this->window);
 
     //rendering current weapon
-    this->currentWeapon->render(this->window);
+    //this->currentWeapon->render(this->window);
 
 
     this->window->display();
