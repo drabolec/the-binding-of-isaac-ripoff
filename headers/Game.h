@@ -55,6 +55,10 @@ public:
     void render();
     bool isColision(Entity* e1, Entity* e2);
     void interf();
+    void updatePlayerBullets();
+    void updateLoot();
+    void updateBoosts();
+    void updateWeapons();
     
 
 };
@@ -143,76 +147,13 @@ void Game::update(){
     this->playerBullets = this->currentWeapon->getCurrentPlayerBullets();
     
 
-    //updating player bullet position
-    for(auto i = playerBullets.begin(); i != playerBullets.end();){
-        //updating position
-        (*i)->update();
-        //checking if bullet should be deleted for now only by its range
-        if((*i)->isVisible==false){
-            playerBullets.erase(i);
-            
-        }else{
-            i++;
-        }
-        
-    }
+    updatePlayerBullets();
 
-    //updating loot for testing
-    //in the future wepons list will be taken from room object but the rest of the logic stays the same
-    int x = 0;
-    for(Item* weapon:weapons){
-        //checking for colision and if player pressed E 
-        if(isColision(weapon, &player) && player.pressedE==true){
-            //giving a player weapon on the ground and droping current weapon 
-            Item* droped = currentWeapon;
-            droped->updatePos({this->player.getPosition().x+20.f, this->player.getPosition().y+80.f});
-            this->weapons.at(x) = droped;
-            this->currentWeapon = weapon;
-            //setting current bullets for new weapon
-            this->currentWeapon->setCurrentBullet(this->currentBullet);
-            this->pickupWeapon->play();
-            break;
-        }
-        x++;
-    }
+    updateWeapons();
 
-    for(auto i = boosts.begin(); i != boosts.end();){
-        //checking for colision and if player pressed E 
-        if(isColision((*i), &player)){
-            //erasing boost and acordinglyt to its type changing player propertys
-            this->boosts.erase(i);
-            if(dynamic_cast<SmallHealth*>((*i)) != NULL){
-                this->player.changeHp((*i)->value);  
-            }
-            
-        }
-        else{
-            i++;
-        }
-    }
-    for(auto i = loot.begin(); i != loot.end();){
-        if(isColision((*i), &player)&&player.pressedE==true){
-            //change boolets acordingly
-            Bullet* temp = this->currentBullet;
-            Ammo* droped;
-            if(dynamic_cast<RoundBullet*>(temp)!=NULL){
-                droped = new rbAmmo;
-                droped->setPosition({this->player.getPosition().x+45.f, this->player.getPosition().y+45.f});
-            }else if(dynamic_cast<FastBullet*>(temp)!=NULL){
-                droped = new fastAmmo;
-                droped->setPosition({this->player.getPosition().x+45.f, this->player.getPosition().y+45.f});
-            }
-            currentBullet = (*i)->getType();
-            this->currentWeapon->setCurrentBullet(this->currentBullet);
-            loot.erase(i);
-            loot.emplace_back(droped);
-            break;
-            
-        }
-        
-            i++;
-        
-    }
+    updateBoosts();
+    
+    updateLoot();
     
     
 }
@@ -268,6 +209,83 @@ void Game::interf(){
     this->window->draw(bullet);
     this->window->draw(temp);
     this->window->draw(*(this->hpText));
+}
+void Game::updateBoosts(){
+    for(auto i = boosts.begin(); i != boosts.end();){
+        //checking for colision and if player pressed E 
+        if(isColision((*i), &player)){
+            //erasing boost and acordinglyt to its type changing player propertys
+            this->boosts.erase(i);
+            if(dynamic_cast<SmallHealth*>((*i)) != NULL){
+                this->player.changeHp((*i)->value);  
+            }
+            
+        }
+        else{
+            i++;
+        }
+    }
+    
+}
+void Game::updateWeapons(){
+     //updating loot for testing
+    //in the future wepons list will be taken from room object but the rest of the logic stays the same
+    int x = 0;
+    for(Item* weapon:weapons){
+        //checking for colision and if player pressed E 
+        if(isColision(weapon, &player) && player.pressedE==true){
+            //giving a player weapon on the ground and droping current weapon 
+            Item* droped = currentWeapon;
+            droped->updatePos({this->player.getPosition().x+20.f, this->player.getPosition().y+80.f});
+            this->weapons.at(x) = droped;
+            this->currentWeapon = weapon;
+            //setting current bullets for new weapon
+            this->currentWeapon->setCurrentBullet(this->currentBullet);
+            this->pickupWeapon->play();
+            break;
+        }
+        x++;
+    }
+}
+void Game::updatePlayerBullets(){
+    //updating player bullet position
+    for(auto i = playerBullets.begin(); i != playerBullets.end();){
+        //updating position
+        (*i)->update();
+        //checking if bullet should be deleted for now only by its range
+        if((*i)->isVisible==false){
+            playerBullets.erase(i);
+            
+        }else{
+            i++;
+        }
+        
+    }
+}
+void Game::updateLoot(){
+    for(auto i = loot.begin(); i != loot.end();){
+        if(isColision((*i), &player)&&player.pressedE==true){
+            //change boolets acordingly
+            Bullet* temp = this->currentBullet;
+            Ammo* droped;
+            if(dynamic_cast<RoundBullet*>(temp)!=NULL){
+                droped = new rbAmmo;
+                droped->setPosition({this->player.getPosition().x+45.f, this->player.getPosition().y+45.f});
+            }else if(dynamic_cast<FastBullet*>(temp)!=NULL){
+                droped = new fastAmmo;
+                droped->setPosition({this->player.getPosition().x+45.f, this->player.getPosition().y+45.f});
+            }
+            currentBullet = (*i)->getType();
+            this->currentWeapon->setCurrentBullet(this->currentBullet);
+            loot.erase(i);
+            loot.emplace_back(droped);
+            break;
+            
+        }
+        
+            i++;
+        
+    }
 }
 
 
