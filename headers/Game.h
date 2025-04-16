@@ -41,6 +41,17 @@ private:
     sf::Sound *pickupWeapon;
 
     bool isClosed = false;
+
+    //menu stuf
+    bool ismenuOpen = true;
+    int selected = 1;
+    sf::Clock clock;
+    sf::Text* menuT;
+    sf::Text* play;
+    sf::Text* option1;
+    sf::Text* option2; 
+    sf::Text* quit; 
+    sf::RectangleShape fog;
     //temporary for testing
     std::vector<Item*> weapons;
 
@@ -52,6 +63,7 @@ public:
     Game();
     virtual ~Game();
     bool running();
+    bool menuOpen();
     void events();
     void update();
     void render();
@@ -63,6 +75,7 @@ public:
     void updateWeapons();
     void pause();
     void renderEntitys();
+    void menu();
     
 
 };
@@ -97,6 +110,35 @@ Game::Game(){
     this->pickupWeapon = new sf::Sound(*(this->buffer));
     this->pickupWeapon->setVolume(2.f);
 
+
+    //menu stuff
+    this->menuT = new sf::Text(*(this->font));
+    this->menuT->setPosition({50.f, 60.f});
+    this->menuT->setCharacterSize(60.f);
+    this->menuT->setString("Menu");
+
+    this->play = new sf::Text(*(this->font));
+    this->play->setPosition({50.f, 200.f});
+    this->play->setCharacterSize(20.f);
+    this->play->setString("Play");
+
+    this->option1 = new sf::Text(*(this->font));
+    this->option1->setPosition({50.f, 250.f});
+    this->option1->setCharacterSize(20.f);
+    this->option1->setString("Option1");
+
+    this->option2 = new sf::Text(*(this->font));
+    this->option2->setPosition({50.f, 300.f});
+    this->option2->setCharacterSize(20.f);
+    this->option2->setString("Option2");
+
+    this->quit = new sf::Text(*(this->font));
+    this->quit->setPosition({50.f, 350.f});
+    this->quit->setCharacterSize(20.f);
+    this->quit->setString("Quit");
+
+    fog.setFillColor(sf::Color(50, 50, 50, 30));
+    fog.setSize({100.f, 35.f});
     
     //temporary for testing
     this->weapons.emplace_back(new FirstWeapon);
@@ -337,6 +379,82 @@ void Game::pause(){
         
         this->window->display();
     }
+}
+bool Game::menuOpen(){
+    return this->ismenuOpen;
+}
+void Game::menu(){
+
+    while (this->event = this->window->pollEvent())
+        {
+            if (this->event->is<sf::Event::Closed>()){
+                this->ismenuOpen = false;
+                this->isClosed = true;
+            } 
+        }
+    this->window->clear(sf::Color(150, 150, 150));
+    
+    
+    if(this->clock.getElapsedTime().asSeconds() > 0.1f){
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up))
+        {
+            if(this->selected>1){
+                this->selected --;
+            }
+            this->clock.restart();
+            
+        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down))
+        {
+            if(this->selected < 4){
+                this->selected ++;
+            }
+            this->clock.restart();
+            
+        }
+            
+    }
+     
+
+    if(this->selected == 1){
+        fog.setPosition({play->getPosition().x-20.f, play->getPosition().y-5.f});
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter))
+        {
+            this->ismenuOpen = false; 
+        }  
+    }else if(this->selected == 2){
+        fog.setPosition({option1->getPosition().x-20.f, option1->getPosition().y-5.f});
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter))
+        {
+            //magic
+        }  
+    }else if(this->selected == 3){
+        fog.setPosition({option2->getPosition().x-20.f, option2->getPosition().y-5.f});
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter))
+        {
+            //magic
+        }  
+    }
+    else if(this->selected == 4){
+        fog.setPosition({quit->getPosition().x-20.f, quit->getPosition().y-5.f});
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter))
+        {
+            this->ismenuOpen = false;
+            this->isClosed = true;
+        }  
+    }
+
+
+
+
+    //drawing
+    this->window->draw(*menuT);
+    this->window->draw(fog);
+    this->window->draw(*play);
+    this->window->draw(*option1);
+    this->window->draw(*option2);
+    this->window->draw(*quit);
+
+    this->window->display();
 }
 
 
