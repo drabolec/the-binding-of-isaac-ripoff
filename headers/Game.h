@@ -34,6 +34,8 @@ private:
 
     //Game font for now roboto
     sf::Font* font;
+    //hp text
+    sf::Text *hpText;
 
     //temporary for testing
     std::vector<Item*> weapons;
@@ -50,12 +52,17 @@ public:
     void update();
     void render();
     bool isColision(Entity* e1, Entity* e2);
+    void interf();
     
 
 };
 Game::Game(){
     //setting font
     this->font = new sf::Font("./Fonts/Roboto-Regular.ttf");
+    //setting text font
+    this->hpText = new sf::Text(*font); 
+    this->hpText->setPosition({20.f, 20.f});
+    this->hpText->setCharacterSize(20.f);
     //seting game window parameters
     this->videoMode.size = {1600, 900};
     //makes window unresizable and sets its parameters
@@ -231,9 +238,8 @@ void Game::render(){
     //rendering player
     this->player.render(this->window);
 
-    //rendering current weapon
-    //this->currentWeapon->render(this->window);
-
+    //rendering and updating interface
+    interf();
 
     this->window->display();
 
@@ -245,7 +251,18 @@ bool Game::isColision(Entity* e1, Entity* e2){
     }
     return false;
 }
-
+void Game::interf(){
+    this->hpText->setString(std::to_string(this->player.getHp()) + " hp");
+    sf::RectangleShape temp = this->currentWeapon->shape;
+    temp.setPosition({100.f, 20.f});
+    temp.setScale({2.f, 2.f});
+    sf::RectangleShape bullet = this->currentBullet->shape;
+    bullet.setPosition({300.f, 20.f});
+    bullet.setScale({1.5f, 1.5f});
+    this->window->draw(bullet);
+    this->window->draw(temp);
+    this->window->draw(*(this->hpText));
+}
 
 
 
