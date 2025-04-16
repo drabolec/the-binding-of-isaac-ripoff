@@ -79,10 +79,10 @@ Game::Game(){
 
 
     this->loot.emplace_back(new rbAmmo);
-    this->loot.at(0)->setPosition({800.f, 400.f});
+    this->loot.at(0)->setPosition({800.f, 300.f});
 
     this->boosts.emplace_back(new SmallHealth);
-    this->boosts.at(0)->setPosition({800.f, 800.f});
+    this->boosts.at(0)->setPosition({800.f, 400.f});
 
 
 }

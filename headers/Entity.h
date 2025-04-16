@@ -13,6 +13,7 @@ public:
     sf::RectangleShape hitbox;
     virtual void update();
     virtual void render(sf::RenderTarget* target);
+    
 };
 void Entity::update(){
 
