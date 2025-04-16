@@ -19,18 +19,26 @@ class FirstWeapon: public Item{
         const int shootingSpeed = 20;
     private:
         sf::RectangleShape shape;
+        sf::Texture* texture;
+        sf::IntRect *intrect;
         
 
     
 };
 FirstWeapon::FirstWeapon(){
-    shape.setFillColor(sf::Color::Red);
-    shape.setSize({30.f, 10.f});
+    //setting texture
+    this->texture = new sf::Texture("./Textures/defaul_weapon.png");
+    //setting intrect
+    this->intrect = new sf::IntRect({0, 0},{64, 18});
+    //setting shape
+    this->shape.setTextureRect(*intrect);
+    this->shape.setTexture(texture);
+    this->shape.setSize({80.f, 20.f});
     
-    this->hitbox.setSize({30.f,10.f});
+    this->hitbox.setSize({80.f,20.f});
     this->hitbox.setPosition(this->shape.getPosition());
 
-    counter = this->shootingSpeed;
+    this->counter = this->shootingSpeed;
 }
 void FirstWeapon::update(){
 

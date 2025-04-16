@@ -31,13 +31,11 @@ RoundBullet::RoundBullet(){
     this->hitbox.setSize({30.f, 30.f});
     this->rangeControl = 0;
 }
-void RoundBullet::update(){
-    //updating hitbox position
-    //need to update hitbox position better bcs it doesnt match 
-    this->hitbox.setPosition(this->shape.getPosition());
-    
+void RoundBullet::update(){    
     //moving bullet in correct direction and speed
     this->shape.move(this->direction*this->speed);
+    //updating hitbox position
+    this->hitbox.setPosition(this->shape.getPosition());
     //incremencting speed to range control
     this->rangeControl += this->speed;
     //range control
@@ -47,7 +45,6 @@ void RoundBullet::update(){
     }
 }
 void RoundBullet::render(sf::RenderTarget* target){
-
 
     target->draw(this->shape);
     
