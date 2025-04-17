@@ -13,17 +13,27 @@ public:
     void update();
 
 private:
-    sf::CircleShape shape;
     
 
 };
 
 SmallHealth::SmallHealth(){
-    this->shape.setFillColor(sf::Color::Green);
-    this->shape.setRadius(5.f);
-    this->hitbox.setSize({3.f, 3.f});
+    
+    //setting up hitbox
+    this->hitbox.setSize({40.f, 40.f});
     
     this->value = 10;
+    //seting up texture
+    this->texture = new sf::Texture("./Textures/Heart.png");
+    //setting up int rect
+    this->intrect = new sf::IntRect({0, 0},{16, 16});
+
+    //setting up shape
+    this->shape.setSize({40.f, 40.f});
+    this->shape.setTextureRect(*intrect);
+    this->shape.setTexture(texture);
+
+
 }
 void SmallHealth::setPosition(sf::Vector2f pos){
     this->shape.setPosition(pos);

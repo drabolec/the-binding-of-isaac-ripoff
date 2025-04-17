@@ -12,7 +12,9 @@ int main()
 
     
     Game game;
-
+    while(game.menuOpen()){
+        game.menu();
+    }
     while (game.running())
     {
         game.update();

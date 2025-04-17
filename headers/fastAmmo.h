@@ -1,15 +1,15 @@
-#ifndef RBAMMO_H
-#define RBAMMO_H
+#ifndef FASTAMMO_H
+#define FASTAMMO_H
 
 #include "Entity.h"
 
 #include "Bullet.h"
-#include "RoundBullet.h"
+#include "FastBullet.h"
 #include "Ammo.h"
 
-class rbAmmo:public Ammo{
+class fastAmmo:public Ammo{
     public:
-        rbAmmo();
+    fastAmmo();
         Bullet* type;
         void setPosition(sf::Vector2f pos);
         Bullet* getType();
@@ -20,10 +20,10 @@ class rbAmmo:public Ammo{
         
 
 };
-Bullet* rbAmmo::getType(){
+Bullet* fastAmmo::getType(){
     return this->type;
 }
-rbAmmo::rbAmmo(){
+fastAmmo::fastAmmo(){
     //setting tezture
     this->texture = new sf::Texture("./Textures/default_ammo.png");
     //setting intrect
@@ -32,22 +32,21 @@ rbAmmo::rbAmmo(){
     this->shape.setSize({50.f, 50.f});
     this->shape.setTexture(texture);
     this->shape.setTextureRect(*intrect);
-    this->shape.setFillColor(sf::Color(209, 0, 150));
     //setting type
-    this->type = new RoundBullet();
+    this->type = new FastBullet;
     //setting hitbox
     this->hitbox.setSize({50.f, 50.f});
     this->hitbox.setPosition(this->shape.getPosition());
 }
-void rbAmmo::setPosition(sf::Vector2f pos){
+void fastAmmo::setPosition(sf::Vector2f pos){
     this->shape.setPosition(pos);
     this->hitbox.setPosition(pos);
 
 }
-void rbAmmo::update(){
+void fastAmmo::update(){
     this->hitbox.setPosition(this->shape.getPosition());
 }
-void rbAmmo::render(sf::RenderTarget* target){
+void fastAmmo::render(sf::RenderTarget* target){
     target->draw(this->shape);
 }
 
