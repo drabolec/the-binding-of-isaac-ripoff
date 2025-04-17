@@ -87,9 +87,11 @@ Game::Game(){
     this->hpText->setPosition({20.f, 20.f});
     this->hpText->setCharacterSize(20.f);
     //seting game window parameters
-    this->videoMode.size = {1600, 900};
-    //makes window unresizable and sets its parameters
-    this->window = new sf::RenderWindow(this->videoMode, "The binding of isaac ultimate ripoff", sf::Style::Close);
+    this->videoMode.size = {800, 450};
+    //makes window proportional
+    this->window = new sf::RenderWindow(this->videoMode, "The binding of isaac ultimate ripoff");
+    sf::View view(sf::FloatRect({0.f, 0.f}, {1600.f, 900.f}));
+    this->window->setView(view);
 
     //seting defaul player parameter
     this->player.setPosition({100.f, 100.f});
