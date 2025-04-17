@@ -1,5 +1,3 @@
-sfml-app.exe
-main.o
 sfml-audio-3.dll
 sfml-audio-d-3.dll
 sfml-graphics-3.dll
@@ -11,3 +9,5 @@ sfml-system-d-3.dll
 sfml-window-3.dll
 sfml-window-d-3.dll
 SFML-3.0.0
+sfml-app.exe
+main.o
