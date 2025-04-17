@@ -8,6 +8,7 @@
 #include "RoundBullet.h"
 #include "Item.h"
 #include "FirstWeapon.h"
+#include "Room.h"
 
 #include "rbAmmo.h"
 #include "Ammo.h"
@@ -25,7 +26,7 @@ private:
     Item* currentWeapon;
     Bullet* currentBullet;
     std::vector<Bullet*> playerBullets;
-
+    std::vector<Room*> rooms;
     //Game font for now roboto
     sf::Font* font;
 
@@ -74,6 +75,8 @@ Game::Game(){
 
     
     //temporary for testing
+    this->rooms.emplace_back(new Room(2)); //room making
+
     this->weapons.emplace_back(new FirstWeapon);
     this->weapons.at(0)->updatePos({500.f, 500.f});
 
@@ -130,6 +133,16 @@ void Game::update(){
             playerBullets.erase(i);
         }
         i++;
+    }
+
+    auto in = rooms.begin();
+    for(Room* room: this->rooms){
+        //updating position
+        //checking if bullet should be deleted for now only by its range
+        if(room->getIsActive()==true){
+            room->update();
+        }
+        in++;
     }
 
     //updating loot for testing
@@ -194,6 +207,13 @@ void Game::render(){
     for(Ammo* ammo:loot){
         ammo->render(this->window);
     }
+
+    for(Room* room:rooms){
+        if(room->getIsActive()==true){
+            room->render(this->window);
+        }
+    }
+
 
     this->player.render(this->window);
     this->currentWeapon->render(this->window);
