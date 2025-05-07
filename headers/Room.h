@@ -36,6 +36,7 @@ class Room {
         std::vector<std::unique_ptr<Item>>& getWeapons();
         std::vector<std::unique_ptr<Boost>>& getBoosts();
         std::vector<std::unique_ptr<Ammo>>& getLoot();
+        std::vector<std::unique_ptr<Wall>>& getWalls();
     private:
         bool isActive=true;
         int type_id;
@@ -53,6 +54,7 @@ class Room {
 std::vector<std::unique_ptr<Item>>& Room::getWeapons() { return weapons; };
 std::vector<std::unique_ptr<Ammo>>& Room::getLoot() { return loot; };
 std::vector<std::unique_ptr<Boost>>& Room::getBoosts() { return boosts; };
+std::vector<std::unique_ptr<Wall>>& Room::getWalls() { return walls; };
 
 Room::Room(){
     this->shape.setFillColor(sf::Color::White);
@@ -61,11 +63,28 @@ Room::Room(){
 };
 Room::Room(int a){
     this->shape.setFillColor(sf::Color::White);
-    this->shape.setSize(sf::Vector2f(200.f, 200.f));
+    this->shape.setSize(sf::Vector2f(1600.f, 900.f));
     this->shape.setPosition(sf::Vector2f(0.f, 0.f));
     this->type_id=a;
     if(type_id==1){
+        this->doors.emplace_back(new Door(1));
         this->doors.emplace_back(new Door(2));
+        this->doors.emplace_back(new Door(3));
+        this->doors.emplace_back(new Door(4));
+        this->walls.emplace_back(new Wall(1));
+        this->walls.emplace_back(new Wall(2));
+        this->walls.emplace_back(new Wall(3));
+        this->walls.emplace_back(new Wall(4));
+        this->walls.emplace_back(new Wall(5));
+        this->walls.emplace_back(new Wall(6));
+        this->walls.emplace_back(new Wall(7));
+        this->walls.emplace_back(new Wall(8));
+        this->loot.emplace_back(new rbAmmo);
+        //this->loot.at(0)->setPosition({800.f, 300.f});        //podniesienie przestalo dzialac
+        //this->loot.emplace_back(new fastAmmo);
+        //this->loot.at(1)->setPosition({800.f, 400.f});
+        this->boosts.emplace_back(new SmallHealth);
+        this->boosts.at(0)->setPosition({900.f, 400.f});
     }
     if(type_id==2){
         this->doors.emplace_back(new Door(1));
@@ -78,7 +97,7 @@ Room::Room(int a){
         this->enemies[1]->setPosition(sf::Vector2f(140.f, 140.f));
 
         this->weapons.emplace_back(new FirstWeapon);
-        this->weapons.at(0)->updatePos({500.f, 500.f});
+        this->weapons.at(0)->updatePos({500.f, 500.f}); //blad przy klikaniu game 
         this->weapons.emplace_back(new ThreeBulletWeapon);
         this->weapons.at(1)->updatePos({500.f, 600.f});
         this->weapons.emplace_back(new MiniGunWeapon);

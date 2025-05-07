@@ -32,7 +32,8 @@ class Player: public DmgEntity{
         idleup = 8
     };
     state st;
-    
+    int hitWallNS=0;
+    int hitWallWE=0;
     bool animChange;
     //clock for animation 
     sf::Clock clock;
@@ -40,24 +41,33 @@ public:
     Player();
     virtual ~Player();
     
-    
+    void setHitWallNS(int a);
+    void setHitWallWE(int a);
     void setPosition(sf::Vector2f pos);
     sf::Vector2f getPosition();
     void setFont(sf::Font* font);
     void initHp();
     void animation();
     void changeState(state st);
-
+    state getState();
     
     void update();
     void move();
     void render(sf::RenderTarget* target);
 
     bool pressedE;
-    
-    
-
+ 
 };
+void Player::setHitWallNS(int a){
+    this->hitWallNS=a;
+}
+void Player::setHitWallWE(int a){
+    this->hitWallWE=a;
+}
+
+Player::state Player::getState(){
+    return st;
+}
 
 Player::Player(){
     //seting defaul parameters
@@ -102,22 +112,30 @@ void Player::move(){
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
         {
-            this->shape.move({0.f, -this->movespeed});
-            
-        }if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
-        {
-            this->shape.move({0.f, this->movespeed});
-            
-        }if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
-        {
-            this->shape.move({-this->movespeed, 0.f});
-            
-        }if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
-        {
-            this->shape.move({this->movespeed, 0.f});
-            
-            
+            if (hitWallNS != 4) {
+                this->shape.move({0.f, -this->movespeed});
+                hitWallNS = 0;  // Reset here after successful move
+            }
         }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
+            if (hitWallNS != 5) {
+                this->shape.move({0.f, this->movespeed});
+                hitWallNS = 0;  // Reset here after successful move
+            }
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
+            if (hitWallWE != 3) {
+                this->shape.move({-this->movespeed, 0.f});
+                hitWallWE = 0;  // Reset here after successful move
+            }
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
+            if (hitWallWE != 2) {
+                this->shape.move({this->movespeed, 0.f});
+                hitWallWE = 0;  // Reset here after successful move
+            }
+        }
+        
         //changing state
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
         {

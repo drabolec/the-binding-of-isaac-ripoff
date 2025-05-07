@@ -30,9 +30,9 @@ private:
     std::optional<sf::Event> event;
     Player player;
     std::unique_ptr<Item> currentWeapon;
-    Bullet* currentBullet;
+    std::unique_ptr<Bullet> currentBullet;
     std::vector<Bullet*> playerBullets;
-    std::vector<Room*> rooms;
+    std::vector<std::unique_ptr<Room>> rooms;
     //Game font for now roboto
     sf::Font* font;
     //hp text
@@ -42,7 +42,7 @@ private:
     sf::Sound *pickupWeapon;
 
     bool isClosed = false;
-    int active_room;
+    int active_room=0;
     //menu stuf
     bool ismenuOpen = true;
     int selected = 1;
@@ -69,6 +69,7 @@ public:
     void updateLoot(Room* room);
     void updateBoosts(Room* room);
     void updateWeapons(Room* room);
+    void updateWalls(Room* room);
     void pause();
     void renderEntitys();
     void menu();
@@ -98,11 +99,11 @@ Game::Game(){
     this->window->setFramerateLimit(60);
     
     //seting default bullets
-    this->currentBullet = new RoundBullet;
+    this->currentBullet = std::make_unique<RoundBullet>();
 
     //setting defaul weapon
     this->currentWeapon = std::make_unique<FirstWeapon>();
-    this->currentWeapon->setCurrentBullet(this->currentBullet);
+    this->currentWeapon->setCurrentBullet(this->currentBullet.get());
     //sound
     this->buffer = new sf::SoundBuffer("./Sound/pickupweapon.wav");
     this->pickupWeapon = new sf::Sound(*(this->buffer));
@@ -139,9 +140,7 @@ Game::Game(){
     fog.setSize({100.f, 35.f});
     
     //temporary for testing
-    this->rooms.emplace_back(new Room(2)); //room making
-
-
+    this->rooms.emplace_back(std::make_unique<Room>(1)); //room making
 
 }
 Game::~Game(){
@@ -183,11 +182,13 @@ void Game::update(){
 
     updatePlayerBullets();
 
-    updateWeapons(this->rooms[active_room]);
+    updateWeapons(this->rooms[active_room].get());
 
-    updateBoosts(this->rooms[active_room]);
+    updateBoosts(this->rooms[active_room].get());
     
-    updateLoot(this->rooms[active_room]);
+    updateLoot(this->rooms[active_room].get());
+
+    updateWalls(this->rooms[active_room].get());
     
     
 }
@@ -206,13 +207,12 @@ void Game::renderEntitys(){
     //weapons vector should be inside room object
 
 
-    for(Room* room:rooms){
-        if(room->getIsActive()==true){
+    for (const auto& roomPtr : rooms) {
+        Room* room = roomPtr.get();
+        if (room->getIsActive()) {
             room->render(this->window);
-       }
+        }
     }
-
-    this->player.render(this->window);
 
     //rendering player bullets
     for(Bullet* bullet: this->playerBullets){
@@ -262,6 +262,27 @@ void Game::updateBoosts(Room* room) {
         }
     }
 }
+
+void Game::updateWalls(Room* room){
+    auto& walls = room->getWalls();
+    for(auto i = walls.begin(); i != walls.end();){
+        if(isColision(i->get(), &player)){
+            if(this->player.getState()==2){
+                player.setHitWallWE(1);
+            }
+            if(this->player.getState()==3){
+                player.setHitWallWE(2);
+            }
+            if(this->player.getState()==4){
+                player.setHitWallNS(1);
+            }
+            if(this->player.getState()==5){
+                player.setHitWallNS(2);
+            }
+        }
+    }
+}
+
 void Game::updateWeapons(Room* room){
      //updating loot for testing
     //in the future wepons list will be taken from room object but the rest of the logic stays the same
@@ -275,7 +296,7 @@ void Game::updateWeapons(Room* room){
             *i = std::move(droped);
             //setting current bullets for new weapon
             this->currentWeapon = std::move(*i);
-            this->currentWeapon->setCurrentBullet(this->currentBullet);
+            this->currentWeapon->setCurrentBullet(this->currentBullet.get());
             this->pickupWeapon->play();
             break;
         }
@@ -299,9 +320,10 @@ void Game::updatePlayerBullets(){
 void Game::updateLoot(Room* room){
     auto& loot = room->getLoot();
     for(auto i = loot.begin(); i != loot.end();){
+        std::cout << "Checking loot item: " << i->get() << std::endl;
         if(isColision((i->get()), &player)&&player.pressedE==true){
             //change boolets acordingly
-            Bullet* temp = this->currentBullet;
+            Bullet* temp = this->currentBullet.get();
             Ammo* droped;
             if(dynamic_cast<RoundBullet*>(temp)!=NULL){
                 droped = new rbAmmo;
@@ -310,17 +332,19 @@ void Game::updateLoot(Room* room){
                 droped = new fastAmmo;
                 droped->setPosition({this->player.getPosition().x+45.f, this->player.getPosition().y+45.f});
             }
-            currentBullet = (i->get())->getType();
-            this->currentWeapon->setCurrentBullet(this->currentBullet);
+            std::cout<<"working\n";
+            currentBullet = std::unique_ptr<Bullet>(dynamic_cast<Bullet*>(i->release()));
+            std::cout<<"working\n";
+            this->currentWeapon->setCurrentBullet(this->currentBullet.get());
+            std::cout<<"working\n";
             loot.erase(i);
+            std::cout<<"working\n";
             loot.emplace_back(droped);
+            std::cout<<"working\n";
             break;
-            
         }
-        
             i++;
-        
-    }
+    }   
 }
 void Game::pause(){
     sf::Text pause(*(this->font));
@@ -425,9 +449,6 @@ void Game::menu(){
         }  
     }
 
-
-
-
     //drawing
     this->window->draw(*menuT);
     this->window->draw(fog);
@@ -438,7 +459,5 @@ void Game::menu(){
 
     this->window->display();
 }
-
-
 
 #endif

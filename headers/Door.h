@@ -9,7 +9,7 @@ class Door:public Entity{
         Door();
         Door(int b);
         virtual ~Door();
-
+        void render(sf::RenderTarget* target);
     private:
         int doorSide;
         sf::RectangleShape shape;
@@ -23,23 +23,27 @@ inline Door::Door(){
 
 inline Door::Door(int b){
     this->shape.setFillColor(sf::Color::Yellow);
-    this->shape.setSize(sf::Vector2f(20.f, 20.f));
+    this->shape.setSize(sf::Vector2f(100.f, 100.f));
     this->doorSide=b;
     if(this->doorSide==1){
-        this->shape.setPosition(sf::Vector2f(0.f, 90.f));
+        this->shape.setPosition(sf::Vector2f(0.f, 400.f));
     }
     else if(this->doorSide==2){
-        this->shape.setPosition(sf::Vector2f(180.f, 90.f));
+        this->shape.setPosition(sf::Vector2f(1500.f, 400.f));
     }
     else if(this->doorSide==3){
-        this->shape.setPosition(sf::Vector2f(90.f, 0.f));
+        this->shape.setPosition(sf::Vector2f(750.f, 0.f));
     }
     else if(this->doorSide==4){
-        this->shape.setPosition(sf::Vector2f(90.f, 180.f));
+        this->shape.setPosition(sf::Vector2f(750.f, 800.f));
     }
 };
 
+void Door::render(sf::RenderTarget* target){
 
+    target->draw(this->shape);
+
+}
 
 inline Door::~Door(){
 
