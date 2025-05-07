@@ -2,7 +2,7 @@
 #define GAME_H
 
 #include <vector>
-
+#include <memory>
 #include "Player.h"
 
 #include "Bullet.h"
@@ -29,7 +29,7 @@ private:
     //event handling variable
     std::optional<sf::Event> event;
     Player player;
-    Item* currentWeapon;
+    std::unique_ptr<Item> currentWeapon;
     Bullet* currentBullet;
     std::vector<Bullet*> playerBullets;
     std::vector<Room*> rooms;
@@ -42,7 +42,7 @@ private:
     sf::Sound *pickupWeapon;
 
     bool isClosed = false;
-
+    int active_room;
     //menu stuf
     bool ismenuOpen = true;
     int selected = 1;
@@ -54,11 +54,6 @@ private:
     sf::Text* quit; 
     sf::RectangleShape fog;
     //temporary for testing
-    std::vector<Item*> weapons;
-
-    std::vector<Ammo*> loot;
-
-    std::vector<Boost*> boosts;
 
 public:
     Game();
@@ -71,9 +66,9 @@ public:
     bool isColision(Entity* e1, Entity* e2);
     void interf();
     void updatePlayerBullets();
-    void updateLoot();
-    void updateBoosts();
-    void updateWeapons();
+    void updateLoot(Room* room);
+    void updateBoosts(Room* room);
+    void updateWeapons(Room* room);
     void pause();
     void renderEntitys();
     void menu();
@@ -106,7 +101,7 @@ Game::Game(){
     this->currentBullet = new RoundBullet;
 
     //setting defaul weapon
-    this->currentWeapon = new FirstWeapon;
+    this->currentWeapon = std::make_unique<FirstWeapon>();
     this->currentWeapon->setCurrentBullet(this->currentBullet);
     //sound
     this->buffer = new sf::SoundBuffer("./Sound/pickupweapon.wav");
@@ -146,21 +141,6 @@ Game::Game(){
     //temporary for testing
     this->rooms.emplace_back(new Room(2)); //room making
 
-    this->weapons.emplace_back(new FirstWeapon);
-    this->weapons.at(0)->updatePos({500.f, 500.f});
-    this->weapons.emplace_back(new ThreeBulletWeapon);
-    this->weapons.at(1)->updatePos({500.f, 600.f});
-    this->weapons.emplace_back(new MiniGunWeapon);
-    this->weapons.at(2)->updatePos({500.f, 700.f});
-
-
-    this->loot.emplace_back(new rbAmmo);
-    this->loot.at(0)->setPosition({800.f, 300.f});
-    this->loot.emplace_back(new fastAmmo);
-    this->loot.at(1)->setPosition({800.f, 400.f});
-
-    this->boosts.emplace_back(new SmallHealth);
-    this->boosts.at(0)->setPosition({900.f, 400.f});
 
 
 }
@@ -203,11 +183,11 @@ void Game::update(){
 
     updatePlayerBullets();
 
-    updateWeapons();
+    updateWeapons(this->rooms[active_room]);
 
-    updateBoosts();
+    updateBoosts(this->rooms[active_room]);
     
-    updateLoot();
+    updateLoot(this->rooms[active_room]);
     
     
 }
@@ -224,27 +204,16 @@ void Game::renderEntitys(){
 
     //rendering loot for testing
     //weapons vector should be inside room object
-    for(Item* weapon:weapons){
-        weapon->render(this->window);
-    }
 
-    for(Ammo* ammo:loot){
-        ammo->render(this->window);
-    }
 
     for(Room* room:rooms){
         if(room->getIsActive()==true){
             room->render(this->window);
-        }
+       }
     }
-
 
     this->player.render(this->window);
-    
 
-    for(Boost* boost:boosts){
-        boost->render(this->window);
-    }
     //rendering player bullets
     for(Bullet* bullet: this->playerBullets){
         bullet->render(this->window);
@@ -275,41 +244,41 @@ void Game::interf(){
     this->window->draw(temp);
     this->window->draw(*(this->hpText));
 }
-void Game::updateBoosts(){
-    for(auto i = boosts.begin(); i != boosts.end();){
-        //checking for colision and if player pressed E 
-        if(isColision((*i), &player)){
-            //erasing boost and acordinglyt to its type changing player propertys
-            this->boosts.erase(i);
-            if(dynamic_cast<SmallHealth*>((*i)) != NULL){
-                this->player.changeHp((*i)->value);  
+
+
+void Game::updateBoosts(Room* room) {
+    auto& boosts = room->getBoosts();
+    for (auto i = boosts.begin(); i != boosts.end(); ) {
+        // Dereference unique_ptr to raw pointer for isColision
+        if (isColision(i->get(), &player)) {
+            // Handle boost effect before erasing
+            if (auto smallHealth = dynamic_cast<SmallHealth*>(i->get())) {
+                this->player.changeHp(smallHealth->value);
             }
-            
-        }
-        else{
-            i++;
+            // Erase and advance iterator safely
+            i = boosts.erase(i);
+        } else {
+            ++i;
         }
     }
-    
 }
-void Game::updateWeapons(){
+void Game::updateWeapons(Room* room){
      //updating loot for testing
     //in the future wepons list will be taken from room object but the rest of the logic stays the same
-    int x = 0;
-    for(Item* weapon:weapons){
+    auto& weapons = room->getWeapons();
+    for(auto i = weapons.begin(); i != weapons.end();){
         //checking for colision and if player pressed E 
-        if(isColision(weapon, &player) && player.pressedE==true){
+        if(isColision(i->get(), &player) && player.pressedE==true){
             //giving a player weapon on the ground and droping current weapon 
-            Item* droped = currentWeapon;
+            std::unique_ptr<Item> droped = std::move(currentWeapon);
             droped->updatePos({this->player.getPosition().x+20.f, this->player.getPosition().y+80.f});
-            this->weapons.at(x) = droped;
-            this->currentWeapon = weapon;
+            *i = std::move(droped);
             //setting current bullets for new weapon
+            this->currentWeapon = std::move(*i);
             this->currentWeapon->setCurrentBullet(this->currentBullet);
             this->pickupWeapon->play();
             break;
         }
-        x++;
     }
 }
 void Game::updatePlayerBullets(){
@@ -327,9 +296,10 @@ void Game::updatePlayerBullets(){
         
     }
 }
-void Game::updateLoot(){
+void Game::updateLoot(Room* room){
+    auto& loot = room->getLoot();
     for(auto i = loot.begin(); i != loot.end();){
-        if(isColision((*i), &player)&&player.pressedE==true){
+        if(isColision((i->get()), &player)&&player.pressedE==true){
             //change boolets acordingly
             Bullet* temp = this->currentBullet;
             Ammo* droped;
@@ -340,7 +310,7 @@ void Game::updateLoot(){
                 droped = new fastAmmo;
                 droped->setPosition({this->player.getPosition().x+45.f, this->player.getPosition().y+45.f});
             }
-            currentBullet = (*i)->getType();
+            currentBullet = (i->get())->getType();
             this->currentWeapon->setCurrentBullet(this->currentBullet);
             loot.erase(i);
             loot.emplace_back(droped);

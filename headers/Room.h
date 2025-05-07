@@ -7,68 +7,139 @@
 #include <SFML/Network.hpp>
 #include <SFML/Audio.hpp>
 #include <vector>
+#include <memory>
 #include "Enemy.h"
 #include "Door.h"
 #include "Wall.h"
+#include "Item.h"
+#include "Ammo.h"
+#include "Boost.h"
+#include "Bullet.h"
+#include "RoundBullet.h"
+#include "FastBullet.h"
 
-class Room{
+#include "FirstWeapon.h"
+#include "ThreeBulletWeapon.h"
+#include "MiniGunWeapon.h"
+#include "rbAmmo.h"
+#include "fastAmmo.h"
+#include "SmallHealth.h"
+
+class Room {
     public:
         Room();
         Room(int a);
         virtual ~Room();
         void render(sf::RenderTarget* target);
-
+        void update();
+        bool getIsActive(){ return isActive; };
+        std::vector<std::unique_ptr<Item>>& getWeapons();
+        std::vector<std::unique_ptr<Boost>>& getBoosts();
+        std::vector<std::unique_ptr<Ammo>>& getLoot();
     private:
-        int isActive;
+        bool isActive=true;
         int type_id;
         sf::RectangleShape shape;
-        vector<Enemy> enemies;
-        vector<Door> doors;
-        vector<Wall> walls;
+        std::vector<std::unique_ptr<Enemy>> enemies;
+        std::vector<std::unique_ptr<Door>> doors;
+        std::vector<std::unique_ptr<Wall>> walls;
+        std::vector<std::unique_ptr<Item>> weapons;
+        std::vector<std::unique_ptr<Ammo>> loot;
+        std::vector<std::unique_ptr<Boost>> boosts;
+        int x;
+        int y;
+};
 
-}
+std::vector<std::unique_ptr<Item>>& Room::getWeapons() { return weapons; };
+std::vector<std::unique_ptr<Ammo>>& Room::getLoot() { return loot; };
+std::vector<std::unique_ptr<Boost>>& Room::getBoosts() { return boosts; };
 
 Room::Room(){
     this->shape.setFillColor(sf::Color::White);
     this->shape.setSize(sf::Vector2f(200.f, 200.f));
     this->shape.setPosition(sf::Vector2f(0.f, 0.f));
-}
+};
 Room::Room(int a){
     this->shape.setFillColor(sf::Color::White);
     this->shape.setSize(sf::Vector2f(200.f, 200.f));
     this->shape.setPosition(sf::Vector2f(0.f, 0.f));
     this->type_id=a;
     if(type_id==1){
-        Door rightDoor(2);
+        this->doors.emplace_back(new Door(2));
     }
     if(type_id==2){
-        Door leftDoor(1);
-        Door rightDoor(2);
-        Door upDoor(3);
-        Door downDoor(4);
-        Enemy Zombie1;
-        Enemy Zombie2;
-        Zombie1.setPosition(sf::Vector2f(140.f, 40.f))
-        Zombie2.setPosition(sf::Vector2f(140.f, 140.f))
+        this->doors.emplace_back(new Door(1));
+        this->doors.emplace_back(new Door(2));
+        this->doors.emplace_back(new Door(3));
+        this->doors.emplace_back(new Door(4));
+        this->enemies.emplace_back(new Enemy());
+        this->enemies.emplace_back(new Enemy());
+        this->enemies[0]->setPosition(sf::Vector2f(140.f, 40.f));
+        this->enemies[1]->setPosition(sf::Vector2f(140.f, 140.f));
+
+        this->weapons.emplace_back(new FirstWeapon);
+        this->weapons.at(0)->updatePos({500.f, 500.f});
+        this->weapons.emplace_back(new ThreeBulletWeapon);
+        this->weapons.at(1)->updatePos({500.f, 600.f});
+        this->weapons.emplace_back(new MiniGunWeapon);
+        this->weapons.at(2)->updatePos({500.f, 700.f});
+    
+    
+        this->loot.emplace_back(new rbAmmo);
+        this->loot.at(0)->setPosition({800.f, 300.f});
+        this->loot.emplace_back(new fastAmmo);
+        this->loot.at(1)->setPosition({800.f, 400.f});
+    
+        this->boosts.emplace_back(new SmallHealth);
+        this->boosts.at(0)->setPosition({900.f, 400.f});
+    
     }
-}
+};
 
 
 
 Room::~Room(){
 
-}
+};
 
-void Room::update(sf::RenderTarget* target){
-    for(Enemy : enemies){
-        if()
+void Room::update(){
+    if(this->isActive){
+    for(auto it = this->enemies.begin(); it != this->enemies.end();){
+        if((*it)->getIsDead()){
+            it = this->enemies.erase(it); //petla sprawdzajaca czy w pokoju umarli enemies
+        }
+        else{
+            ++it;
+        }
     }
-
-}
+    }
+};
 
 void Room::render(sf::RenderTarget* target){
     target->draw(this->shape);
-}
+    for (const auto& enemy : enemies) {
+        enemy->render(target);
+    }
+    for (const auto& door : doors) {
+        door->render(target);
+    }
+    
+    for (const auto& wall : walls) {
+        wall->render(target);
+    }
+    
+    for (const auto& weapon : weapons) {
+        weapon->render(target);
+    }
+    
+    for (const auto& ammo : loot) {
+        ammo->render(target);
+    }
+    
+    for (const auto& boost : boosts) {
+        boost->render(target);
+    }
+};
 
 
 

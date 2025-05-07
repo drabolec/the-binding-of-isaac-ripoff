@@ -1,12 +1,7 @@
 #ifndef WALL_H
 #define WALL_H
 
-#include <SFML/Graphics.hpp>
-#include <SFML/Window.hpp>
-#include <SFML/System.hpp>
-#include <SFML/Network.hpp>
-#include <SFML/Audio.hpp>
-
+#include "Entity.h"
 
 class Wall:public Entity{
     public:
@@ -14,15 +9,20 @@ class Wall:public Entity{
         virtual ~Wall();
 
     private:
+        sf::RectangleShape shape;
 
-}
-Door::Door(){
-    this->shape.setFillColor(sf::Color::White);
+};
+
+Wall::Wall(){
+    this->shape.setFillColor(sf::Color::Black);
     this->shape.setSize(sf::Vector2f(200.f, 200.f));
     this->shape.setPosition(sf::Vector2f(0.f, 0.f));
-}
+
+};
 
 
+Wall::~Wall(){
+};
 
 
 #endif

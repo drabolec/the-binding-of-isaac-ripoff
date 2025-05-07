@@ -1,11 +1,7 @@
 #ifndef DOOR_H
 #define DOOR_H
 
-#include <SFML/Graphics.hpp>
-#include <SFML/Window.hpp>
-#include <SFML/System.hpp>
-#include <SFML/Network.hpp>
-#include <SFML/Audio.hpp>
+
 #include "Entity.h"
 
 class Door:public Entity{
@@ -19,13 +15,13 @@ class Door:public Entity{
         sf::RectangleShape shape;
 };
 
-Door::Door(){
+inline Door::Door(){
     this->shape.setFillColor(sf::Color::White);
     this->shape.setSize(sf::Vector2f(200.f, 200.f));
     this->shape.setPosition(sf::Vector2f(0.f, 0.f));
 };
 
-Door::Door(int b){
+inline Door::Door(int b){
     this->shape.setFillColor(sf::Color::Yellow);
     this->shape.setSize(sf::Vector2f(20.f, 20.f));
     this->doorSide=b;
@@ -45,7 +41,7 @@ Door::Door(int b){
 
 
 
-Door::~Door(){
+inline Door::~Door(){
 
 };
 
