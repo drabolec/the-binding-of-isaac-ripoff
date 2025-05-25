@@ -28,15 +28,19 @@
 class Room {
     public:
         Room();
-        Room(int a);
+        Room(int a,int b, int c,int d);
         virtual ~Room();
         void render(sf::RenderTarget* target);
         void update();
         bool getIsActive(){ return isActive; };
+        bool getId(){ return id; };
+        int getX();
+        int getY();
         std::vector<std::unique_ptr<Item>>& getWeapons();
         std::vector<std::unique_ptr<Boost>>& getBoosts();
         std::vector<std::unique_ptr<Ammo>>& getLoot();
         std::vector<std::unique_ptr<Wall>>& getWalls();
+        std::vector<std::unique_ptr<Door>>& getDoors();
     private:
         bool isActive=true;
         int type_id;
@@ -49,23 +53,30 @@ class Room {
         std::vector<std::unique_ptr<Boost>> boosts;
         int x;
         int y;
+        int id;
 };
-
+        int Room::getX(){
+            return x;
+        };
+        int Room::getY(){return y;};
 std::vector<std::unique_ptr<Item>>& Room::getWeapons() { return weapons; };
 std::vector<std::unique_ptr<Ammo>>& Room::getLoot() { return loot; };
 std::vector<std::unique_ptr<Boost>>& Room::getBoosts() { return boosts; };
 std::vector<std::unique_ptr<Wall>>& Room::getWalls() { return walls; };
-
+std::vector<std::unique_ptr<Door>>& Room::getDoors() { return doors; };
 Room::Room(){
     this->shape.setFillColor(sf::Color::White);
     this->shape.setSize(sf::Vector2f(200.f, 200.f));
     this->shape.setPosition(sf::Vector2f(0.f, 0.f));
 };
-Room::Room(int a){
+Room::Room(int a,int b, int c,int d){
     this->shape.setFillColor(sf::Color::White);
     this->shape.setSize(sf::Vector2f(1600.f, 900.f));
     this->shape.setPosition(sf::Vector2f(0.f, 0.f));
     this->type_id=a;
+    this->x=b;
+    this->y=c;
+    this->id=d;
     if(type_id==1){
         this->doors.emplace_back(new Door(1));
         this->doors.emplace_back(new Door(2));
