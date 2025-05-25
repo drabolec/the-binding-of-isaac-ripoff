@@ -10,10 +10,15 @@ class Door:public Entity{
         Door(int b);
         virtual ~Door();
         void render(sf::RenderTarget* target);
+        int getDoorSide();
     private:
         int doorSide;
         sf::RectangleShape shape;
 };
+
+int Door::getDoorSide(){
+    return doorSide;
+}
 
 inline Door::Door(){
     this->shape.setFillColor(sf::Color::White);
