@@ -61,7 +61,7 @@ class Room {
         int Room::getY(){return y;};
 std::vector<std::unique_ptr<Item>>& Room::getWeapons() { return weapons; };
 std::vector<std::unique_ptr<Ammo>>& Room::getLoot() { return loot; };
-std::vector<std::unique_ptr<Boost>>& Room::getBoosts() { return boosts; };
+std::vector<std::unique_ptr<Boost>>& Room::getBoosts() { return this->boosts; };
 std::vector<std::unique_ptr<Wall>>& Room::getWalls() { return walls; };
 std::vector<std::unique_ptr<Door>>& Room::getDoors() { return doors; };
 Room::Room(){
@@ -170,6 +170,7 @@ void Room::render(sf::RenderTarget* target){
         boost->render(target);
     }
 };
+
 
 
 

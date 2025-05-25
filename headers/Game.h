@@ -216,12 +216,7 @@ void Game::renderEntitys(){
     //weapons vector should be inside room object
 
 
-    for (const auto& roomPtr : rooms) {
-        Room* room = roomPtr.get();
-        if (room->getIsActive()) {
-            room->render(this->window);
-        }
-    }
+    this->rooms.at(this->active_room)->render(this->window);
 
     //rendering player bullets
     for(Bullet* bullet: this->playerBullets){
@@ -230,6 +225,7 @@ void Game::renderEntitys(){
 
     //rendering player
     this->player.render(this->window);
+    
 
     //rendering and updating interface
     interf();
@@ -261,11 +257,12 @@ void Game::updateBoosts(Room* room) {
         // Dereference unique_ptr to raw pointer for isColision
         if (isColision(i->get(), &player)) {
             // Handle boost effect before erasing
-            if (auto smallHealth = dynamic_cast<SmallHealth*>(i->get())) {
-                this->player.changeHp(smallHealth->value);
+            if (dynamic_cast<SmallHealth*>(i->get()) != NULL) {
+                this->player.changeHp(i->get()->value);
             }
             // Erase and advance iterator safely
-            i = boosts.erase(i);
+            boosts.erase(i);
+            break;
         } else {
             ++i;
         }
