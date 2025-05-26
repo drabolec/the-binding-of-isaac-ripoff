@@ -32,7 +32,9 @@ private:
     Item* currentWeapon;
     Bullet* currentBullet;
     std::vector<Bullet*> playerBullets;
+    std::vector<Room*> gameRooms;
     std::vector<Room*> rooms;
+    std::vector<Room*> playtest;
     //Game font for now roboto
     sf::Font* font;
     //hp text
@@ -127,7 +129,7 @@ Game::Game(){
     this->option1 = new sf::Text(*(this->font));
     this->option1->setPosition({50.f, 250.f});
     this->option1->setCharacterSize(20.f);
-    this->option1->setString("Option1");
+    this->option1->setString("Test");
 
     this->option2 = new sf::Text(*(this->font));
     this->option2->setPosition({50.f, 300.f});
@@ -147,6 +149,11 @@ Game::Game(){
     this->rooms.emplace_back(new Room(1,0,1,1)); //1
     this->rooms.emplace_back(new Room(1,1,0,2)); //2
     this->rooms.emplace_back(new Room(1,1,1,3)); //3
+
+    //playtest rooms
+    this->playtest.emplace_back(new Room(1,0,0,0)); 
+
+    
 }
 Game::~Game(){
     delete this->window;
@@ -536,13 +543,15 @@ void Game::menu(){
         fog.setPosition({play->getPosition().x-20.f, play->getPosition().y-5.f});
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter))
         {
+            this->gameRooms = this->rooms;
             this->ismenuOpen = false; 
         }  
     }else if(this->selected == 2){
         fog.setPosition({option1->getPosition().x-20.f, option1->getPosition().y-5.f});
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter))
         {
-            //magic
+            this->gameRooms = this->playtest;
+            this->ismenuOpen = false;
         }  
     }else if(this->selected == 3){
         fog.setPosition({option2->getPosition().x-20.f, option2->getPosition().y-5.f});
