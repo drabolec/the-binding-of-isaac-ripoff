@@ -32,7 +32,7 @@ private:
     Item* currentWeapon;
     Bullet* currentBullet;
     std::vector<Bullet*> playerBullets;
-    std::vector<std::unique_ptr<Room>> rooms;
+    std::vector<Room*> rooms;
     //Game font for now roboto
     sf::Font* font;
     //hp text
@@ -55,7 +55,7 @@ private:
     sf::Text* option2; 
     sf::Text* quit; 
     sf::RectangleShape fog;
-    bool dootTP;
+    bool dootTP=true;
     //temporary for testing
 
 public:
@@ -144,10 +144,10 @@ Game::Game(){
     fog.setSize({100.f, 35.f});
     
     //temporary for testing
-    this->rooms.emplace_back(std::make_unique<Room>(1,0,0,0)); //0   room making
-    this->rooms.emplace_back(std::make_unique<Room>(1,0,1,1)); //1
-    this->rooms.emplace_back(std::make_unique<Room>(1,1,0,2)); //2
-    this->rooms.emplace_back(std::make_unique<Room>(1,1,1,3)); //3
+    this->rooms.emplace_back(new Room(1,0,0,0)); //0   room making
+    this->rooms.emplace_back(new Room(1,0,1,1)); //1
+    this->rooms.emplace_back(new Room(1,1,0,2)); //2
+    this->rooms.emplace_back(new Room(1,1,1,3)); //3
 }
 Game::~Game(){
     delete this->window;
@@ -184,15 +184,15 @@ void Game::update(){
 
     updatePlayerBullets();
 
-    updateWeapons(this->rooms[active_room].get());
+    updateWeapons(this->rooms[active_room]);
     //std::cout<<this->player.getPosition().x<<" "<<this->player.getPosition().y<<"\n";
     //std::cout<<this->player.hitbox.getPosition().x<<" "<<this->player.hitbox.getPosition().y<<"\n";
     //std::cout<<this->player.collides<<"\n";
-    updateBoosts(this->rooms[active_room].get());
+    updateBoosts(this->rooms[active_room]);
     
-    updateLoot(this->rooms[active_room].get());
-    updateDoors(this->rooms[active_room].get());
-    updateWalls(this->rooms[active_room].get());
+    updateLoot(this->rooms[active_room]);
+    updateDoors(this->rooms[active_room]);
+    updateWalls(this->rooms[active_room]);
     
     this->player.update();
     this->currentWeapon->setCurrentPlayerBullets(this->playerBullets);
@@ -216,7 +216,7 @@ void Game::renderEntitys(){
     //weapons vector should be inside room object
 
 
-    this->rooms.at(this->active_room)->render(this->window);
+    this->rooms[this->active_room]->render(this->window);
 
     //rendering player bullets
     for(Bullet* bullet: this->playerBullets){
@@ -314,68 +314,96 @@ void Game::updateWalls(Room* room){
 
 void Game::updateDoors(Room* room){
     if(this->player.getPosition().x<20){ //left
-        for(auto& temproom : rooms){
-            if((*temproom).getY()==(*temproom).getY()){
-                if ((*temproom).getX()==(*temproom).getX()-1)
+        for(auto& temproom : this->rooms){
+            if(this->rooms[this->active_room]->getY()==temproom->getY()){
+                if (this->rooms[this->active_room]->getX()-1==temproom->getX())
                 {
-                    this->active_room=(*temproom).getId();
+                    std::cout<<this->rooms[this->active_room]->getX()<<" "<<this->rooms[this->active_room]->getY()<<"\n";
+                    std::cout<<temproom->getId()<<"\n";
+                    this->active_room=temproom->getId();
+                    std::cout<<this->rooms[this->active_room]->getX()<<" "<<this->rooms[this->active_room]->getY()<<"\n";
                     this->dootTP=false;
-                    this->player.setPosition(sf::Vector2f(1570.f, this->player.getPosition().y));
+                    this->player.setPosition(sf::Vector2f(1500.f, this->player.getPosition().y));
                     /* changing to another room */
+                }
+                else{
+                    std::cout<<"there is no such room in X axis on the right\n";
                 }
             }
         }
         if(this->dootTP==true){
-            this->player.setPosition(sf::Vector2f(30.f,this->player.getPosition().y));
+            this->player.setPosition(sf::Vector2f(20.f,this->player.getPosition().y));
         }
 
     }
-    if(this->player.getPosition().x>1580){ //right
-                for(auto& temproom : rooms){
-            if((*temproom).getY()==(*temproom).getY()){
-                if ((*temproom).getX()==(*temproom).getX()+1)
-                {
-                    this->active_room=(*temproom).getId();
+    if(this->player.getPosition().x>1520){ //right
+                for(auto& temproom : this->rooms){
+            if(this->rooms[this->active_room]->getY()==temproom->getY()){
+                if (this->rooms[this->active_room]->getX()+1==temproom->getX())
+                {   
+                    std::cout<<this->rooms[this->active_room]->getX()<<" "<<this->rooms[this->active_room]->getY()<<"\n";
+                    std::cout<<temproom->getId()<<"\n";
+                    this->active_room=temproom->getId();
+                    std::cout<<this->rooms[this->active_room]->getX()<<" "<<this->rooms[this->active_room]->getY()<<"\n";
+                    std::cout<<"there is such a room in X axis on the right\n";
                     this->dootTP=false;
-                                this->player.setPosition(sf::Vector2f(30.f,this->player.getPosition().y));
+                    this->player.setPosition(sf::Vector2f(30.f,this->player.getPosition().y));
+                    break;
                     /* changing to another room */
+                }
+                else{
+                    std::cout<<"there is no such room in X axis on the right\n";
                 }
             }
         }
         if(this->dootTP==true){
-            this->player.setPosition(sf::Vector2f(1570.f,this->player.getPosition().y));
+            this->player.setPosition(sf::Vector2f(1520.f,this->player.getPosition().y));
+            this->dootTP=false;
         }
     }
     if(this->player.getPosition().y<20){ //top
-                for(auto& temproom : rooms){
-            if((*temproom).getX()==(*temproom).getX()){
-                if ((*temproom).getY()==(*temproom).getY()-1)
+                for(auto& temproom : this->rooms){
+            if(this->rooms[this->active_room]->getX()==temproom->getX()){
+                if (this->rooms[this->active_room]->getY()+1==temproom->getY())
                 {
-                    this->active_room=(*temproom).getId();
+                    std::cout<<this->rooms[this->active_room]->getX()<<" "<<this->rooms[this->active_room]->getY()<<"\n";
+                    std::cout<<temproom->getId()<<"\n";
+                    this->active_room=temproom->getId();
+                    std::cout<<this->rooms[this->active_room]->getX()<<" "<<this->rooms[this->active_room]->getY()<<"\n";
                     this->dootTP=false;
-                    this->player.setPosition(sf::Vector2f(this->player.getPosition().x,870.f));
+                    this->player.setPosition(sf::Vector2f(this->player.getPosition().x,800.f));
                     /* changing to another room */
+                }
+                else{
+                    std::cout<<"there is no such room in Y axis on the top\n";
+                }
+            }
+
+        }
+        if(this->dootTP==true){
+            this->player.setPosition(sf::Vector2f(this->player.getPosition().x,20.f));
+        }
+    }
+    if(this->player.getPosition().y>820){ //bottom
+        for(auto& temproom : this->rooms){
+            if(this->rooms[this->active_room]->getX()==temproom->getX()){
+                if (this->rooms[this->active_room]->getY()-1==temproom->getY())
+                {
+                    std::cout<<this->rooms[this->active_room]->getX()<<" "<<this->rooms[this->active_room]->getY()<<"\n";
+                    std::cout<<temproom->getId()<<"\n";
+                    this->active_room=temproom->getId();
+                    std::cout<<this->rooms[this->active_room]->getX()<<" "<<this->rooms[this->active_room]->getY()<<"\n";
+                    this->dootTP=false;
+                    this->player.setPosition(sf::Vector2f(this->player.getPosition().x,30.f));
+                    /* changing to another room */
+                }
+                else{
+                    std::cout<<"there is no such room in Y axis on the Bottom\n";
                 }
             }
         }
         if(this->dootTP==true){
-            this->player.setPosition(sf::Vector2f(this->player.getPosition().x,30.f));
-        }
-    }
-    if(this->player.getPosition().y>880){ //bottom
-        for(auto& temproom : rooms){
-            if((*temproom).getX()==(*temproom).getX()){
-                if ((*temproom).getY()==(*temproom).getY()+1)
-                {
-                    this->active_room=(*temproom).getId();
-                    this->dootTP=false;
-                    this->player.setPosition(sf::Vector2f(this->player.getPosition().x,30.f));
-                    /* changing to another room */
-                }  
-            }
-        }
-        if(this->dootTP==true){
-            this->player.setPosition(sf::Vector2f(this->player.getPosition().x,870.f));
+            this->player.setPosition(sf::Vector2f(this->player.getPosition().x,820.f));
         }
     }
 }
