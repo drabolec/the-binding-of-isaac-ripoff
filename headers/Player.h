@@ -31,33 +31,72 @@ class Player: public DmgEntity{
         idleleft = 7,
         idleup = 8
     };
+    sf::Vector2f nextMove;
     state st;
-    
     bool animChange;
     //clock for animation 
     sf::Clock clock;
+    sf::Vector2f originalPos;
 public:
     Player();
     virtual ~Player();
-    
-    
+    void setCollides(bool a);
+void setCollidesUp(bool a);
+void setCollidesDown(bool a);
+void setCollidesRight(bool a);
+void setCollidesLeft(bool a);
+    void setHitWallNS(int a);
+    void setHitWallWE(int a);
     void setPosition(sf::Vector2f pos);
     sf::Vector2f getPosition();
+    sf::Vector2f getSize();
     void setFont(sf::Font* font);
     void initHp();
     void animation();
     void changeState(state st);
-
-    
+    state getState();
+    void preUpdate();
     void update();
     void move();
     void render(sf::RenderTarget* target);
-
+    void resetCollisions();
     bool pressedE;
-    
-    
-
+    bool collides;
+    bool collidesUp = false;
+    bool collidesDown = false;
+    bool collidesLeft = false;
+    bool collidesRight = false;
+ 
 };
+void Player::resetCollisions() {
+    this->collidesUp = this->collidesDown = this->collidesLeft = this->collidesRight = false;
+}
+void Player::setCollides(bool a){
+    this->collides=a;
+}
+
+void Player::setCollidesUp(bool a){
+    this->collidesUp=a;
+}
+
+void Player::setCollidesDown(bool a){
+    this->collidesDown=a;
+}
+
+void Player::setCollidesLeft(bool a){
+    this->collidesLeft=a;
+}
+
+void Player::setCollidesRight(bool a){
+    this->collidesRight=a;
+}
+
+
+
+
+Player::state Player::getState(){
+    return st;
+}
 
 Player::Player(){
     //seting defaul parameters
@@ -84,7 +123,7 @@ Player::Player(){
 void Player::initHp(){
     this->hpText = new sf::Text(*font);
     this->hpText->setString(std::to_string(this->getHp())+ " hp");
-    this->hpText->setFillColor(sf::Color::White); //change later
+    this->hpText->setFillColor(sf::Color::Black); //change later
     this->hpText->setCharacterSize(10);
     this->hpText->setPosition({this->shape.getPosition().x+60.f, this->shape.getPosition().y- 30.f});
 }
@@ -93,33 +132,32 @@ Player::~Player(){
 }
 void Player::setPosition(sf::Vector2f pos){
     this->shape.setPosition(pos);
+    this->hitbox.setPosition({this->shape.getPosition().x+40.f, this->shape.getPosition().y+40.f});
 }
+
+
+
 sf::Vector2f Player::getPosition(){
     return this->shape.getPosition();
 }
+sf::Vector2f Player::getSize(){
+    return this->shape.getSize();
+}
 void Player::move(){
-    
-
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
-        {
-            this->shape.move({0.f, -this->movespeed});
-            
-        }if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
-        {
-            this->shape.move({0.f, this->movespeed});
-            
-        }if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
-        {
-            this->shape.move({-this->movespeed, 0.f});
-            
-        }if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
-        {
-            this->shape.move({this->movespeed, 0.f});
-            
-            
-        }
+    nextMove = sf::Vector2f(0.f, 0.f);
+       if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) && !this->collidesUp) {
+                nextMove.y -= this->movespeed;
+            } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S) && !this->collidesDown) {
+                nextMove.y += this->movespeed;
+            }
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A) && !this->collidesLeft) {
+                nextMove.x -= this->movespeed;
+            } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D) && !this->collidesRight) {
+                nextMove.x += this->movespeed;
+            }
+        
         //changing state
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A) )
         {
             
             changeState(left);
@@ -166,6 +204,12 @@ void Player::move(){
     
 }
 
+void Player::preUpdate(){
+    this->originalPos = this->shape.getPosition();
+    this->shape.setPosition(originalPos + nextMove);
+}
+
+
 void Player::update(){
     //updates counter
     if(counter <60){
@@ -176,8 +220,19 @@ void Player::update(){
     
     
     //mvoes and check for other actions
-    this->move();
-
+    /*
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) && this->collidesUp){
+        this->shape.setPosition(originalPos);  // Don't allow the move
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S) && this->collidesDown){
+        this->shape.setPosition(originalPos);  // Don't allow the move
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D) && this->collidesRight){
+        this->shape.setPosition(originalPos);  // Don't allow the move
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A) && this->collidesLeft){
+        this->shape.setPosition(originalPos);  // Don't allow the move
+    }*/
     //animating
     this->animation();
 

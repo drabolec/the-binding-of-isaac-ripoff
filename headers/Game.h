@@ -2,7 +2,7 @@
 #define GAME_H
 
 #include <vector>
-
+#include <memory>
 #include "Player.h"
 
 #include "Bullet.h"
@@ -11,6 +11,7 @@
 
 #include "Item.h"
 #include "FirstWeapon.h"
+#include "Room.h"
 #include "ThreeBulletWeapon.h"
 #include "MiniGunWeapon.h"
 
@@ -31,7 +32,7 @@ private:
     Item* currentWeapon;
     Bullet* currentBullet;
     std::vector<Bullet*> playerBullets;
-
+    std::vector<std::unique_ptr<Room>> rooms;
     //Game font for now roboto
     sf::Font* font;
     //hp text
@@ -41,7 +42,9 @@ private:
     sf::Sound *pickupWeapon;
 
     bool isClosed = false;
-
+    int x=0;
+    int y=0;
+    int active_room=0;
     //menu stuf
     bool ismenuOpen = true;
     int selected = 1;
@@ -52,12 +55,8 @@ private:
     sf::Text* option2; 
     sf::Text* quit; 
     sf::RectangleShape fog;
+    bool dootTP;
     //temporary for testing
-    std::vector<Item*> weapons;
-
-    std::vector<Ammo*> loot;
-
-    std::vector<Boost*> boosts;
 
 public:
     Game();
@@ -70,9 +69,11 @@ public:
     bool isColision(Entity* e1, Entity* e2);
     void interf();
     void updatePlayerBullets();
-    void updateLoot();
-    void updateBoosts();
-    void updateWeapons();
+    void updateLoot(Room* room);
+    void updateBoosts(Room* room);
+    void updateWeapons(Room* room);
+    void updateWalls(Room* room);
+    void updateDoors(Room* room);
     void pause();
     void renderEntitys();
     void menu();
@@ -102,10 +103,10 @@ Game::Game(){
     this->window->setFramerateLimit(60);
     
     //seting default bullets
-    this->currentBullet = new RoundBullet;
+    this->currentBullet = new RoundBullet();
 
     //setting defaul weapon
-    this->currentWeapon = new FirstWeapon;
+    this->currentWeapon = new FirstWeapon();
     this->currentWeapon->setCurrentBullet(this->currentBullet);
     //sound
     this->buffer = new sf::SoundBuffer("./Sound/pickupweapon.wav");
@@ -143,23 +144,10 @@ Game::Game(){
     fog.setSize({100.f, 35.f});
     
     //temporary for testing
-    this->weapons.emplace_back(new FirstWeapon);
-    this->weapons.at(0)->updatePos({500.f, 500.f});
-    this->weapons.emplace_back(new ThreeBulletWeapon);
-    this->weapons.at(1)->updatePos({500.f, 600.f});
-    this->weapons.emplace_back(new MiniGunWeapon);
-    this->weapons.at(2)->updatePos({500.f, 700.f});
-
-
-    this->loot.emplace_back(new rbAmmo);
-    this->loot.at(0)->setPosition({800.f, 300.f});
-    this->loot.emplace_back(new fastAmmo);
-    this->loot.at(1)->setPosition({800.f, 400.f});
-
-    this->boosts.emplace_back(new SmallHealth);
-    this->boosts.at(0)->setPosition({900.f, 400.f});
-
-
+    this->rooms.emplace_back(std::make_unique<Room>(1,0,0,0)); //0   room making
+    this->rooms.emplace_back(std::make_unique<Room>(1,0,1,1)); //1
+    this->rooms.emplace_back(std::make_unique<Room>(1,1,0,2)); //2
+    this->rooms.emplace_back(std::make_unique<Room>(1,1,1,3)); //3
 }
 Game::~Game(){
     delete this->window;
@@ -191,21 +179,26 @@ void Game::update(){
     this->events();
 
     //player weapon and shooting
+    this->player.move();
+    this->player.preUpdate();
+
+    updatePlayerBullets();
+
+    updateWeapons(this->rooms[active_room].get());
+    //std::cout<<this->player.getPosition().x<<" "<<this->player.getPosition().y<<"\n";
+    //std::cout<<this->player.hitbox.getPosition().x<<" "<<this->player.hitbox.getPosition().y<<"\n";
+    //std::cout<<this->player.collides<<"\n";
+    updateBoosts(this->rooms[active_room].get());
+    
+    updateLoot(this->rooms[active_room].get());
+    updateDoors(this->rooms[active_room].get());
+    updateWalls(this->rooms[active_room].get());
+    
     this->player.update();
     this->currentWeapon->setCurrentPlayerBullets(this->playerBullets);
     this->currentWeapon->setPlayerPos({this->player.getPosition().x+45.f,this->player.getPosition().y+45.f});
     this->currentWeapon->update();
     this->playerBullets = this->currentWeapon->getCurrentPlayerBullets();
-    
-
-    updatePlayerBullets();
-
-    updateWeapons();
-
-    updateBoosts();
-    
-    updateLoot();
-    
     
 }
 void Game::render(){
@@ -221,20 +214,10 @@ void Game::renderEntitys(){
 
     //rendering loot for testing
     //weapons vector should be inside room object
-    for(Item* weapon:weapons){
-        weapon->render(this->window);
-    }
 
-    for(Ammo* ammo:loot){
-        ammo->render(this->window);
-    }
 
-    this->player.render(this->window);
-    
+    this->rooms.at(this->active_room)->render(this->window);
 
-    for(Boost* boost:boosts){
-        boost->render(this->window);
-    }
     //rendering player bullets
     for(Bullet* bullet: this->playerBullets){
         bullet->render(this->window);
@@ -242,6 +225,7 @@ void Game::renderEntitys(){
 
     //rendering player
     this->player.render(this->window);
+    
 
     //rendering and updating interface
     interf();
@@ -265,26 +249,146 @@ void Game::interf(){
     this->window->draw(temp);
     this->window->draw(*(this->hpText));
 }
-void Game::updateBoosts(){
-    for(auto i = boosts.begin(); i != boosts.end();){
-        //checking for colision and if player pressed E 
-        if(isColision((*i), &player)){
-            //erasing boost and acordinglyt to its type changing player propertys
-            this->boosts.erase(i);
-            if(dynamic_cast<SmallHealth*>((*i)) != NULL){
-                this->player.changeHp((*i)->value);  
+
+
+void Game::updateBoosts(Room* room) {
+    auto& boosts = room->getBoosts();
+    for (auto i = boosts.begin(); i != boosts.end(); ) {
+        // Dereference unique_ptr to raw pointer for isColision
+        if (isColision(i->get(), &player)) {
+            // Handle boost effect before erasing
+            if (dynamic_cast<SmallHealth*>(i->get()) != NULL) {
+                this->player.changeHp(i->get()->value);
             }
-            
-        }
-        else{
-            i++;
+            // Erase and advance iterator safely
+            boosts.erase(i);
+            break;
+        } else {
+            ++i;
         }
     }
-    
 }
-void Game::updateWeapons(){
-     //updating loot for testing
+
+void Game::updateWalls(Room* room){
+    auto& walls = room->getWalls();
+
+    // Reset all collision flags before checking new collisions
+    this->player.resetCollisions();
+
+    sf::FloatRect playerBounds = this->player.hitbox.getGlobalBounds();
+
+    
+    for (auto& wall : walls) {
+        sf::FloatRect wallBounds = wall->hitbox.getGlobalBounds();
+        bool intersects = !(this->player.hitbox.getPosition().x + this->player.hitbox.getSize().x < wallBounds.position.x||  // Player is to the left of the wall
+                            this->player.hitbox.getPosition().x > wallBounds.position.x + wallBounds.size.x || // Player is to the right of the wall
+                            this->player.hitbox.getPosition().y + this->player.hitbox.getSize().y  < wallBounds.position.y|| // Player is above the wall
+                            this->player.hitbox.getPosition().y  > wallBounds.position.y + wallBounds.size.y); 
+
+        if (intersects) {
+            float dx = (this->player.hitbox.getPosition().x+this->player.hitbox.getSize().x / 2) - (wallBounds.position.x + wallBounds.size.x / 2);
+            float dy = (this->player.hitbox.getPosition().y +this->player.hitbox.getSize().y / 2) - (wallBounds.position.y + wallBounds.size.y / 2);
+
+            float overlapX = (this->player.hitbox.getSize().x + wallBounds.size.x ) / 2 - std::abs(dx);
+            float overlapY = (this->player.hitbox.getSize().y + wallBounds.size.y) / 2 - std::abs(dy);
+
+            if (overlapX < overlapY) {
+                if (dx > 0){
+                    this->player.setCollidesLeft(true);
+                }
+                else{
+                    this->player.setCollidesRight(true);
+                }
+            } 
+            else {
+                if (dy > 0){
+                    this->player.setCollidesUp(true);
+                }
+                else{
+                    this->player.setCollidesDown(true);
+                }
+            }
+        }
+    }
+}
+
+void Game::updateDoors(Room* room){
+    if(this->player.getPosition().x<20){ //left
+        for(auto& temproom : rooms){
+            if((*temproom).getY()==(*temproom).getY()){
+                if ((*temproom).getX()==(*temproom).getX()-1)
+                {
+                    this->active_room=(*temproom).getId();
+                    this->dootTP=false;
+                    this->player.setPosition(sf::Vector2f(1570.f, this->player.getPosition().y));
+                    /* changing to another room */
+                }
+            }
+        }
+        if(this->dootTP==true){
+            this->player.setPosition(sf::Vector2f(30.f,this->player.getPosition().y));
+        }
+
+    }
+    if(this->player.getPosition().x>1580){ //right
+                for(auto& temproom : rooms){
+            if((*temproom).getY()==(*temproom).getY()){
+                if ((*temproom).getX()==(*temproom).getX()+1)
+                {
+                    this->active_room=(*temproom).getId();
+                    this->dootTP=false;
+                                this->player.setPosition(sf::Vector2f(30.f,this->player.getPosition().y));
+                    /* changing to another room */
+                }
+            }
+        }
+        if(this->dootTP==true){
+            this->player.setPosition(sf::Vector2f(1570.f,this->player.getPosition().y));
+        }
+    }
+    if(this->player.getPosition().y<20){ //top
+                for(auto& temproom : rooms){
+            if((*temproom).getX()==(*temproom).getX()){
+                if ((*temproom).getY()==(*temproom).getY()-1)
+                {
+                    this->active_room=(*temproom).getId();
+                    this->dootTP=false;
+                    this->player.setPosition(sf::Vector2f(this->player.getPosition().x,870.f));
+                    /* changing to another room */
+                }
+            }
+        }
+        if(this->dootTP==true){
+            this->player.setPosition(sf::Vector2f(this->player.getPosition().x,30.f));
+        }
+    }
+    if(this->player.getPosition().y>880){ //bottom
+        for(auto& temproom : rooms){
+            if((*temproom).getX()==(*temproom).getX()){
+                if ((*temproom).getY()==(*temproom).getY()+1)
+                {
+                    this->active_room=(*temproom).getId();
+                    this->dootTP=false;
+                    this->player.setPosition(sf::Vector2f(this->player.getPosition().x,30.f));
+                    /* changing to another room */
+                }  
+            }
+        }
+        if(this->dootTP==true){
+            this->player.setPosition(sf::Vector2f(this->player.getPosition().x,870.f));
+        }
+    }
+}
+
+
+
+
+void Game::updateWeapons(Room* room){
+  //updating loot for testing
     //in the future wepons list will be taken from room object but the rest of the logic stays the same
+      //updating loot for testing
+    //in the future wepons list will be taken from room object but the rest of the logic stays the same
+    auto& weapons = room->getWeapons();
     int x = 0;
     for(Item* weapon:weapons){
         //checking for colision and if player pressed E 
@@ -292,7 +396,7 @@ void Game::updateWeapons(){
             //giving a player weapon on the ground and droping current weapon 
             Item* droped = currentWeapon;
             droped->updatePos({this->player.getPosition().x+20.f, this->player.getPosition().y+80.f});
-            this->weapons.at(x) = droped;
+            weapons.at(x) = droped;
             this->currentWeapon = weapon;
             //setting current bullets for new weapon
             this->currentWeapon->setCurrentBullet(this->currentBullet);
@@ -301,6 +405,27 @@ void Game::updateWeapons(){
         }
         x++;
     }
+    
+
+
+     //updating loot for testing
+    //in the future wepons list will be taken from room object but the rest of the logic stays the same
+    /*auto& weapons = room->getWeapons();
+    for(auto i = weapons.begin(); i != weapons.end();){
+        //checking for colision and if player pressed E 
+        if(isColision(i->get(), &player) && player.pressedE==true){
+            //giving a player weapon on the ground and droping current weapon 
+            std::unique_ptr<Item> droped = std::move(currentWeapon);
+            droped->updatePos({this->player.getPosition().x+20.f, this->player.getPosition().y+80.f});
+            this->currentWeapon = std::move(*i);
+            *i = std::move(droped);
+            //setting current bullets for new weapon
+            
+            this->currentWeapon->setCurrentBullet(this->currentBullet.get());
+            this->pickupWeapon->play();
+            break;
+        }
+    }*/
 }
 void Game::updatePlayerBullets(){
     //updating player bullet position
@@ -317,7 +442,8 @@ void Game::updatePlayerBullets(){
         
     }
 }
-void Game::updateLoot(){
+void Game::updateLoot(Room* room){
+    auto& loot = room->getLoot();
     for(auto i = loot.begin(); i != loot.end();){
         if(isColision((*i), &player)&&player.pressedE==true){
             //change boolets acordingly
@@ -334,13 +460,14 @@ void Game::updateLoot(){
             this->currentWeapon->setCurrentBullet(this->currentBullet);
             loot.erase(i);
             loot.emplace_back(droped);
+            
             break;
             
         }
         
             i++;
         
-    }
+    }   
 }
 void Game::pause(){
     sf::Text pause(*(this->font));
@@ -445,9 +572,6 @@ void Game::menu(){
         }  
     }
 
-
-
-
     //drawing
     this->window->draw(*menuT);
     this->window->draw(fog);
@@ -458,7 +582,5 @@ void Game::menu(){
 
     this->window->display();
 }
-
-
 
 #endif
