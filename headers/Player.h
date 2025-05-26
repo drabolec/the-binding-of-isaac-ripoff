@@ -145,19 +145,19 @@ sf::Vector2f Player::getSize(){
 }
 void Player::move(){
     nextMove = sf::Vector2f(0.f, 0.f);
-       if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) {
+       if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) && !this->collidesUp) {
                 nextMove.y -= this->movespeed;
-            } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
+            } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S) && !this->collidesDown) {
                 nextMove.y += this->movespeed;
             }
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A) && !this->collidesLeft) {
                 nextMove.x -= this->movespeed;
-            } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
+            } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D) && !this->collidesRight) {
                 nextMove.x += this->movespeed;
             }
         
         //changing state
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A) )
         {
             
             changeState(left);
@@ -220,6 +220,7 @@ void Player::update(){
     
     
     //mvoes and check for other actions
+    /*
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) && this->collidesUp){
         this->shape.setPosition(originalPos);  // Don't allow the move
     }
@@ -231,7 +232,7 @@ void Player::update(){
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A) && this->collidesLeft){
         this->shape.setPosition(originalPos);  // Don't allow the move
-    }
+    }*/
     //animating
     this->animation();
 
