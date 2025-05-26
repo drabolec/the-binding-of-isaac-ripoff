@@ -29,8 +29,8 @@ private:
     //event handling variable
     std::optional<sf::Event> event;
     Player player;
-    std::unique_ptr<Item> currentWeapon;
-    std::unique_ptr<Bullet> currentBullet;
+    Item* currentWeapon;
+    Bullet* currentBullet;
     std::vector<Bullet*> playerBullets;
     std::vector<std::unique_ptr<Room>> rooms;
     //Game font for now roboto
@@ -103,11 +103,11 @@ Game::Game(){
     this->window->setFramerateLimit(60);
     
     //seting default bullets
-    this->currentBullet = std::make_unique<RoundBullet>();
+    this->currentBullet = new RoundBullet();
 
     //setting defaul weapon
-    this->currentWeapon = std::make_unique<FirstWeapon>();
-    this->currentWeapon->setCurrentBullet(this->currentBullet.get());
+    this->currentWeapon = new FirstWeapon();
+    this->currentWeapon->setCurrentBullet(this->currentBullet);
     //sound
     this->buffer = new sf::SoundBuffer("./Sound/pickupweapon.wav");
     this->pickupWeapon = new sf::Sound(*(this->buffer));
@@ -384,23 +384,48 @@ void Game::updateDoors(Room* room){
 
 
 void Game::updateWeapons(Room* room){
-     //updating loot for testing
+  //updating loot for testing
+    //in the future wepons list will be taken from room object but the rest of the logic stays the same
+      //updating loot for testing
     //in the future wepons list will be taken from room object but the rest of the logic stays the same
     auto& weapons = room->getWeapons();
+    int x = 0;
+    for(Item* weapon:weapons){
+        //checking for colision and if player pressed E 
+        if(isColision(weapon, &player) && player.pressedE==true){
+            //giving a player weapon on the ground and droping current weapon 
+            Item* droped = currentWeapon;
+            droped->updatePos({this->player.getPosition().x+20.f, this->player.getPosition().y+80.f});
+            weapons.at(x) = droped;
+            this->currentWeapon = weapon;
+            //setting current bullets for new weapon
+            this->currentWeapon->setCurrentBullet(this->currentBullet);
+            this->pickupWeapon->play();
+            break;
+        }
+        x++;
+    }
+    
+
+
+     //updating loot for testing
+    //in the future wepons list will be taken from room object but the rest of the logic stays the same
+    /*auto& weapons = room->getWeapons();
     for(auto i = weapons.begin(); i != weapons.end();){
         //checking for colision and if player pressed E 
         if(isColision(i->get(), &player) && player.pressedE==true){
             //giving a player weapon on the ground and droping current weapon 
             std::unique_ptr<Item> droped = std::move(currentWeapon);
             droped->updatePos({this->player.getPosition().x+20.f, this->player.getPosition().y+80.f});
+            this->currentWeapon = std::move(*i);
             *i = std::move(droped);
             //setting current bullets for new weapon
-            this->currentWeapon = std::move(*i);
+            
             this->currentWeapon->setCurrentBullet(this->currentBullet.get());
             this->pickupWeapon->play();
             break;
         }
-    }
+    }*/
 }
 void Game::updatePlayerBullets(){
     //updating player bullet position
@@ -420,10 +445,9 @@ void Game::updatePlayerBullets(){
 void Game::updateLoot(Room* room){
     auto& loot = room->getLoot();
     for(auto i = loot.begin(); i != loot.end();){
-        if(isColision((i->get()), &player)&&player.pressedE==true){
-            std::cout << "Checking loot item: " << i->get() << std::endl;
+        if(isColision((*i), &player)&&player.pressedE==true){
             //change boolets acordingly
-            Bullet* temp = this->currentBullet.get();
+            Bullet* temp = this->currentBullet;
             Ammo* droped;
             if(dynamic_cast<RoundBullet*>(temp)!=NULL){
                 droped = new rbAmmo;
@@ -432,19 +456,17 @@ void Game::updateLoot(Room* room){
                 droped = new fastAmmo;
                 droped->setPosition({this->player.getPosition().x+45.f, this->player.getPosition().y+45.f});
             }
-            std::cout<<"working\n";
-            currentBullet = std::unique_ptr<Bullet>(dynamic_cast<Bullet*>(i->release()));
-            std::cout<<"working\n";
-            this->currentWeapon->setCurrentBullet(this->currentBullet.get());
-            std::cout<<"working\n";
+            currentBullet = (*i)->getType();
+            this->currentWeapon->setCurrentBullet(this->currentBullet);
             loot.erase(i);
-            std::cout<<"working\n";
             loot.emplace_back(droped);
-            std::cout<<"working\n";
-            std::cout << "Checking loot item: " << i->get() << std::endl;
+            
             break;
+            
         }
+        
             i++;
+        
     }   
 }
 void Game::pause(){

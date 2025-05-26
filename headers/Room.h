@@ -36,9 +36,9 @@ class Room {
         bool getId(){ return id; };
         int getX();
         int getY();
-        std::vector<std::unique_ptr<Item>>& getWeapons();
+        std::vector<Item*>& getWeapons();
         std::vector<std::unique_ptr<Boost>>& getBoosts();
-        std::vector<std::unique_ptr<Ammo>>& getLoot();
+        std::vector<Ammo*>& getLoot();
         std::vector<std::unique_ptr<Wall>>& getWalls();
         std::vector<std::unique_ptr<Door>>& getDoors();
     private:
@@ -48,8 +48,8 @@ class Room {
         std::vector<std::unique_ptr<Enemy>> enemies;
         std::vector<std::unique_ptr<Door>> doors;
         std::vector<std::unique_ptr<Wall>> walls;
-        std::vector<std::unique_ptr<Item>> weapons;
-        std::vector<std::unique_ptr<Ammo>> loot;
+        std::vector<Item*> weapons;
+        std::vector<Ammo*> loot;
         std::vector<std::unique_ptr<Boost>> boosts;
         int x;
         int y;
@@ -59,8 +59,8 @@ class Room {
             return x;
         };
         int Room::getY(){return y;};
-std::vector<std::unique_ptr<Item>>& Room::getWeapons() { return weapons; };
-std::vector<std::unique_ptr<Ammo>>& Room::getLoot() { return loot; };
+std::vector<Item*>& Room::getWeapons() { return weapons; };
+std::vector<Ammo*>& Room::getLoot() { return loot; };
 std::vector<std::unique_ptr<Boost>>& Room::getBoosts() { return this->boosts; };
 std::vector<std::unique_ptr<Wall>>& Room::getWalls() { return walls; };
 std::vector<std::unique_ptr<Door>>& Room::getDoors() { return doors; };
@@ -91,11 +91,17 @@ Room::Room(int a,int b, int c,int d){
         this->walls.emplace_back(new Wall(7));
         this->walls.emplace_back(new Wall(8));
         this->loot.emplace_back(new rbAmmo);
-        //this->loot.at(0)->setPosition({800.f, 300.f});        //podniesienie przestalo dzialac
-        //this->loot.emplace_back(new fastAmmo);
-        //this->loot.at(1)->setPosition({800.f, 400.f});
+        this->loot.at(0)->setPosition({800.f, 300.f});        //podniesienie przestalo dzialac
+        this->loot.emplace_back(new fastAmmo);
+        this->loot.at(1)->setPosition({800.f, 400.f});
         this->boosts.emplace_back(new SmallHealth);
         this->boosts.at(0)->setPosition({900.f, 400.f});
+        this->weapons.emplace_back(new FirstWeapon);
+        this->weapons.at(0)->updatePos({500.f, 500.f}); //blad przy klikaniu game 
+        this->weapons.emplace_back(new ThreeBulletWeapon);
+        this->weapons.at(1)->updatePos({500.f, 600.f});
+        this->weapons.emplace_back(new MiniGunWeapon);
+        this->weapons.at(2)->updatePos({500.f, 700.f}); 
     }
     if(type_id==2){
         this->doors.emplace_back(new Door(1));
@@ -107,12 +113,7 @@ Room::Room(int a,int b, int c,int d){
         this->enemies[0]->setPosition(sf::Vector2f(140.f, 40.f));
         this->enemies[1]->setPosition(sf::Vector2f(140.f, 140.f));
 
-        this->weapons.emplace_back(new FirstWeapon);
-        this->weapons.at(0)->updatePos({500.f, 500.f}); //blad przy klikaniu game 
-        this->weapons.emplace_back(new ThreeBulletWeapon);
-        this->weapons.at(1)->updatePos({500.f, 600.f});
-        this->weapons.emplace_back(new MiniGunWeapon);
-        this->weapons.at(2)->updatePos({500.f, 700.f});
+        
     
     
         this->loot.emplace_back(new rbAmmo);
