@@ -74,7 +74,6 @@ public:
     void updateWeapons(Room* room);
     void updateWalls(Room* room);
     void updateDoors(Room* room);
-    void pause();
     void renderEntitys();
     void menu();
     
@@ -167,7 +166,7 @@ void Game::events(){
             }else if(const auto* keyPressed = this->event->getIf<sf::Event::KeyPressed>()){
                 //turns of on escape change later
                 if(keyPressed->scancode == sf::Keyboard::Scan::Escape){
-                    pause();
+                    this->ismenuOpen = !this->ismenuOpen;
                 }
                 
             }
@@ -178,6 +177,9 @@ void Game::events(){
 void Game::update(){
     this->events();
 
+    while(this->menuOpen()){
+        this->menu();
+    }
     //player weapon and shooting
     this->player.move();
     this->player.preUpdate();
@@ -185,9 +187,6 @@ void Game::update(){
     updatePlayerBullets();
 
     updateWeapons(this->rooms[active_room]);
-    //std::cout<<this->player.getPosition().x<<" "<<this->player.getPosition().y<<"\n";
-    //std::cout<<this->player.hitbox.getPosition().x<<" "<<this->player.hitbox.getPosition().y<<"\n";
-    //std::cout<<this->player.collides<<"\n";
     updateBoosts(this->rooms[active_room]);
     
     updateLoot(this->rooms[active_room]);
@@ -497,46 +496,7 @@ void Game::updateLoot(Room* room){
         
     }   
 }
-void Game::pause(){
-    sf::Text pause(*(this->font));
-    pause.setString("PAUSE");
-    pause.setCharacterSize(60.f);
-    pause.setPosition({700, 100});
-    pause.setFillColor(sf::Color::Black);
 
-    sf::RectangleShape fog;
-    fog.setFillColor(sf::Color(0, 0, 0, 50));
-    fog.setSize({1600, 900});
-    
-    
-    bool p = true;
-    while(p && !isClosed){
-        while (this->event = this->window->pollEvent())
-        {
-            if (this->event->is<sf::Event::Closed>()){
-                this->isClosed = true;
-                
-            }else if(const auto* keyPressed = this->event->getIf<sf::Event::KeyPressed>()){
-                //turns of on escape change later
-                if(keyPressed->scancode == sf::Keyboard::Scan::Escape){
-                    p = false;
-                }
-                
-            }
-                
-            
-        }
-        
-        this->window->clear(sf::Color(120, 120, 120));
-        this->renderEntitys();
-
-        this->window->draw(fog);
-        this->window->draw(pause);
-        
-        
-        this->window->display();
-    }
-}
 bool Game::menuOpen(){
     return this->ismenuOpen;
 }
