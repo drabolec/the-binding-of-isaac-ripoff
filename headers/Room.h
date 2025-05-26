@@ -33,7 +33,7 @@ class Room {
         void render(sf::RenderTarget* target);
         void update();
         bool getIsActive(){ return isActive; };
-        bool getId(){ return id; };
+        int getId(){ return id; };
         int getX();
         int getY();
         std::vector<Item*>& getWeapons();
