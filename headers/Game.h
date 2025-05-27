@@ -145,13 +145,15 @@ Game::Game(){
     fog.setSize({100.f, 35.f});
     
     //temporary for testing
-    this->rooms.emplace_back(new Room(1,0,0,0)); //0   room making
-    this->rooms.emplace_back(new Room(1,0,1,1)); //1
-    this->rooms.emplace_back(new Room(1,1,0,2)); //2
-    this->rooms.emplace_back(new Room(1,1,1,3)); //3
+    this->gameRooms.emplace_back(new Room(1,0,0,0)); //0   room making
+    this->gameRooms.emplace_back(new Room(1,0,1,1)); //1
+    this->gameRooms.emplace_back(new Room(1,1,0,2)); //2
+    this->gameRooms.emplace_back(new Room(1,1,1,3)); //3
 
     //playtest rooms
     this->playtest.emplace_back(new Room(1,0,0,0)); 
+
+    this->rooms = gameRooms;
 
     
 }
@@ -543,14 +545,14 @@ void Game::menu(){
         fog.setPosition({play->getPosition().x-20.f, play->getPosition().y-5.f});
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter))
         {
-            this->gameRooms = this->rooms;
+            this->rooms = this->gameRooms;
             this->ismenuOpen = false; 
         }  
     }else if(this->selected == 2){
         fog.setPosition({option1->getPosition().x-20.f, option1->getPosition().y-5.f});
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter))
         {
-            this->gameRooms = this->playtest;
+            this->rooms = this->playtest;
             this->ismenuOpen = false;
         }  
     }else if(this->selected == 3){
