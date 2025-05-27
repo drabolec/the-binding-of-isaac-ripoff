@@ -32,7 +32,9 @@ private:
     Item* currentWeapon;
     Bullet* currentBullet;
     std::vector<Bullet*> playerBullets;
+    std::vector<Room*> gameRooms;
     std::vector<Room*> rooms;
+    std::vector<Room*> playtest;
     //Game font for now roboto
     sf::Font* font;
     //hp text
@@ -74,7 +76,6 @@ public:
     void updateWeapons(Room* room);
     void updateWalls(Room* room);
     void updateDoors(Room* room);
-    void pause();
     void renderEntitys();
     void menu();
     
@@ -128,7 +129,7 @@ Game::Game(){
     this->option1 = new sf::Text(*(this->font));
     this->option1->setPosition({50.f, 250.f});
     this->option1->setCharacterSize(20.f);
-    this->option1->setString("Option1");
+    this->option1->setString("Test");
 
     this->option2 = new sf::Text(*(this->font));
     this->option2->setPosition({50.f, 300.f});
@@ -148,6 +149,11 @@ Game::Game(){
     this->rooms.emplace_back(new Room(1,0,1,1)); //1
     this->rooms.emplace_back(new Room(1,1,0,2)); //2
     this->rooms.emplace_back(new Room(1,1,1,3)); //3
+
+    //playtest rooms
+    this->playtest.emplace_back(new Room(1,0,0,0)); 
+
+    
 }
 Game::~Game(){
     delete this->window;
@@ -167,7 +173,7 @@ void Game::events(){
             }else if(const auto* keyPressed = this->event->getIf<sf::Event::KeyPressed>()){
                 //turns of on escape change later
                 if(keyPressed->scancode == sf::Keyboard::Scan::Escape){
-                    pause();
+                    this->ismenuOpen = !this->ismenuOpen;
                 }
                 
             }
@@ -178,6 +184,9 @@ void Game::events(){
 void Game::update(){
     this->events();
 
+    while(this->menuOpen()){
+        this->menu();
+    }
     //player weapon and shooting
     this->player.move();
     this->player.preUpdate();
@@ -185,9 +194,6 @@ void Game::update(){
     updatePlayerBullets();
 
     updateWeapons(this->rooms[active_room]);
-    //std::cout<<this->player.getPosition().x<<" "<<this->player.getPosition().y<<"\n";
-    //std::cout<<this->player.hitbox.getPosition().x<<" "<<this->player.hitbox.getPosition().y<<"\n";
-    //std::cout<<this->player.collides<<"\n";
     updateBoosts(this->rooms[active_room]);
     
     updateLoot(this->rooms[active_room]);
@@ -497,46 +503,7 @@ void Game::updateLoot(Room* room){
         
     }   
 }
-void Game::pause(){
-    sf::Text pause(*(this->font));
-    pause.setString("PAUSE");
-    pause.setCharacterSize(60.f);
-    pause.setPosition({700, 100});
-    pause.setFillColor(sf::Color::Black);
 
-    sf::RectangleShape fog;
-    fog.setFillColor(sf::Color(0, 0, 0, 50));
-    fog.setSize({1600, 900});
-    
-    
-    bool p = true;
-    while(p && !isClosed){
-        while (this->event = this->window->pollEvent())
-        {
-            if (this->event->is<sf::Event::Closed>()){
-                this->isClosed = true;
-                
-            }else if(const auto* keyPressed = this->event->getIf<sf::Event::KeyPressed>()){
-                //turns of on escape change later
-                if(keyPressed->scancode == sf::Keyboard::Scan::Escape){
-                    p = false;
-                }
-                
-            }
-                
-            
-        }
-        
-        this->window->clear(sf::Color(120, 120, 120));
-        this->renderEntitys();
-
-        this->window->draw(fog);
-        this->window->draw(pause);
-        
-        
-        this->window->display();
-    }
-}
 bool Game::menuOpen(){
     return this->ismenuOpen;
 }
@@ -576,13 +543,15 @@ void Game::menu(){
         fog.setPosition({play->getPosition().x-20.f, play->getPosition().y-5.f});
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter))
         {
+            this->gameRooms = this->rooms;
             this->ismenuOpen = false; 
         }  
     }else if(this->selected == 2){
         fog.setPosition({option1->getPosition().x-20.f, option1->getPosition().y-5.f});
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter))
         {
-            //magic
+            this->gameRooms = this->playtest;
+            this->ismenuOpen = false;
         }  
     }else if(this->selected == 3){
         fog.setPosition({option2->getPosition().x-20.f, option2->getPosition().y-5.f});
