@@ -57,7 +57,11 @@ private:
     sf::Text* option2; 
     sf::Text* quit; 
     sf::RectangleShape fog;
+    sf::RectangleShape background;
     bool dootTP=true;
+    int currentMenu = 0;
+    std::string currentScreen;
+    std::string tempScreen;
     //temporary for testing
 
 public:
@@ -78,6 +82,8 @@ public:
     void updateDoors(Room* room);
     void renderEntitys();
     void menu();
+    void mainMenu();
+    void settingsMenu();
     
 
 };
@@ -119,7 +125,7 @@ Game::Game(){
     this->menuT = new sf::Text(*(this->font));
     this->menuT->setPosition({50.f, 60.f});
     this->menuT->setCharacterSize(60.f);
-    this->menuT->setString("Menu");
+    this->menuT->setString("The binding of not isaac");
 
     this->play = new sf::Text(*(this->font));
     this->play->setPosition({50.f, 200.f});
@@ -134,15 +140,18 @@ Game::Game(){
     this->option2 = new sf::Text(*(this->font));
     this->option2->setPosition({50.f, 300.f});
     this->option2->setCharacterSize(20.f);
-    this->option2->setString("Option2");
+    this->option2->setString("Settings");
 
     this->quit = new sf::Text(*(this->font));
     this->quit->setPosition({50.f, 350.f});
     this->quit->setCharacterSize(20.f);
     this->quit->setString("Quit");
 
-    fog.setFillColor(sf::Color(50, 50, 50, 30));
+    fog.setFillColor(sf::Color(0, 0, 0, 230));
     fog.setSize({100.f, 35.f});
+
+    this->background.setFillColor(sf::Color(0, 0, 0, 200));
+    this->background.setSize({1600.f, 900.f});
     
     //temporary for testing
     this->gameRooms.emplace_back(new Room(1,0,0,0)); //0   room making
@@ -154,6 +163,9 @@ Game::Game(){
     this->playtest.emplace_back(new Room(1,0,0,0)); 
 
     this->rooms = gameRooms;
+    
+
+    this->currentScreen = "Window";
 
     
 }
@@ -176,6 +188,7 @@ void Game::events(){
                 //turns of on escape change later
                 if(keyPressed->scancode == sf::Keyboard::Scan::Escape){
                     this->ismenuOpen = !this->ismenuOpen;
+                    this->currentMenu = 0;
                 }
                 
             }
@@ -186,9 +199,7 @@ void Game::events(){
 void Game::update(){
     this->events();
 
-    while(this->menuOpen()){
-        this->menu();
-    }
+    
     //player weapon and shooting
     this->player.move();
     this->player.preUpdate();
@@ -211,8 +222,11 @@ void Game::update(){
 }
 void Game::render(){
     this->window->clear(sf::Color(120, 120, 120));
-   
+    
     this->renderEntitys();
+    if(this->menuOpen()){
+        this->menu();
+    }
 
     this->window->display();
 
@@ -507,6 +521,7 @@ void Game::updateLoot(Room* room){
 }
 
 bool Game::menuOpen(){
+    
     return this->ismenuOpen;
 }
 void Game::menu(){
@@ -516,11 +531,38 @@ void Game::menu(){
             if (this->event->is<sf::Event::Closed>()){
                 this->ismenuOpen = false;
                 this->isClosed = true;
+                
             } 
         }
-    this->window->clear(sf::Color(150, 150, 150));
     
     
+        
+    
+    
+    //drawing
+    this->window->draw(background);
+    this->window->draw(fog);
+        this->window->draw(*menuT);
+    if(this->currentMenu == 0){
+        this->mainMenu();
+    }else if(this->currentMenu == 1){
+        this->settingsMenu();
+    }
+        
+    
+    
+
+}
+void Game::mainMenu(){
+    this->play->setString("Play");
+    this->option1->setString("Test");
+    this->option2->setString("Settings");
+    this->option2->setPosition({50.f, 300.f});
+    this->option2->setFillColor(sf::Color::White);
+    this->window->draw(*play);
+        this->window->draw(*option1);
+        this->window->draw(*option2);
+        this->window->draw(*quit);
     if(this->clock.getElapsedTime().asSeconds() > 0.1f){
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up))
         {
@@ -537,49 +579,126 @@ void Game::menu(){
             this->clock.restart();
             
         }
+        
             
     }
-     
-
     if(this->selected == 1){
         fog.setPosition({play->getPosition().x-20.f, play->getPosition().y-5.f});
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter))
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) && this->clock.getElapsedTime().asSeconds() > 0.3f)
         {
             this->rooms = this->gameRooms;
             this->ismenuOpen = false; 
+            this->clock.restart();
         }  
     }else if(this->selected == 2){
         fog.setPosition({option1->getPosition().x-20.f, option1->getPosition().y-5.f});
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter))
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) && this->clock.getElapsedTime().asSeconds() > 0.1f)
         {
             this->rooms = this->playtest;
             this->ismenuOpen = false;
+            this->clock.restart();
         }  
     }else if(this->selected == 3){
         fog.setPosition({option2->getPosition().x-20.f, option2->getPosition().y-5.f});
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter))
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) && this->clock.getElapsedTime().asSeconds() > 0.1f)
         {
-            //magic
+            this->currentMenu = 1;
+            this->selected = 1;
+            this->tempScreen = this->currentScreen;
+            this->clock.restart();
         }  
     }
     else if(this->selected == 4){
         fog.setPosition({quit->getPosition().x-20.f, quit->getPosition().y-5.f});
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter))
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) && this->clock.getElapsedTime().asSeconds() > 0.1f)
         {
             this->ismenuOpen = false;
             this->isClosed = true;
+            this->clock.restart();
         }  
     }
+     
 
-    //drawing
-    this->window->draw(*menuT);
-    this->window->draw(fog);
+    
+
+}
+void Game::settingsMenu(){
+    this->play->setString("Scrren");
+    this->option1->setString("Back");
+    
+    this->option2->setString(this->tempScreen);
+    this->option2->setPosition({200.f, 200.f});
+    
     this->window->draw(*play);
-    this->window->draw(*option1);
-    this->window->draw(*option2);
-    this->window->draw(*quit);
+        this->window->draw(*option1);
+        this->window->draw(*option2);
+    if(this->clock.getElapsedTime().asSeconds() > 0.1f){
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up))
+        {
+            if(this->selected>1){
+                this->selected --;
+            }
+            this->clock.restart();
+            
+        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down))
+        {
+            if(this->selected < 2){
+                this->selected ++;
+            }
+            this->clock.restart();
+            
+        }
+        
+            
+    }
+     if(this->selected == 1){
+        fog.setPosition({play->getPosition().x-20.f, play->getPosition().y-5.f});
+        if ((sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left)|| sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))&& this->clock.getElapsedTime().asSeconds() > 0.3f)
+        {
+            
+            if(this->tempScreen == "Window" ){
+                this->tempScreen = "Fullscreen";
+                this->option2->setFillColor(sf::Color::Red);
+                
+            }else if(this->tempScreen == "Fullscreen"){
+                this->tempScreen = "Window";
+                this->option2->setFillColor(sf::Color::Red);
+                
+            }
+            this->clock.restart();
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) && this->clock.getElapsedTime().asSeconds() > 0.2f)
+        {
+            if(this->tempScreen == "Fullscreen"){
+                delete this->window;
+                this->window = new sf::RenderWindow(sf::VideoMode::getFullscreenModes()[0], "The binding of isaac ultimate ripoff", sf::Style::None);
+                sf::View view(sf::FloatRect({0.f, 0.f}, {1600.f, 900.f}));
+    this->window->setView(view);
+            }else if(this->tempScreen == "Window"){
+                delete this->window;
+                this->window = new sf::RenderWindow(this->videoMode, "The binding of isaac ultimate ripoff", sf::Style::Default);
+                sf::View view(sf::FloatRect({0.f, 0.f}, {1600.f, 900.f}));
+    this->window->setView(view);
+            }
+            this->option2->setFillColor(sf::Color::White);
+            this->currentScreen = this->tempScreen;
+            this->clock.restart();
+            
+        }    
+    }else if(this->selected == 2){
+        fog.setPosition({option1->getPosition().x-20.f, option1->getPosition().y-5.f});
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) && this->clock.getElapsedTime().asSeconds() > 0.1f)
+        {
+            this->currentMenu = 0;
+            this->selected = 1;
+            this->clock.restart();
+            
+        }  
+    }
+     
 
-    this->window->display();
+   
+    
 }
 
 #endif
