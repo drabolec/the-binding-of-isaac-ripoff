@@ -692,11 +692,13 @@ void Game::settingsMenu(){
                 delete this->window;
                 this->window = new sf::RenderWindow(sf::VideoMode::getFullscreenModes()[0], "The binding of isaac ultimate ripoff", sf::Style::None);
                 sf::View view(sf::FloatRect({0.f, 0.f}, {1600.f, 900.f}));
+                this->window->setFramerateLimit(60);
     this->window->setView(view);
             }else if(this->tempScreen == "Window"){
                 delete this->window;
                 this->window = new sf::RenderWindow(this->videoMode, "The binding of isaac ultimate ripoff", sf::Style::Default);
                 sf::View view(sf::FloatRect({0.f, 0.f}, {1600.f, 900.f}));
+                this->window->setFramerateLimit(60);
     this->window->setView(view);
             }
             this->option2->setFillColor(sf::Color::White);
