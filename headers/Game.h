@@ -56,6 +56,7 @@ private:
     sf::Text* option1;
     sf::Text* option2; 
     sf::Text* quit; 
+    sf::Text* info;
     sf::RectangleShape fog;
     sf::RectangleShape background;
     bool dootTP=true;
@@ -84,6 +85,7 @@ public:
     void menu();
     void mainMenu();
     void settingsMenu();
+    void infoMenu();
     
 
 };
@@ -142,8 +144,14 @@ Game::Game(){
     this->option2->setCharacterSize(20.f);
     this->option2->setString("Settings");
 
+    this->info = new sf::Text(*(this->font));
+    this->info->setPosition({50.f, 350.f});
+    this->info->setCharacterSize(20.f);
+    this->info->setString("Info");
+
     this->quit = new sf::Text(*(this->font));
-    this->quit->setPosition({50.f, 350.f});
+
+    this->quit->setPosition({50.f, 400.f});
     this->quit->setCharacterSize(20.f);
     this->quit->setString("Quit");
 
@@ -547,6 +555,8 @@ void Game::menu(){
         this->mainMenu();
     }else if(this->currentMenu == 1){
         this->settingsMenu();
+    }else if(this->currentMenu == 2){
+        this->infoMenu();
     }
         
     
@@ -556,12 +566,14 @@ void Game::menu(){
 void Game::mainMenu(){
     this->play->setString("Play");
     this->option1->setString("Test");
+    this->option1->setPosition({50.f, 250.f});
     this->option2->setString("Settings");
     this->option2->setPosition({50.f, 300.f});
     this->option2->setFillColor(sf::Color::White);
     this->window->draw(*play);
         this->window->draw(*option1);
         this->window->draw(*option2);
+        this->window->draw(*info);
         this->window->draw(*quit);
     if(this->clock.getElapsedTime().asSeconds() > 0.1f){
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up))
@@ -573,7 +585,7 @@ void Game::mainMenu(){
             
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down))
         {
-            if(this->selected < 4){
+            if(this->selected < 5){
                 this->selected ++;
             }
             this->clock.restart();
@@ -607,8 +619,15 @@ void Game::mainMenu(){
             this->tempScreen = this->currentScreen;
             this->clock.restart();
         }  
+    }else if(this->selected == 4){
+        fog.setPosition({info->getPosition().x-20.f, info->getPosition().y-5.f});
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) && this->clock.getElapsedTime().asSeconds() > 0.1f)
+        {
+            this->currentMenu = 2;
+            this->clock.restart();
+        }  
     }
-    else if(this->selected == 4){
+    else if(this->selected == 5){
         fog.setPosition({quit->getPosition().x-20.f, quit->getPosition().y-5.f});
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) && this->clock.getElapsedTime().asSeconds() > 0.1f)
         {
@@ -700,5 +719,26 @@ void Game::settingsMenu(){
    
     
 }
-
+void Game::infoMenu(){
+    this->play->setString("MOVEMENT\n\nW - move forevard\nS = move backward\nA - move left\nR - move right\nE - use\nArrow Up - shoot up\nArrow Down - shoot down\nArrow Left - shoot left\nArrow Right - shoot right\n");
+    this->option1->setString("Back");
+    this->play->setScale({1.2f, 1.2f});
+    
+    this->option1->setPosition({50.f, 600.f});
+    
+    this->window->draw(*play);
+        this->window->draw(*option1);
+        
+  
+    
+        fog.setPosition({option1->getPosition().x-20.f, option1->getPosition().y-5.f});
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter)&& this->clock.getElapsedTime().asSeconds() > 0.3f)
+        {
+            
+            this->currentMenu = 0;
+            this->clock.restart();
+        }
+        
+    
+}
 #endif
