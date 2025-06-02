@@ -81,6 +81,7 @@ public:
     void updateWeapons(Room* room);
     void updateWalls(Room* room);
     void updateDoors(Room* room);
+    void updateEnemies(Room* room);
     void renderEntitys();
     void menu();
     void mainMenu();
@@ -220,7 +221,7 @@ void Game::update(){
     updateLoot(this->rooms[active_room]);
     updateDoors(this->rooms[active_room]);
     updateWalls(this->rooms[active_room]);
-    
+    updateEnemies(this->rooms[active_room]);
     this->player.update();
     this->currentWeapon->setCurrentPlayerBullets(this->playerBullets);
     this->currentWeapon->setPlayerPos({this->player.getPosition().x+45.f,this->player.getPosition().y+45.f});
@@ -252,7 +253,7 @@ void Game::renderEntitys(){
     for(Bullet* bullet: this->playerBullets){
         bullet->render(this->window);
     }
-
+    
     //rendering player
     this->player.render(this->window);
     
@@ -298,6 +299,32 @@ void Game::updateBoosts(Room* room) {
         }
     }
 }
+
+
+void Game::updateEnemies(Room* room) {
+    auto& enemies = room->getEnemies();
+    auto j = enemies.begin();
+    for(auto& enemy : enemies){
+        for(auto i = playerBullets.begin(); i != playerBullets.end();){
+            if(isColision((*i),enemy)){
+                enemy->setHp(enemy->getHp()-(*i)->dmg);
+                playerBullets.erase(i);
+            }else{
+                i++;
+            }
+            
+        };
+        if(enemy->getHp()<=0){
+            enemies.erase(j);
+        }else{
+            j++;
+        }
+        enemy->move(this->player.getPosition());
+        
+    }
+}
+
+
 
 void Game::updateWalls(Room* room){
     auto& walls = room->getWalls();

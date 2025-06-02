@@ -24,6 +24,8 @@ RoundBullet::RoundBullet(){
     this->shape.setTexture(texture);
     this->shape.setTextureRect(*intrect);
 
+    this->dmg = 10.f;
+
     this->speed = 10.f;
     this->range = 300.f;
     this->hitbox.setSize({30.f, 30.f});
