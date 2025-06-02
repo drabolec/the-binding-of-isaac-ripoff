@@ -303,18 +303,24 @@ void Game::updateBoosts(Room* room) {
 
 void Game::updateEnemies(Room* room) {
     auto& enemies = room->getEnemies();
-
+    auto j = enemies.begin();
     for(auto& enemy : enemies){
         for(auto i = playerBullets.begin(); i != playerBullets.end();){
             if(isColision((*i),enemy)){
                 enemy->setHp(enemy->getHp()-(*i)->dmg);
-            };
-            i++;
+                playerBullets.erase(i);
+            }else{
+                i++;
+            }
+            
         };
         if(enemy->getHp()<=0){
-            enemy->~Enemy();
+            enemies.erase(j);
+        }else{
+            j++;
         }
         enemy->move(this->player.getPosition());
+        
     }
 }
 
