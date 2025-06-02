@@ -14,7 +14,10 @@ int main()
     Game game;
     while (game.running())
     {
-        game.update();
+        if(!game.menuOpen()){
+            game.update();
+        }
+        
 
         game.render();
        
