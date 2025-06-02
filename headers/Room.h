@@ -17,7 +17,7 @@
 #include "Bullet.h"
 #include "RoundBullet.h"
 #include "FastBullet.h"
-
+#include "Dumb.h"
 #include "FirstWeapon.h"
 #include "ThreeBulletWeapon.h"
 #include "MiniGunWeapon.h"
@@ -41,11 +41,12 @@ class Room {
         std::vector<Ammo*>& getLoot();
         std::vector<std::unique_ptr<Wall>>& getWalls();
         std::vector<std::unique_ptr<Door>>& getDoors();
+        std::vector<Enemy*>& getEnemies();
     private:
         bool isActive=true;
         int type_id;
         sf::RectangleShape shape;
-        std::vector<std::unique_ptr<Enemy>> enemies;
+        std::vector<Enemy*> enemies;
         std::vector<std::unique_ptr<Door>> doors;
         std::vector<std::unique_ptr<Wall>> walls;
         std::vector<Item*> weapons;
@@ -61,9 +62,11 @@ class Room {
         int Room::getY(){return y;};
 std::vector<Item*>& Room::getWeapons() { return weapons; };
 std::vector<Ammo*>& Room::getLoot() { return loot; };
+std::vector<Enemy*>& Room::getEnemies() { return enemies; };
 std::vector<std::unique_ptr<Boost>>& Room::getBoosts() { return this->boosts; };
 std::vector<std::unique_ptr<Wall>>& Room::getWalls() { return walls; };
 std::vector<std::unique_ptr<Door>>& Room::getDoors() { return doors; };
+
 Room::Room(){
     this->shape.setFillColor(sf::Color::White);
     this->shape.setSize(sf::Vector2f(200.f, 200.f));
@@ -102,6 +105,12 @@ Room::Room(int a,int b, int c,int d){
         this->weapons.at(1)->updatePos({500.f, 600.f});
         this->weapons.emplace_back(new MiniGunWeapon);
         this->weapons.at(2)->updatePos({500.f, 700.f}); 
+        sf::Vector2f c;
+        c.x=1200.f;
+        c.y=500.f;
+        this->enemies.emplace_back(new Dumb(c));
+        c.y=200.f;
+        this->enemies.emplace_back(new Dumb(c));
     }
     if(type_id==2){
         this->doors.emplace_back(new Door(1));

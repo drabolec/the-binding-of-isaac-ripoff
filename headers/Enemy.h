@@ -13,12 +13,17 @@ class Enemy:public DmgEntity{
     public:
         Enemy();
         virtual ~Enemy();
-        void move();
-        void update(sf::RenderTarget* target);
-        void render(sf::RenderTarget* target);
-        bool getIsDead();
-        void setPosition(sf::Vector2f pos);
-        sf::Vector2f getPosition();
+        void move(sf::Vector2f pos);
+        virtual void update(sf::RenderTarget* target);
+        virtual void render(sf::RenderTarget* target);
+        virtual bool getIsDead();
+        virtual void setColor(sf::Color color);
+        virtual void setHitboxSize(sf::Vector2f size);
+        virtual void setShapeSize(sf::Vector2f size);
+        virtual void setPosition(sf::Vector2f pos);
+        virtual void setPosition(float a,float b);
+        virtual sf::Vector2f getPosition();
+        virtual sf::Vector2f getHitbox();
     private:    
         int hp;
         bool isDead;
@@ -37,13 +42,35 @@ Enemy::~Enemy(){
 };
 void Enemy::setPosition(sf::Vector2f pos){
     this->shape.setPosition(pos);
+    this->hitbox.setPosition(pos);//for now
 }
+void Enemy::setHitboxSize(sf::Vector2f size){
+    this->hitbox.setSize(size);
+}
+void Enemy::setShapeSize(sf::Vector2f size){
+    this->shape.setSize(size);
+}
+void Enemy::setColor(sf::Color color){
+    this->shape.setFillColor(color);
+}
+
+void Enemy::setPosition(float a,float b){
+    sf::Vector2f c;
+    c.x=a;
+    c.y=b;
+    this->shape.setPosition(c);
+    this->hitbox.setPosition(c);//for now
+}
+
+
 sf::Vector2f Enemy::getPosition(){
     return this->shape.getPosition();
 }
+sf::Vector2f Enemy::getHitbox(){
+    return this->hitbox.getPosition();
+}
 
-
-void Enemy::move(){ //temporary
+void Enemy::move(sf::Vector2f pos){ //temporary
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::I))
     {
         this->shape.move({0.f, -this->movespeed});
@@ -64,10 +91,10 @@ void Enemy::move(){ //temporary
 };
 
 void Enemy::update(sf::RenderTarget* target){
-    this->move();
-    if(this->hp<=0){
-        this->isDead=true;
-    }
+    //this->move(sf::Vector2f pos);
+    //if(this->hp<=0){
+    //    this->isDead=true;
+    //}
 };
 void Enemy::render(sf::RenderTarget* target){
     target->draw(this->shape);
