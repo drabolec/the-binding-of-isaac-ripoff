@@ -13,7 +13,7 @@ class Enemy:public DmgEntity{
     public:
         Enemy();
         virtual ~Enemy();
-        void move(sf::Vector2f pos);
+        virtual void move(sf::Vector2f pos);
         virtual void update(sf::RenderTarget* target);
         virtual void render(sf::RenderTarget* target);
         virtual bool getIsDead();
