@@ -14,7 +14,7 @@ int main()
     Game game;
     while (game.running())
     {
-        if(!game.menuOpen()){
+        if(!game.menuOpen() && !game.getEnd()){
             game.update();
         }
         
