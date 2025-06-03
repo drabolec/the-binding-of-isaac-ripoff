@@ -12,3 +12,5 @@ sfml-window-d-3.dll
 SFML-3.0.0
 sfml-app.exe
 main.o
+*.exe
+*.csv
