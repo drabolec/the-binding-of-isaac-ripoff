@@ -384,6 +384,7 @@ void Game::updateDoors(Room* room){
                     /* changing to another room */
                 }
                 else{
+                    //this->dootTP=true;
                     std::cout<<"there is no such room in X axis on the right\n";
                 }
             }
@@ -409,6 +410,7 @@ void Game::updateDoors(Room* room){
                     /* changing to another room */
                 }
                 else{
+                    //this->dootTP=true;
                     std::cout<<"there is no such room in X axis on the right\n";
                 }
             }
@@ -432,6 +434,7 @@ void Game::updateDoors(Room* room){
                     /* changing to another room */
                 }
                 else{
+                    //this->dootTP=true;
                     std::cout<<"there is no such room in Y axis on the top\n";
                 }
             }
@@ -455,6 +458,7 @@ void Game::updateDoors(Room* room){
                     /* changing to another room */
                 }
                 else{
+                    //this->dootTP=true;
                     std::cout<<"there is no such room in Y axis on the Bottom\n";
                 }
             }
