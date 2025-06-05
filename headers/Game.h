@@ -54,7 +54,7 @@ private:
     int y=0;
     int active_room=0;
     //menu stuf
-    bool ismenuOpen = true;
+    bool ismenuOpen;
     int selected = 1;
     sf::Clock clock;
     sf::Text* menuT;
@@ -63,6 +63,7 @@ private:
     sf::Text* option2; 
     sf::Text* quit; 
     sf::Text* info;
+    sf::Text* nickname;
     sf::RectangleShape fog;
     sf::RectangleShape background;
     bool dootTP=true;
@@ -73,6 +74,8 @@ private:
     int scoreSeconds;
     sf::Text* timer;
     bool isEnd;
+    bool isLose;
+    std::string nickString;
     //temporary for testing
 
 public:
@@ -102,10 +105,98 @@ public:
     bool getEnd();
     template <typename T>
     void writeToFile(T input);
+    void breakLine();
+    void comma();
+    bool getLose();
+    void lose();
+    void restart();
     
 
 };
+void Game::restart(){
+    this->ismenuOpen = true;
+    this->isLose = false;
+    this->isEnd = false;
+    this->scoreFrames = 0;
+    this->scoreSeconds = 0;
+
+    //seting defaul player parameter
+    this->player.setPosition({100.f, 100.f});
+    this->player.setFont(this->font);
+    this->player.initHp();
+
+    this->currentBullet = new RoundBullet();
+
+    //setting defaul weapon
+    this->currentWeapon = new FirstWeapon();
+    this->currentWeapon->setCurrentBullet(this->currentBullet);
+//menu stuff
+    this->menuT = new sf::Text(*(this->font));
+    this->menuT->setPosition({50.f, 60.f});
+    this->menuT->setCharacterSize(60.f);
+    this->menuT->setString("The binding of not isaac");
+
+    this->play = new sf::Text(*(this->font));
+    this->play->setPosition({50.f, 200.f});
+    this->play->setCharacterSize(20.f);
+    this->play->setString("Play");
+
+    this->option1 = new sf::Text(*(this->font));
+    this->option1->setPosition({50.f, 250.f});
+    this->option1->setCharacterSize(20.f);
+    this->option1->setString("Test");
+
+    this->option2 = new sf::Text(*(this->font));
+    this->option2->setPosition({50.f, 300.f});
+    this->option2->setCharacterSize(20.f);
+    this->option2->setString("Settings");
+
+    this->info = new sf::Text(*(this->font));
+    this->info->setPosition({50.f, 350.f});
+    this->info->setCharacterSize(20.f);
+    this->info->setString("Info");
+
+    this->nickname = new sf::Text(*(this->font));
+    this->nickname->setPosition({50.f, 300.f});
+    this->nickname->setCharacterSize(60.f);
+    this->nickname->setString("");
+
+    this->quit = new sf::Text(*(this->font));
+
+    this->quit->setPosition({50.f, 400.f});
+    this->quit->setCharacterSize(20.f);
+    this->quit->setString("Quit");
+
+    this->timer = new sf::Text(*(this->font));
+    this->timer->setPosition({1500.f, 20.f});
+    this->timer->setCharacterSize(60.f);
+    this->timer->setString(std::to_string(this->scoreSeconds));
+
+    fog.setFillColor(sf::Color(0, 0, 0, 230));
+    fog.setSize({100.f, 35.f});
+
+    this->background.setFillColor(sf::Color(0, 0, 0, 200));
+    this->background.setSize({1600.f, 900.f});
+
+   
+    
+    //temporary for testing
+    this->gameRooms.clear();
+    this->gameRooms.emplace_back(new Room(1,0,0,0)); //0   room making
+    this->gameRooms.emplace_back(new Room(1,0,1,1)); //1
+    this->gameRooms.emplace_back(new Room(1,1,0,2)); //2
+    this->gameRooms.emplace_back(new Room(1,1,1,3)); //3
+
+    //playtest rooms
+    this->playtest.emplace_back(new Room(1,0,0,0)); 
+
+    this->rooms = gameRooms;
+    this->active_room = 0;
+    this->clock.restart();//bo inaczej sie enter sam wciska lol
+}
 void Game::init(){
+    this->ismenuOpen = true;
+    this->isLose = false;
     this->isEnd = false;
     this->scoreFrames = 0;
     this->scoreSeconds = 0;
@@ -168,6 +259,11 @@ void Game::init(){
     this->info->setCharacterSize(20.f);
     this->info->setString("Info");
 
+    this->nickname = new sf::Text(*(this->font));
+    this->nickname->setPosition({50.f, 300.f});
+    this->nickname->setCharacterSize(60.f);
+    this->nickname->setString("");
+
     this->quit = new sf::Text(*(this->font));
 
     this->quit->setPosition({50.f, 400.f});
@@ -207,7 +303,9 @@ Game::Game(){
 Game::~Game(){
     delete this->window;
 }
-
+bool Game::getLose(){
+    return this->isLose;
+}
 bool Game::running(){
     return this->window->isOpen();
 }
@@ -221,18 +319,32 @@ void Game::events(){
                 this->window->close();
             }else if(const auto* keyPressed = this->event->getIf<sf::Event::KeyPressed>()){
                 //turns of on escape change later
-                if(keyPressed->scancode == sf::Keyboard::Scan::Escape){
+                if(keyPressed->scancode == sf::Keyboard::Scan::Escape && !this->getEnd()&& !this->getLose()){
                     this->ismenuOpen = !this->ismenuOpen;
                     this->currentMenu = 0;
                     
                 }
                 
-            }if(const auto* keyPressed = this->event->getIf<sf::Event::KeyPressed>()){
+            }
+            if(const auto* keyPressed = this->event->getIf<sf::Event::KeyPressed>()){
+                //turns of on escape change later
+                if(keyPressed->scancode == sf::Keyboard::Scan::O){
+                    this->isLose = true;
+                }
+                
+            }
+            if(const auto* keyPressed = this->event->getIf<sf::Event::KeyPressed>()){
                 //turns of on escape change later
                 if(keyPressed->scancode == sf::Keyboard::Scan::P){
                     this->isEnd = true;
                 }
                 
+            }if (this->event->getIf<sf::Event::TextEntered>()&&this->getEnd())
+            {
+            // Only handle ASCII -- it's up to you if you want to handle other encodings
+            
+                this->nickname->setString(this->nickname->getString()+static_cast<char>(event->getIf<sf::Event::TextEntered>()->unicode));
+                this->nickString += static_cast<char>(event->getIf<sf::Event::TextEntered>()->unicode);
             }
                 
             
@@ -277,6 +389,13 @@ void Game::render(){
     }
     if(this->getEnd()){
         this->end();
+    }
+    if(this->getLose()){
+        this->lose();
+    }
+    //zabijanko gracza
+    if(this->player.getHp() <= 0){
+        this->isLose = true;
     }
     this->window->display();
 
@@ -542,7 +661,7 @@ void Game::updateWeapons(Room* room){
     /*auto& weapons = room->getWeapons();
     for(auto i = weapons.begin(); i != weapons.end();){
         //checking for colision and if player pressed E 
-        if(isColision(i->get(), &player) && player.pressedE==true){
+        if(isColision(i->getLose();(), &player) && player.pressedE==true){
             //giving a player weapon on the ground and droping current weapon 
             std::unique_ptr<Item> droped = std::move(currentWeapon);
             droped->updatePos({this->player.getPosition().x+20.f, this->player.getPosition().y+80.f});
@@ -550,7 +669,7 @@ void Game::updateWeapons(Room* room){
             *i = std::move(droped);
             //setting current bullets for new weapon
             
-            this->currentWeapon->setCurrentBullet(this->currentBullet.get());
+            this->currentWeapon->setCurrentBullet(this->currentBullet.getLose();());
             this->pickupWeapon->play();
             break;
         }
@@ -608,14 +727,7 @@ bool Game::menuOpen(){
 }
 void Game::menu(){
 
-    while (this->event = this->window->pollEvent())
-        {
-            if (this->event->is<sf::Event::Closed>()){
-                this->ismenuOpen = false;
-                this->isClosed = true;
-                
-            } 
-        }
+    this->events();
     
     
         
@@ -819,15 +931,45 @@ void Game::infoMenu(){
     
 }
 void Game::end(){
+    this->events();
+    this->menuT->setString("You Win");
+    this->timer->setPosition({50.f, 150.f});
+    this->timer->setString("Your time: " + this->timer->getString()+ "\n\nEnter your nickname: ");
+    this->timer->setCharacterSize(45);
+    this->nickname->setCharacterSize(45);
+    
     this->window->draw(this->background);
+    this->window->draw(*(this->nickname));
+    this->window->draw(*(this->menuT));
+    this->window->draw(*(this->timer));
     //interfejs do wpisywania nicku i wyświetlanie czasu po enterze sie resetuje gra
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter))
         {
             writeToFile(this->scoreSeconds);
-            this->init();
+            comma();
+            writeToFile(this->nickString);
+            breakLine();
+            this->restart();
+
+        }
+}
+void Game::lose(){
+    this->events();
+    this->menuT->setString("You lose");
+    this->timer->setPosition({50.f, 150.f});
+    this->timer->setString("Your time: " + this->timer->getString());
+    this->timer->setCharacterSize(45);
+    this->nickname->setCharacterSize(45);
+    
+    
+    this->window->draw(this->background);
+    this->window->draw(*(this->menuT));
+    this->window->draw(*(this->timer));
+    //interfejs do wpisywania nicku i wyświetlanie czasu po enterze sie resetuje gra
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter))
+        {
+            this->restart();
             
-            this->ismenuOpen = !this->ismenuOpen;
-            this->currentMenu = 0;
         }
 }
 bool Game::getEnd(){
@@ -836,7 +978,17 @@ bool Game::getEnd(){
 template <typename T>
 void Game::writeToFile(T input){
     std::fstream file("./score.csv", std::ios::app);
-    file << input << std::endl;
+    file << input;
+    file.close();
+}
+void Game::breakLine(){
+    std::fstream file("./score.csv", std::ios::app);
+    file << std::endl;
+    file.close();
+}
+void Game::comma(){
+    std::fstream file("./score.csv", std::ios::app);
+    file << ","<<std::endl;
     file.close();
 }
 
