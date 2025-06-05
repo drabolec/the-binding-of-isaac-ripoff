@@ -18,6 +18,7 @@ Dumb::Dumb(){};
 
 Dumb::Dumb(sf::Vector2f pos){
     this->setHp(20);
+    this->setDmg(5.f);
     this->setColor(sf::Color::Green);
     this->setHitboxSize({40.f, 40.f});
     this->setShapeSize({40.f, 40.f});

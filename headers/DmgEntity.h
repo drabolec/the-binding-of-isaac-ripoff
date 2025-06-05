@@ -8,8 +8,12 @@ public:
     void setHp(int hp);
     int getHp();
     void changeHp(int hp);
+    void setDmg(int dmg);
+    int getDmg();
+
 private:
     int hp;
+    int dmg;
 };
 
 void DmgEntity::setHp(int hp){
@@ -21,5 +25,17 @@ int DmgEntity::getHp(){
 void DmgEntity::changeHp(int hp){
     this->hp += hp;
 }
+
+void DmgEntity::setDmg(int dmg){
+    this->dmg = dmg;
+}
+int DmgEntity::getDmg(){
+    return this->dmg;
+}
+
+
+
+
+
 
 #endif

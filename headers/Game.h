@@ -52,7 +52,7 @@ private:
     bool isClosed = false;
     int x=0;
     int y=0;
-    int active_room=0;
+    int active_room=12;
     //menu stuf
     bool ismenuOpen = true;
     int selected = 1;
@@ -190,6 +190,28 @@ void Game::init(){
     this->gameRooms.emplace_back(new Room(1,0,1,1)); //1
     this->gameRooms.emplace_back(new Room(1,1,0,2)); //2
     this->gameRooms.emplace_back(new Room(1,1,1,3)); //3
+    this->gameRooms.emplace_back(new Room(1,0,2,4)); //4
+    this->gameRooms.emplace_back(new Room(1,0,3,5)); //5
+    this->gameRooms.emplace_back(new Room(1,0,4,6)); //6
+    this->gameRooms.emplace_back(new Room(3,1,2,7)); //7
+    this->gameRooms.emplace_back(new Room(1,1,3,8)); //8
+    this->gameRooms.emplace_back(new Room(1,1,4,9)); //9
+    this->gameRooms.emplace_back(new Room(1,2,0,10)); //10
+    this->gameRooms.emplace_back(new Room(4,2,1,11)); //11
+    this->gameRooms.emplace_back(new Room(1,2,2,12)); //12
+    this->gameRooms.emplace_back(new Room(4,2,3,13)); //13
+    this->gameRooms.emplace_back(new Room(1,2,4,14)); //14
+    this->gameRooms.emplace_back(new Room(1,3,0,15)); //15
+    this->gameRooms.emplace_back(new Room(1,3,1,16)); //16
+    this->gameRooms.emplace_back(new Room(3,3,2,17)); //17
+    this->gameRooms.emplace_back(new Room(1,3,3,18)); //18
+    this->gameRooms.emplace_back(new Room(1,3,4,19)); //19
+    this->gameRooms.emplace_back(new Room(1,4,0,20)); //20
+    this->gameRooms.emplace_back(new Room(1,4,1,21)); //21
+    this->gameRooms.emplace_back(new Room(1,4,2,22)); //22
+    this->gameRooms.emplace_back(new Room(1,4,3,23)); //23
+    this->gameRooms.emplace_back(new Room(1,4,4,24)); //24
+
 
     //playtest rooms
     this->playtest.emplace_back(new Room(1,0,0,0)); 
@@ -355,21 +377,25 @@ void Game::updateEnemies(Room* room) {
     auto j = enemies.begin();
     for(auto& enemy : enemies){
         for(auto i = playerBullets.begin(); i != playerBullets.end();){
-            if(isColision((*i),enemy)){
+            if(isColision((*i),enemy)&&enemy->get_can_be_hit()){
                 enemy->setHp(enemy->getHp()-(*i)->dmg);
                 playerBullets.erase(i);
             }else{
                 i++;
             }
-            
         };
         if(enemy->getHp()<=0){
             enemies.erase(j);
         }else{
             j++;
         }
-        enemy->move(this->player.getPosition());
-        
+        if(isColision(&player,enemy)&&this->player.getTargetable()){
+            std::cout<<player.getHp()<<std::endl;
+            this->player.changeHp(-enemy->getDmg());
+            std::cout<<player.getHp()<<std::endl;
+            this->player.setTargetable(false);
+        };
+        enemy->move(sf::Vector2f(this->player.getPosition().x+(this->player.getSize().x/2),this->player.getPosition().y+(this->player.getSize().y/2)));
     }
 }
 

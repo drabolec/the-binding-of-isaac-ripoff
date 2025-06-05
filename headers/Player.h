@@ -14,6 +14,7 @@ class Player: public DmgEntity{
     const int clickSpeed = 10;
     //frame counter for E button might later be used for animations
     int counter;
+    int counterTargetability=0;
     //movespeed
     float movespeed;
     //font
@@ -37,6 +38,7 @@ class Player: public DmgEntity{
     //clock for animation 
     sf::Clock clock;
     sf::Vector2f originalPos;
+    bool targetable = true;
 public:
     Player();
     virtual ~Player();
@@ -48,6 +50,8 @@ void setCollidesLeft(bool a);
     void setHitWallNS(int a);
     void setHitWallWE(int a);
     void setPosition(sf::Vector2f pos);
+    void setTargetable(bool a);
+    bool getTargetable();
     sf::Vector2f getPosition();
     sf::Vector2f getSize();
     void setFont(sf::Font* font);
@@ -91,8 +95,12 @@ void Player::setCollidesRight(bool a){
     this->collidesRight=a;
 }
 
-
-
+void Player::setTargetable(bool a){
+    this->targetable=a;
+}
+bool Player::getTargetable(){
+    return this->targetable;
+}
 
 Player::state Player::getState(){
     return st;
@@ -215,7 +223,13 @@ void Player::update(){
     if(counter <60){
         this->counter ++;
     }
-    
+    if(counterTargetability<60&&targetable==false){
+        this->counterTargetability ++;
+    }
+    else{
+        this->targetable=true;
+        this->counterTargetability=0;
+    }
     //setting state as idle in case of no moving
     
     
