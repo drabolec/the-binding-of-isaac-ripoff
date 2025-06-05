@@ -339,13 +339,30 @@ void Game::events(){
                     this->isEnd = true;
                 }
                 
-            }if (this->event->getIf<sf::Event::TextEntered>()&&this->getEnd())
-            {
-            // Only handle ASCII -- it's up to you if you want to handle other encodings
-            
-                this->nickname->setString(this->nickname->getString()+static_cast<char>(event->getIf<sf::Event::TextEntered>()->unicode));
-                this->nickString += static_cast<char>(event->getIf<sf::Event::TextEntered>()->unicode);
+
             }
+            if(this->getEnd()){
+                if(const auto* keyPressed = this->event->getIf<sf::Event::KeyPressed>() ){
+                //if statements family reunion
+                
+                    if(keyPressed->scancode == sf::Keyboard::Scan::Backspace){
+                        this->nickString = this->nickString.substr(0, this->nickString.size()-1);
+                        this->nickname->setString(this->nickString);
+                    }
+
+                }
+                else if (this->event->getIf<sf::Event::TextEntered>())
+                {
+                    int temp = event->getIf<sf::Event::TextEntered>()->unicode;
+                    if((temp >= 32 && temp <=126) || (temp>=192&&temp<=255) ){
+                        this->nickname->setString(this->nickname->getString()+static_cast<char>(event->getIf<sf::Event::TextEntered>()->unicode));
+                        this->nickString += static_cast<char>(event->getIf<sf::Event::TextEntered>()->unicode);
+                    }
+                
+                }
+            
+            }
+            
                 
             
         }
