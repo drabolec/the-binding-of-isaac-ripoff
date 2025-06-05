@@ -7,6 +7,8 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <sstream>
+#include <map>
 
 
 #include "Player.h"
@@ -76,6 +78,9 @@ private:
     bool isEnd;
     bool isLose;
     std::string nickString;
+    std::string highScore;
+    sf::Text* highScoreText;
+    sf::Text* highScoreTime;
     //temporary for testing
 
 public:
@@ -110,6 +115,7 @@ public:
     bool getLose();
     void lose();
     void restart();
+    void readFromFile();
     
 
 };
@@ -119,107 +125,19 @@ void Game::restart(){
     this->isEnd = false;
     this->scoreFrames = 0;
     this->scoreSeconds = 0;
-
-    //seting defaul player parameter
-    this->player.setPosition({100.f, 100.f});
-    this->player.setFont(this->font);
-    this->player.initHp();
-
-    this->currentBullet = new RoundBullet();
-
-    //setting defaul weapon
-    this->currentWeapon = new FirstWeapon();
-    this->currentWeapon->setCurrentBullet(this->currentBullet);
-//menu stuff
-    this->menuT = new sf::Text(*(this->font));
-    this->menuT->setPosition({50.f, 60.f});
-    this->menuT->setCharacterSize(60.f);
-    this->menuT->setString("The binding of not isaac");
-
-    this->play = new sf::Text(*(this->font));
-    this->play->setPosition({50.f, 200.f});
-    this->play->setCharacterSize(20.f);
-    this->play->setString("Play");
-
-    this->option1 = new sf::Text(*(this->font));
-    this->option1->setPosition({50.f, 250.f});
-    this->option1->setCharacterSize(20.f);
-    this->option1->setString("Test");
-
-    this->option2 = new sf::Text(*(this->font));
-    this->option2->setPosition({50.f, 300.f});
-    this->option2->setCharacterSize(20.f);
-    this->option2->setString("Settings");
-
-    this->info = new sf::Text(*(this->font));
-    this->info->setPosition({50.f, 350.f});
-    this->info->setCharacterSize(20.f);
-    this->info->setString("Info");
-
-    this->nickname = new sf::Text(*(this->font));
-    this->nickname->setPosition({50.f, 300.f});
-    this->nickname->setCharacterSize(60.f);
-    this->nickname->setString("");
-
-    this->quit = new sf::Text(*(this->font));
-
-    this->quit->setPosition({50.f, 400.f});
-    this->quit->setCharacterSize(20.f);
-    this->quit->setString("Quit");
-
-    this->timer = new sf::Text(*(this->font));
-    this->timer->setPosition({1500.f, 20.f});
-    this->timer->setCharacterSize(60.f);
-    this->timer->setString(std::to_string(this->scoreSeconds));
-
-    fog.setFillColor(sf::Color(0, 0, 0, 230));
-    fog.setSize({100.f, 35.f});
-
-    this->background.setFillColor(sf::Color(0, 0, 0, 200));
-    this->background.setSize({1600.f, 900.f});
-
-   
-    
-    //temporary for testing
-    this->gameRooms.clear();
-    this->gameRooms.emplace_back(new Room(1,0,0,0)); //0   room making
-    this->gameRooms.emplace_back(new Room(1,0,1,1)); //1
-    this->gameRooms.emplace_back(new Room(1,1,0,2)); //2
-    this->gameRooms.emplace_back(new Room(1,1,1,3)); //3
-
-    //playtest rooms
-    this->playtest.emplace_back(new Room(1,0,0,0)); 
-
-    this->rooms = gameRooms;
-    this->active_room = 0;
-    this->clock.restart();//bo inaczej sie enter sam wciska lol
-}
-void Game::init(){
-    this->ismenuOpen = true;
-    this->isLose = false;
-    this->isEnd = false;
-    this->scoreFrames = 0;
-    this->scoreSeconds = 0;
-    //setting font
-    this->font = new sf::Font("./Fonts/Roboto-Regular.ttf");
     //setting text font
     this->hpText = new sf::Text(*font); 
     this->hpText->setPosition({20.f, 20.f});
     this->hpText->setCharacterSize(20.f);
     //seting game window parameters
-    this->videoMode.size = {800, 450};
-    //makes window proportional
-    this->window = new sf::RenderWindow(this->videoMode, "The binding of isaac ultimate ripoff");
-    sf::View view(sf::FloatRect({0.f, 0.f}, {1600.f, 900.f}));
-    this->window->setView(view);
+    
 
     //seting defaul player parameter
     this->player.setPosition({100.f, 100.f});
     this->player.setFont(this->font);
     this->player.initHp();
 
-    //seting frame limit
-    this->window->setFramerateLimit(60);
+
     
     //seting default bullets
     this->currentBullet = new RoundBullet();
@@ -227,10 +145,7 @@ void Game::init(){
     //setting defaul weapon
     this->currentWeapon = new FirstWeapon();
     this->currentWeapon->setCurrentBullet(this->currentBullet);
-    //sound
-    this->buffer = new sf::SoundBuffer("./Sound/pickupweapon.wav");
-    this->pickupWeapon = new sf::Sound(*(this->buffer));
-    this->pickupWeapon->setVolume(2.f);
+
 
 
     //menu stuff
@@ -265,10 +180,17 @@ void Game::init(){
     this->nickname->setString("");
 
     this->quit = new sf::Text(*(this->font));
-
     this->quit->setPosition({50.f, 400.f});
     this->quit->setCharacterSize(20.f);
     this->quit->setString("Quit");
+
+    this->highScoreText = new sf::Text(*(this->font));
+    this->highScoreText->setPosition({600.f, 200.f});
+    this->highScoreText->setCharacterSize(20.f);
+
+    this->highScoreTime = new sf::Text(*(this->font));
+    this->highScoreTime->setPosition({900.f, 250.f});
+    this->highScoreTime->setCharacterSize(20.f);
 
     this->timer = new sf::Text(*(this->font));
     this->timer->setPosition({1500.f, 20.f});
@@ -282,6 +204,7 @@ void Game::init(){
     this->background.setSize({1600.f, 900.f});
     
     //temporary for testing
+    this->gameRooms.clear();
     this->gameRooms.emplace_back(new Room(1,0,0,0)); //0   room making
     this->gameRooms.emplace_back(new Room(1,0,1,1)); //1
     this->gameRooms.emplace_back(new Room(1,1,0,2)); //2
@@ -293,7 +216,30 @@ void Game::init(){
     this->rooms = gameRooms;
     
 
+    
+    this->active_room = 0;
+    this->clock.restart();//bo inaczej sie enter sam wciska lol
+}
+void Game::init(){
+    
     this->currentScreen = "Window";
+        //sound
+    this->buffer = new sf::SoundBuffer("./Sound/pickupweapon.wav");
+    this->pickupWeapon = new sf::Sound(*(this->buffer));
+    this->pickupWeapon->setVolume(2.f);
+
+        //seting frame limit
+    
+    this->videoMode.size = {800, 450};
+    //makes window proportional
+    this->window = new sf::RenderWindow(this->videoMode, "The binding of isaac ultimate ripoff");
+    this->window->setFramerateLimit(60);
+    sf::View view(sf::FloatRect({0.f, 0.f}, {1600.f, 900.f}));
+    this->window->setView(view);
+    
+        //setting font
+    this->font = new sf::Font("./Fonts/Roboto-Regular.ttf");
+    this->restart();
 
     
 }
@@ -462,7 +408,6 @@ void Game::interf(){
     this->window->draw(*(this->timer));
 }
 
-
 void Game::updateBoosts(Room* room) {
     auto& boosts = room->getBoosts();
 
@@ -484,7 +429,6 @@ void Game::updateBoosts(Room* room) {
     
     
 }
-
 
 void Game::updateEnemies(Room* room) {
     auto& enemies = room->getEnemies();
@@ -745,11 +689,7 @@ bool Game::menuOpen(){
 void Game::menu(){
 
     this->events();
-    
-    
-        
-    
-    
+
     //drawing
     this->window->draw(background);
     this->window->draw(fog);
@@ -759,7 +699,9 @@ void Game::menu(){
     }else if(this->currentMenu == 1){
         this->settingsMenu();
     }else if(this->currentMenu == 2){
+        this->readFromFile();
         this->infoMenu();
+        
     }
         
     
@@ -934,6 +876,8 @@ void Game::infoMenu(){
     
     this->window->draw(*play);
         this->window->draw(*option1);
+        this->window->draw(*(this->highScoreText));
+        this->window->draw(*(this->highScoreTime));
         
   
     
@@ -1005,8 +949,42 @@ void Game::breakLine(){
 }
 void Game::comma(){
     std::fstream file("./score.csv", std::ios::app);
-    file << ","<<std::endl;
+    file << ",";
     file.close();
 }
+void Game::readFromFile(){
+    this->highScoreText->setString("High score\n\n");
+    this->highScoreTime->setString("");
+    std::ifstream file("./score.csv");
+    if (file.is_open()) {
+    std::string line;
+    std::vector<std::pair<int, std::string>> scores;
+    while (getline(file, line)) {
+        std::stringstream ss(line);
+        std::string temp1;
+        int temp2 = 0;
+        std::getline(ss, temp1, ',');
+        temp2 = std::stoi(temp1);
+        std::getline(ss, temp1, ',');
+        std::pair<int, std::string> temp3;
+        temp3.first = temp2;
+        temp3.second = temp1;
+        scores.emplace_back(temp3);
+        
+    }
+    std::sort(scores.begin(), scores.end(), [](auto first, auto second){return first.first < second.first;});
+    for(int i = 0; i<10 && i < scores.size(); i++){
+        this->highScoreText->setString(this->highScoreText->getString() + scores.at(i).second + "\n");
+        this->highScoreTime->setString(this->highScoreTime->getString() +std::to_string(scores.at(i).first) + "\n");
+    }
+    
+        
 
+    file.close();
+    }
+
+    
+    // close the file after read opeartion is complete
+    
+}
 #endif
