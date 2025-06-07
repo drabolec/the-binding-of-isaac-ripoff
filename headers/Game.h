@@ -3,6 +3,12 @@
 
 #include <vector>
 #include <memory>
+#include <algorithm>
+#include <iostream>
+#include <string>
+#include <fstream>
+
+
 #include "Player.h"
 
 #include "Bullet.h"
@@ -63,6 +69,10 @@ private:
     int currentMenu = 0;
     std::string currentScreen;
     std::string tempScreen;
+    int scoreFrames;
+    int scoreSeconds;
+    sf::Text* timer;
+    bool isEnd;
     //temporary for testing
 
 public:
@@ -87,10 +97,18 @@ public:
     void mainMenu();
     void settingsMenu();
     void infoMenu();
+    void init();
+    void end();
+    bool getEnd();
+    template <typename T>
+    void writeToFile(T input);
     
 
 };
-Game::Game(){
+void Game::init(){
+    this->isEnd = false;
+    this->scoreFrames = 0;
+    this->scoreSeconds = 0;
     //setting font
     this->font = new sf::Font("./Fonts/Roboto-Regular.ttf");
     //setting text font
@@ -156,6 +174,11 @@ Game::Game(){
     this->quit->setCharacterSize(20.f);
     this->quit->setString("Quit");
 
+    this->timer = new sf::Text(*(this->font));
+    this->timer->setPosition({1500.f, 20.f});
+    this->timer->setCharacterSize(60.f);
+    this->timer->setString(std::to_string(this->scoreSeconds));
+
     fog.setFillColor(sf::Color(0, 0, 0, 230));
     fog.setSize({100.f, 35.f});
 
@@ -178,6 +201,9 @@ Game::Game(){
 
     
 }
+Game::Game(){
+    init();
+}
 Game::~Game(){
     delete this->window;
 }
@@ -198,6 +224,13 @@ void Game::events(){
                 if(keyPressed->scancode == sf::Keyboard::Scan::Escape){
                     this->ismenuOpen = !this->ismenuOpen;
                     this->currentMenu = 0;
+                    
+                }
+                
+            }if(const auto* keyPressed = this->event->getIf<sf::Event::KeyPressed>()){
+                //turns of on escape change later
+                if(keyPressed->scancode == sf::Keyboard::Scan::P){
+                    this->isEnd = true;
                 }
                 
             }
@@ -227,6 +260,12 @@ void Game::update(){
     this->currentWeapon->setPlayerPos({this->player.getPosition().x+45.f,this->player.getPosition().y+45.f});
     this->currentWeapon->update();
     this->playerBullets = this->currentWeapon->getCurrentPlayerBullets();
+
+    if(this->scoreFrames>60){
+        this->scoreSeconds++;
+        this->scoreFrames = 0;
+    }
+    this->scoreFrames ++;
     
 }
 void Game::render(){
@@ -236,7 +275,9 @@ void Game::render(){
     if(this->menuOpen()){
         this->menu();
     }
-
+    if(this->getEnd()){
+        this->end();
+    }
     this->window->display();
 
 }
@@ -250,9 +291,10 @@ void Game::renderEntitys(){
     this->rooms[this->active_room]->render(this->window);
 
     //rendering player bullets
-    for(Bullet* bullet: this->playerBullets){
-        bullet->render(this->window);
-    }
+    
+    std::for_each(this->playerBullets.begin(), this->playerBullets.end(), [this](auto* i){i->render(this->window);});
+    
+    
     
     //rendering player
     this->player.render(this->window);
@@ -270,6 +312,8 @@ bool Game::isColision(Entity* e1, Entity* e2){
 }
 void Game::interf(){
     this->hpText->setString(std::to_string(this->player.getHp()) + " hp");
+    this->timer->setString(std::to_string(this->scoreSeconds));
+
     sf::RectangleShape temp = this->currentWeapon->shape;
     temp.setPosition({100.f, 20.f});
     temp.setScale({2.f, 2.f});
@@ -279,11 +323,14 @@ void Game::interf(){
     this->window->draw(bullet);
     this->window->draw(temp);
     this->window->draw(*(this->hpText));
+    this->window->draw(*(this->timer));
 }
 
 
 void Game::updateBoosts(Room* room) {
     auto& boosts = room->getBoosts();
+
+    
     for (auto i = boosts.begin(); i != boosts.end(); ) {
         // Dereference unique_ptr to raw pointer for isColision
         if (isColision(i->get(), &player)) {
@@ -298,6 +345,8 @@ void Game::updateBoosts(Room* room) {
             ++i;
         }
     }
+    
+    
 }
 
 
@@ -323,8 +372,6 @@ void Game::updateEnemies(Room* room) {
         
     }
 }
-
-
 
 void Game::updateWalls(Room* room){
     auto& walls = room->getWalls();
@@ -469,9 +516,6 @@ void Game::updateDoors(Room* room){
     }
 }
 
-
-
-
 void Game::updateWeapons(Room* room){
   //updating loot for testing
     //in the future wepons list will be taken from room object but the rest of the logic stays the same
@@ -518,9 +562,10 @@ void Game::updateWeapons(Room* room){
 }
 void Game::updatePlayerBullets(){
     //updating player bullet position
+    std::for_each(this->playerBullets.begin(), this->playerBullets.end(), [this](auto* i){i->update();});
+    
     for(auto i = playerBullets.begin(); i != playerBullets.end();){
-        //updating position
-        (*i)->update();
+    
         //checking if bullet should be deleted for now only by its range
         if((*i)->isVisible==false){
             playerBullets.erase(i);
@@ -530,6 +575,8 @@ void Game::updatePlayerBullets(){
         }
         
     }
+    
+    
 }
 void Game::updateLoot(Room* room){
     auto& loot = room->getLoot();
@@ -753,6 +800,7 @@ void Game::settingsMenu(){
     
 }
 void Game::infoMenu(){
+
     this->play->setString("MOVEMENT\n\nW - move forevard\nS = move backward\nA - move left\nR - move right\nE - use\nArrow Up - shoot up\nArrow Down - shoot down\nArrow Left - shoot left\nArrow Right - shoot right\n");
     this->option1->setString("Back");
     this->play->setScale({1.2f, 1.2f});
@@ -774,4 +822,26 @@ void Game::infoMenu(){
         
     
 }
+void Game::end(){
+    this->window->draw(this->background);
+    //interfejs do wpisywania nicku i wyświetlanie czasu po enterze sie resetuje gra
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter))
+        {
+            writeToFile(this->scoreSeconds);
+            this->init();
+            
+            this->ismenuOpen = !this->ismenuOpen;
+            this->currentMenu = 0;
+        }
+}
+bool Game::getEnd(){
+    return this->isEnd;
+}
+template <typename T>
+void Game::writeToFile(T input){
+    std::fstream file("./score.csv", std::ios::app);
+    file << input << std::endl;
+    file.close();
+}
+
 #endif
