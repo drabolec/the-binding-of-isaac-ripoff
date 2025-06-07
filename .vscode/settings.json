@@ -83,7 +83,8 @@
         "span": "cpp",
         "text_encoding": "cpp",
         "condition_variable": "cpp",
-        "semaphore": "cpp"
+        "semaphore": "cpp",
+        "fstream": "cpp"
     },
     "C_Cpp.default.compilerPath": "D:/msys/ucrt64/bin/g++.exe",
     "C_Cpp.errorSquiggles": "disabled"

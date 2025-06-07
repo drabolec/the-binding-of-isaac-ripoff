@@ -7,6 +7,8 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <sstream>
+#include <map>
 
 
 #include "Player.h"
@@ -45,16 +47,25 @@ private:
     sf::Font* font;
     //hp text
     sf::Text *hpText;
+
+
+    float masterVolume;
     //sounds
     sf::SoundBuffer *buffer;
     sf::Sound *pickupWeapon;
+    sf::SoundBuffer *menuBuffer;
+    sf::SoundBuffer *gameBuffer;
+    sf::SoundBuffer *gameOverBuffer; 
+    sf::Sound *soundtrack;
+    sf::Sound *gameSound;
+    sf::Sound *gameOverSound;
 
     bool isClosed = false;
     int x=0;
     int y=0;
     int active_room=0;
     //menu stuf
-    bool ismenuOpen = true;
+    bool ismenuOpen;
     int selected = 1;
     sf::Clock clock;
     sf::Text* menuT;
@@ -63,6 +74,7 @@ private:
     sf::Text* option2; 
     sf::Text* quit; 
     sf::Text* info;
+    sf::Text* nickname;
     sf::RectangleShape fog;
     sf::RectangleShape background;
     bool dootTP=true;
@@ -73,6 +85,11 @@ private:
     int scoreSeconds;
     sf::Text* timer;
     bool isEnd;
+    bool isLose;
+    std::string nickString;
+    std::string highScore;
+    sf::Text* highScoreText;
+    sf::Text* highScoreTime;
     //temporary for testing
 
 public:
@@ -102,33 +119,38 @@ public:
     bool getEnd();
     template <typename T>
     void writeToFile(T input);
+    void breakLine();
+    void comma();
+    bool getLose();
+    void lose();
+    void restart();
+    void readFromFile();
     
 
 };
-void Game::init(){
+void Game::restart(){
+    this->gameOverSound->stop();
+    this->soundtrack->stop();
+    this->soundtrack = new sf::Sound(*(this->menuBuffer));
+    this->soundtrack->play();
+    this->ismenuOpen = true;
+    this->isLose = false;
     this->isEnd = false;
     this->scoreFrames = 0;
     this->scoreSeconds = 0;
-    //setting font
-    this->font = new sf::Font("./Fonts/Roboto-Regular.ttf");
     //setting text font
     this->hpText = new sf::Text(*font); 
     this->hpText->setPosition({20.f, 20.f});
     this->hpText->setCharacterSize(20.f);
     //seting game window parameters
-    this->videoMode.size = {800, 450};
-    //makes window proportional
-    this->window = new sf::RenderWindow(this->videoMode, "The binding of isaac ultimate ripoff");
-    sf::View view(sf::FloatRect({0.f, 0.f}, {1600.f, 900.f}));
-    this->window->setView(view);
+    
 
     //seting defaul player parameter
     this->player.setPosition({100.f, 100.f});
     this->player.setFont(this->font);
     this->player.initHp();
 
-    //seting frame limit
-    this->window->setFramerateLimit(60);
+
     
     //seting default bullets
     this->currentBullet = new RoundBullet();
@@ -136,10 +158,7 @@ void Game::init(){
     //setting defaul weapon
     this->currentWeapon = new FirstWeapon();
     this->currentWeapon->setCurrentBullet(this->currentBullet);
-    //sound
-    this->buffer = new sf::SoundBuffer("./Sound/pickupweapon.wav");
-    this->pickupWeapon = new sf::Sound(*(this->buffer));
-    this->pickupWeapon->setVolume(2.f);
+
 
 
     //menu stuff
@@ -168,11 +187,23 @@ void Game::init(){
     this->info->setCharacterSize(20.f);
     this->info->setString("Info");
 
-    this->quit = new sf::Text(*(this->font));
+    this->nickname = new sf::Text(*(this->font));
+    this->nickname->setPosition({50.f, 300.f});
+    this->nickname->setCharacterSize(60.f);
+    this->nickname->setString("");
 
+    this->quit = new sf::Text(*(this->font));
     this->quit->setPosition({50.f, 400.f});
     this->quit->setCharacterSize(20.f);
     this->quit->setString("Quit");
+
+    this->highScoreText = new sf::Text(*(this->font));
+    this->highScoreText->setPosition({600.f, 200.f});
+    this->highScoreText->setCharacterSize(20.f);
+
+    this->highScoreTime = new sf::Text(*(this->font));
+    this->highScoreTime->setPosition({900.f, 250.f});
+    this->highScoreTime->setCharacterSize(20.f);
 
     this->timer = new sf::Text(*(this->font));
     this->timer->setPosition({1500.f, 20.f});
@@ -186,6 +217,7 @@ void Game::init(){
     this->background.setSize({1600.f, 900.f});
     
     //temporary for testing
+    this->gameRooms.clear();
     this->gameRooms.emplace_back(new Room(1,0,0,0)); //0   room making
     this->gameRooms.emplace_back(new Room(1,0,1,1)); //1
     this->gameRooms.emplace_back(new Room(1,1,0,2)); //2
@@ -197,7 +229,40 @@ void Game::init(){
     this->rooms = gameRooms;
     
 
+    
+    this->active_room = 0;
+    this->clock.restart();//bo inaczej sie enter sam wciska lol
+}
+void Game::init(){
+    this->masterVolume = 1.5f;
     this->currentScreen = "Window";
+        //sound
+    this->buffer = new sf::SoundBuffer("./Sound/pickupweapon.wav");
+    this->pickupWeapon = new sf::Sound(*(this->buffer));
+    this->pickupWeapon->setVolume(2.f);
+
+    this->menuBuffer = new sf::SoundBuffer("./Sound/menu.mp3");
+    this->gameBuffer = new sf::SoundBuffer("./Sound/game.mp3");
+    this->gameOverBuffer = new sf::SoundBuffer("./Sound/game_over.mp3");
+    this->soundtrack = new sf::Sound(*(this->menuBuffer));
+    this->gameSound = new sf::Sound(*(this->gameBuffer));
+    this->gameOverSound = new sf::Sound(*(this->gameOverBuffer));
+    this->soundtrack->setVolume(this->masterVolume);
+    this->gameSound->setVolume(this->masterVolume);
+    this->gameOverSound->setVolume(this->masterVolume);
+
+        //seting frame limit
+    
+    this->videoMode.size = {800, 450};
+    //makes window proportional
+    this->window = new sf::RenderWindow(this->videoMode, "The binding of isaac ultimate ripoff");
+    this->window->setFramerateLimit(60);
+    sf::View view(sf::FloatRect({0.f, 0.f}, {1600.f, 900.f}));
+    this->window->setView(view);
+    
+        //setting font
+    this->font = new sf::Font("./Fonts/Roboto-Regular.ttf");
+    this->restart();
 
     
 }
@@ -207,7 +272,9 @@ Game::Game(){
 Game::~Game(){
     delete this->window;
 }
-
+bool Game::getLose(){
+    return this->isLose;
+}
 bool Game::running(){
     return this->window->isOpen();
 }
@@ -221,24 +288,65 @@ void Game::events(){
                 this->window->close();
             }else if(const auto* keyPressed = this->event->getIf<sf::Event::KeyPressed>()){
                 //turns of on escape change later
-                if(keyPressed->scancode == sf::Keyboard::Scan::Escape){
+                if(keyPressed->scancode == sf::Keyboard::Scan::Escape && !this->getEnd()&& !this->getLose()){
                     this->ismenuOpen = !this->ismenuOpen;
                     this->currentMenu = 0;
+                    this->soundtrack->stop();
+                    if(this->ismenuOpen=true){
+                        this->gameSound->pause();
+                    }else{
+                        this->gameSound->play();
+                    }
+                    
                     
                 }
                 
-            }if(const auto* keyPressed = this->event->getIf<sf::Event::KeyPressed>()){
+            }
+            if(const auto* keyPressed = this->event->getIf<sf::Event::KeyPressed>()){
+                //turns of on escape change later
+                if(keyPressed->scancode == sf::Keyboard::Scan::O){
+                    this->isLose = true;
+                    this->gameSound->pause();
+                    this->gameOverSound->play();
+                }
+                
+            }
+            if(const auto* keyPressed = this->event->getIf<sf::Event::KeyPressed>()){
                 //turns of on escape change later
                 if(keyPressed->scancode == sf::Keyboard::Scan::P){
                     this->isEnd = true;
                 }
                 
+
             }
+            if(this->getEnd()){
+                if(const auto* keyPressed = this->event->getIf<sf::Event::KeyPressed>() ){
+                //if statements family reunion
+                
+                    if(keyPressed->scancode == sf::Keyboard::Scan::Backspace){
+                        this->nickString = this->nickString.substr(0, this->nickString.size()-1);
+                        this->nickname->setString(this->nickString);
+                    }
+
+                }
+                else if (this->event->getIf<sf::Event::TextEntered>())
+                {
+                    int temp = event->getIf<sf::Event::TextEntered>()->unicode;
+                    if((temp >= 32 && temp <=126) || (temp>=192&&temp<=255) ){
+                        this->nickname->setString(this->nickname->getString()+static_cast<char>(event->getIf<sf::Event::TextEntered>()->unicode));
+                        this->nickString += static_cast<char>(event->getIf<sf::Event::TextEntered>()->unicode);
+                    }
+                
+                }
+            
+            }
+            
                 
             
         }
 }
 void Game::update(){
+    
     this->events();
 
     
@@ -265,6 +373,10 @@ void Game::update(){
         this->scoreSeconds++;
         this->scoreFrames = 0;
     }
+    if(this->gameSound->getStatus()==sf::Sound::Status::Stopped){
+        this->gameSound->play();
+    }
+    
     this->scoreFrames ++;
     
 }
@@ -277,6 +389,15 @@ void Game::render(){
     }
     if(this->getEnd()){
         this->end();
+    }
+    if(this->getLose()){
+        this->lose();
+    }
+    //zabijanko gracza
+    if(this->player.getHp() <= 0){
+        this->isLose = true;
+        this->soundtrack->stop();
+        this->gameOverSound->play();
     }
     this->window->display();
 
@@ -326,7 +447,6 @@ void Game::interf(){
     this->window->draw(*(this->timer));
 }
 
-
 void Game::updateBoosts(Room* room) {
     auto& boosts = room->getBoosts();
 
@@ -348,7 +468,6 @@ void Game::updateBoosts(Room* room) {
     
     
 }
-
 
 void Game::updateEnemies(Room* room) {
     auto& enemies = room->getEnemies();
@@ -546,7 +665,7 @@ void Game::updateWeapons(Room* room){
     /*auto& weapons = room->getWeapons();
     for(auto i = weapons.begin(); i != weapons.end();){
         //checking for colision and if player pressed E 
-        if(isColision(i->get(), &player) && player.pressedE==true){
+        if(isColision(i->getLose();(), &player) && player.pressedE==true){
             //giving a player weapon on the ground and droping current weapon 
             std::unique_ptr<Item> droped = std::move(currentWeapon);
             droped->updatePos({this->player.getPosition().x+20.f, this->player.getPosition().y+80.f});
@@ -554,7 +673,7 @@ void Game::updateWeapons(Room* room){
             *i = std::move(droped);
             //setting current bullets for new weapon
             
-            this->currentWeapon->setCurrentBullet(this->currentBullet.get());
+            this->currentWeapon->setCurrentBullet(this->currentBullet.getLose();());
             this->pickupWeapon->play();
             break;
         }
@@ -612,19 +731,8 @@ bool Game::menuOpen(){
 }
 void Game::menu(){
 
-    while (this->event = this->window->pollEvent())
-        {
-            if (this->event->is<sf::Event::Closed>()){
-                this->ismenuOpen = false;
-                this->isClosed = true;
-                
-            } 
-        }
-    
-    
-        
-    
-    
+    this->events();
+
     //drawing
     this->window->draw(background);
     this->window->draw(fog);
@@ -634,7 +742,9 @@ void Game::menu(){
     }else if(this->currentMenu == 1){
         this->settingsMenu();
     }else if(this->currentMenu == 2){
+        this->readFromFile();
         this->infoMenu();
+        
     }
         
     
@@ -678,6 +788,8 @@ void Game::mainMenu(){
         {
             this->rooms = this->gameRooms;
             this->ismenuOpen = false; 
+            this->gameSound->play();
+            this->soundtrack->stop();
             this->clock.restart();
         }  
     }else if(this->selected == 2){
@@ -809,6 +921,8 @@ void Game::infoMenu(){
     
     this->window->draw(*play);
         this->window->draw(*option1);
+        this->window->draw(*(this->highScoreText));
+        this->window->draw(*(this->highScoreTime));
         
   
     
@@ -823,15 +937,45 @@ void Game::infoMenu(){
     
 }
 void Game::end(){
+    this->events();
+    this->menuT->setString("You Win");
+    this->timer->setPosition({50.f, 150.f});
+    this->timer->setString("Your time: " + this->timer->getString()+ "\n\nEnter your nickname: ");
+    this->timer->setCharacterSize(45);
+    this->nickname->setCharacterSize(45);
+    
     this->window->draw(this->background);
+    this->window->draw(*(this->nickname));
+    this->window->draw(*(this->menuT));
+    this->window->draw(*(this->timer));
     //interfejs do wpisywania nicku i wyświetlanie czasu po enterze sie resetuje gra
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter))
         {
             writeToFile(this->scoreSeconds);
-            this->init();
+            comma();
+            writeToFile(this->nickString);
+            breakLine();
+            this->restart();
+
+        }
+}
+void Game::lose(){
+    this->events();
+    this->menuT->setString("You lose");
+    this->timer->setPosition({50.f, 150.f});
+    this->timer->setString("Your time: " + this->timer->getString());
+    this->timer->setCharacterSize(45);
+    this->nickname->setCharacterSize(45);
+    
+    
+    this->window->draw(this->background);
+    this->window->draw(*(this->menuT));
+    this->window->draw(*(this->timer));
+    //interfejs do wpisywania nicku i wyświetlanie czasu po enterze sie resetuje gra
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter))
+        {
+            this->restart();
             
-            this->ismenuOpen = !this->ismenuOpen;
-            this->currentMenu = 0;
         }
 }
 bool Game::getEnd(){
@@ -840,8 +984,52 @@ bool Game::getEnd(){
 template <typename T>
 void Game::writeToFile(T input){
     std::fstream file("./score.csv", std::ios::app);
-    file << input << std::endl;
+    file << input;
     file.close();
 }
+void Game::breakLine(){
+    std::fstream file("./score.csv", std::ios::app);
+    file << std::endl;
+    file.close();
+}
+void Game::comma(){
+    std::fstream file("./score.csv", std::ios::app);
+    file << ",";
+    file.close();
+}
+void Game::readFromFile(){
+    this->highScoreText->setString("High score\n\n");
+    this->highScoreTime->setString("");
+    std::ifstream file("./score.csv");
+    if (file.is_open()) {
+    std::string line;
+    std::vector<std::pair<int, std::string>> scores;
+    while (getline(file, line)) {
+        std::stringstream ss(line);
+        std::string temp1;
+        int temp2 = 0;
+        std::getline(ss, temp1, ',');
+        temp2 = std::stoi(temp1);
+        std::getline(ss, temp1, ',');
+        std::pair<int, std::string> temp3;
+        temp3.first = temp2;
+        temp3.second = temp1;
+        scores.emplace_back(temp3);
+        
+    }
+    std::sort(scores.begin(), scores.end(), [](auto first, auto second){return first.first < second.first;});
+    for(int i = 0; i<10 && i < scores.size(); i++){
+        this->highScoreText->setString(this->highScoreText->getString() + scores.at(i).second + "\n");
+        this->highScoreTime->setString(this->highScoreTime->getString() +std::to_string(scores.at(i).first) + "\n");
+    }
+    
+        
 
+    file.close();
+    }
+
+    
+    // close the file after read opeartion is complete
+    
+}
 #endif
