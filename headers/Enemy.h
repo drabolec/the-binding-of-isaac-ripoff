@@ -22,11 +22,14 @@ class Enemy:public DmgEntity{
         virtual void setShapeSize(sf::Vector2f size);
         virtual void setPosition(sf::Vector2f pos);
         virtual void setPosition(float a,float b);
+        virtual void change_can_be_hit(bool a);
+        virtual bool get_can_be_hit();
         virtual sf::Vector2f getPosition();
         virtual sf::Vector2f getHitbox();
     private:    
         int hp;
         bool isDead;
+        bool can_be_hit=true;
         float movespeed;
         sf::RectangleShape shape;
         
@@ -62,7 +65,13 @@ void Enemy::setPosition(float a,float b){
     this->hitbox.setPosition(c);//for now
 }
 
+void Enemy::change_can_be_hit(bool a){
+    this->can_be_hit=a;
+}
 
+bool Enemy::get_can_be_hit(){
+    return this->can_be_hit;
+}
 sf::Vector2f Enemy::getPosition(){
     return this->shape.getPosition();
 }

@@ -47,14 +47,23 @@ private:
     sf::Font* font;
     //hp text
     sf::Text *hpText;
+
+
+    float masterVolume;
     //sounds
     sf::SoundBuffer *buffer;
     sf::Sound *pickupWeapon;
+    sf::SoundBuffer *menuBuffer;
+    sf::SoundBuffer *gameBuffer;
+    sf::SoundBuffer *gameOverBuffer; 
+    sf::Sound *soundtrack;
+    sf::Sound *gameSound;
+    sf::Sound *gameOverSound;
 
     bool isClosed = false;
     int x=0;
     int y=0;
-    int active_room=0;
+    int active_room=12;
     //menu stuf
     bool ismenuOpen;
     int selected = 1;
@@ -120,6 +129,11 @@ public:
 
 };
 void Game::restart(){
+    this->player.setHp(100);
+    this->gameOverSound->stop();
+    this->soundtrack->stop();
+    this->soundtrack = new sf::Sound(*(this->menuBuffer));
+    this->soundtrack->play();
     this->ismenuOpen = true;
     this->isLose = false;
     this->isEnd = false;
@@ -209,6 +223,28 @@ void Game::restart(){
     this->gameRooms.emplace_back(new Room(1,0,1,1)); //1
     this->gameRooms.emplace_back(new Room(1,1,0,2)); //2
     this->gameRooms.emplace_back(new Room(1,1,1,3)); //3
+    this->gameRooms.emplace_back(new Room(1,0,2,4)); //4
+    this->gameRooms.emplace_back(new Room(1,0,3,5)); //5
+    this->gameRooms.emplace_back(new Room(1,0,4,6)); //6
+    this->gameRooms.emplace_back(new Room(3,1,2,7)); //7
+    this->gameRooms.emplace_back(new Room(1,1,3,8)); //8
+    this->gameRooms.emplace_back(new Room(1,1,4,9)); //9
+    this->gameRooms.emplace_back(new Room(1,2,0,10)); //10
+    this->gameRooms.emplace_back(new Room(4,2,1,11)); //11
+    this->gameRooms.emplace_back(new Room(1,2,2,12)); //12
+    this->gameRooms.emplace_back(new Room(4,2,3,13)); //13
+    this->gameRooms.emplace_back(new Room(1,2,4,14)); //14
+    this->gameRooms.emplace_back(new Room(1,3,0,15)); //15
+    this->gameRooms.emplace_back(new Room(1,3,1,16)); //16
+    this->gameRooms.emplace_back(new Room(3,3,2,17)); //17
+    this->gameRooms.emplace_back(new Room(1,3,3,18)); //18
+    this->gameRooms.emplace_back(new Room(1,3,4,19)); //19
+    this->gameRooms.emplace_back(new Room(1,4,0,20)); //20
+    this->gameRooms.emplace_back(new Room(1,4,1,21)); //21
+    this->gameRooms.emplace_back(new Room(1,4,2,22)); //22
+    this->gameRooms.emplace_back(new Room(1,4,3,23)); //23
+    this->gameRooms.emplace_back(new Room(1,4,4,24)); //24
+
 
     //playtest rooms
     this->playtest.emplace_back(new Room(1,0,0,0)); 
@@ -221,12 +257,22 @@ void Game::restart(){
     this->clock.restart();//bo inaczej sie enter sam wciska lol
 }
 void Game::init(){
-    
+    this->masterVolume = 1.5f;
     this->currentScreen = "Window";
         //sound
     this->buffer = new sf::SoundBuffer("./Sound/pickupweapon.wav");
     this->pickupWeapon = new sf::Sound(*(this->buffer));
     this->pickupWeapon->setVolume(2.f);
+
+    this->menuBuffer = new sf::SoundBuffer("./Sound/menu.mp3");
+    this->gameBuffer = new sf::SoundBuffer("./Sound/game.mp3");
+    this->gameOverBuffer = new sf::SoundBuffer("./Sound/game_over.mp3");
+    this->soundtrack = new sf::Sound(*(this->menuBuffer));
+    this->gameSound = new sf::Sound(*(this->gameBuffer));
+    this->gameOverSound = new sf::Sound(*(this->gameOverBuffer));
+    this->soundtrack->setVolume(this->masterVolume);
+    this->gameSound->setVolume(this->masterVolume);
+    this->gameOverSound->setVolume(this->masterVolume);
 
         //seting frame limit
     
@@ -268,6 +314,13 @@ void Game::events(){
                 if(keyPressed->scancode == sf::Keyboard::Scan::Escape && !this->getEnd()&& !this->getLose()){
                     this->ismenuOpen = !this->ismenuOpen;
                     this->currentMenu = 0;
+                    this->soundtrack->stop();
+                    if(this->ismenuOpen=true){
+                        this->gameSound->pause();
+                    }else{
+                        this->gameSound->play();
+                    }
+                    
                     
                 }
                 
@@ -276,6 +329,8 @@ void Game::events(){
                 //turns of on escape change later
                 if(keyPressed->scancode == sf::Keyboard::Scan::O){
                     this->isLose = true;
+                    this->gameSound->pause();
+                    this->gameOverSound->play();
                 }
                 
             }
@@ -314,6 +369,7 @@ void Game::events(){
         }
 }
 void Game::update(){
+    
     this->events();
 
     
@@ -340,6 +396,10 @@ void Game::update(){
         this->scoreSeconds++;
         this->scoreFrames = 0;
     }
+    if(this->gameSound->getStatus()==sf::Sound::Status::Stopped){
+        this->gameSound->play();
+    }
+    
     this->scoreFrames ++;
     
 }
@@ -357,8 +417,10 @@ void Game::render(){
         this->lose();
     }
     //zabijanko gracza
-    if(this->player.getHp() <= 0){
+    if(this->player.getHp() <= 0 && this->isLose == false){
         this->isLose = true;
+        this->gameSound->stop();
+        this->gameOverSound->play();
     }
     this->window->display();
 
@@ -435,21 +497,25 @@ void Game::updateEnemies(Room* room) {
     auto j = enemies.begin();
     for(auto& enemy : enemies){
         for(auto i = playerBullets.begin(); i != playerBullets.end();){
-            if(isColision((*i),enemy)){
+            if(isColision((*i),enemy)&&enemy->get_can_be_hit()){
                 enemy->setHp(enemy->getHp()-(*i)->dmg);
                 playerBullets.erase(i);
             }else{
                 i++;
             }
-            
         };
         if(enemy->getHp()<=0){
             enemies.erase(j);
         }else{
             j++;
         }
-        enemy->move(this->player.getPosition());
-        
+        if(isColision(&player,enemy)&&this->player.getTargetable()){
+            std::cout<<player.getHp()<<std::endl;
+            this->player.changeHp(-enemy->getDmg());
+            std::cout<<player.getHp()<<std::endl;
+            this->player.setTargetable(false);
+        };
+        enemy->move(sf::Vector2f(this->player.getPosition().x+(this->player.getSize().x/2),this->player.getPosition().y+(this->player.getSize().y/2)));
     }
 }
 
@@ -511,6 +577,7 @@ void Game::updateDoors(Room* room){
                     /* changing to another room */
                 }
                 else{
+                    //this->dootTP=true;
                     std::cout<<"there is no such room in X axis on the right\n";
                 }
             }
@@ -536,6 +603,7 @@ void Game::updateDoors(Room* room){
                     /* changing to another room */
                 }
                 else{
+                    //this->dootTP=true;
                     std::cout<<"there is no such room in X axis on the right\n";
                 }
             }
@@ -559,6 +627,7 @@ void Game::updateDoors(Room* room){
                     /* changing to another room */
                 }
                 else{
+                    //this->dootTP=true;
                     std::cout<<"there is no such room in Y axis on the top\n";
                 }
             }
@@ -582,6 +651,7 @@ void Game::updateDoors(Room* room){
                     /* changing to another room */
                 }
                 else{
+                    //this->dootTP=true;
                     std::cout<<"there is no such room in Y axis on the Bottom\n";
                 }
             }
@@ -745,6 +815,8 @@ void Game::mainMenu(){
         {
             this->rooms = this->gameRooms;
             this->ismenuOpen = false; 
+            this->gameSound->play();
+            this->soundtrack->stop();
             this->clock.restart();
         }  
     }else if(this->selected == 2){
