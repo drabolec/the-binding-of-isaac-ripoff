@@ -9,6 +9,7 @@ class Dumb:public Enemy{
         Dumb(sf::Vector2f pos);
         virtual ~Dumb();
         void move(sf::Vector2f pos);
+        void update(sf::Vector2f pos);
 
     private:    
 
@@ -27,6 +28,9 @@ Dumb::Dumb(sf::Vector2f pos){
 
 Dumb::~Dumb(){
 };
+
+
+void Dumb::update(sf::Vector2f pos){};
 
 void Dumb::move(sf::Vector2f pos){
     if(pos.x>this->getPosition().x){

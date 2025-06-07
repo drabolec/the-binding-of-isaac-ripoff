@@ -14,7 +14,7 @@ class Enemy:public DmgEntity{
         Enemy();
         virtual ~Enemy();
         virtual void move(sf::Vector2f pos);
-        virtual void update(sf::RenderTarget* target);
+        virtual void update(sf::Vector2f pos);
         virtual void render(sf::RenderTarget* target);
         virtual bool getIsDead();
         virtual void setColor(sf::Color color);
@@ -99,7 +99,7 @@ void Enemy::move(sf::Vector2f pos){ //temporary
     }
 };
 
-void Enemy::update(sf::RenderTarget* target){
+void Enemy::update(sf::Vector2f pos){
     //this->move(sf::Vector2f pos);
     //if(this->hp<=0){
     //    this->isDead=true;

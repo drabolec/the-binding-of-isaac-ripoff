@@ -376,6 +376,7 @@ void Game::updateEnemies(Room* room) {
     auto& enemies = room->getEnemies();
     auto j = enemies.begin();
     for(auto& enemy : enemies){
+        enemy->update(sf::Vector2f(this->player.getPosition().x+(this->player.getSize().x/2),this->player.getPosition().y+(this->player.getSize().y/2)));
         for(auto i = playerBullets.begin(); i != playerBullets.end();){
             if(isColision((*i),enemy)&&enemy->get_can_be_hit()){
                 enemy->setHp(enemy->getHp()-(*i)->dmg);

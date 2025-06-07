@@ -18,6 +18,8 @@
 #include "RoundBullet.h"
 #include "FastBullet.h"
 #include "Dumb.h"
+#include "Spike.h"
+#include "Spike2.h"
 #include "FirstWeapon.h"
 #include "ThreeBulletWeapon.h"
 #include "MiniGunWeapon.h"
@@ -141,6 +143,15 @@ Room::Room(int a,int b, int c,int d){
         this->loot.at(1)->setPosition({800.f, 400.f});
         this->boosts.emplace_back(new SmallHealth);
         this->boosts.at(0)->setPosition({900.f, 400.f});
+        sf::Vector2f c;
+        c.x=1200.f;
+        c.y=500.f;
+        this->enemies.emplace_back(new Spike2(c));
+        c.y=200.f;
+        this->enemies.emplace_back(new Spike2(c));
+        c.x=300.f;
+        c.y=500.f;
+        this->enemies.emplace_back(new Spike(c));
     }
 
 
