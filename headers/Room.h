@@ -40,6 +40,7 @@ class Room {
         int getId(){ return id; };
         int getX();
         int getY();
+        int getRandomInt(int min,int max);
         std::vector<Item*>& getWeapons();
         std::vector<std::unique_ptr<Boost>>& getBoosts();
         std::vector<Ammo*>& getLoot();
@@ -99,10 +100,10 @@ Room::Room(int a,int b, int c,int d){
         this->doors.emplace_back(new Door(4));
         this->weapons.emplace_back(new FirstWeapon);
         this->weapons.at(0)->updatePos({500.f, 500.f}); //blad przy klikaniu game 
-        //sf::Vector2f c;
-        //c.x=1200.f;
-        //c.y=500.f;
-        //this->enemies.emplace_back(new Turret(c));
+        sf::Vector2f c;
+        c.x=1200.f;
+        c.y=500.f;
+        this->enemies.emplace_back(new Turret(c));
     }
     if(type_id==2){
         this->doors.emplace_back(new Door(1));
@@ -160,14 +161,28 @@ Room::Room(int a,int b, int c,int d){
         this->enemies.emplace_back(new Spike(c));
 
     }
+    if(type_id==5){  //changing room
+        this->doors.emplace_back(new Door(1));
+        this->doors.emplace_back(new Door(2));
+        this->doors.emplace_back(new Door(3));
+        this->doors.emplace_back(new Door(4));
+        sf::Vector2f c;
+        for(int j=0;j<20;j++){
+        c.x=getRandomInt(300,1300);
+        c.y=getRandomInt(300,600);
+        this->enemies.emplace_back(new Spike2(c));
+        }
 
-
-
-
-
+    }
 
 };
 
+int Room::getRandomInt(int min,int max){
+    static std::random_device rd;  // Seed
+    static std::mt19937 gen(rd()); // Mersenne Twister generator
+    std::uniform_int_distribution<> dis(min, max);
+    return dis(gen);
+};
 
 
 Room::~Room(){

@@ -71,6 +71,33 @@ void Turret::move(sf::Vector2f pos){
         this->setColor(sf::Color::Red);
         if(counter==0){
         this->setPosition(sf::Vector2f(newx,newy));
+        }
+
+        if(counter==30){
+        this->shoot({1.f, 0.f});
+        this->shoot({0.f, 1.f});
+        this->shoot({-1.f, 0.f});
+        this->shoot({0.f, -1.f});
+        }
+        if(counter==45){
+        this->shoot({1.f, 0.f});
+        this->shoot({0.f, 1.f});
+        this->shoot({-1.f, 0.f});
+        this->shoot({0.f, -1.f});
+        }      
+        if(counter==60){
+        this->shoot({1.f, 0.f});
+        this->shoot({0.f, 1.f});
+        this->shoot({-1.f, 0.f});
+        this->shoot({0.f, -1.f});
+        }
+        if(counter==75){
+        this->shoot({1.f, 0.f});
+        this->shoot({0.f, 1.f});
+        this->shoot({-1.f, 0.f});
+        this->shoot({0.f, -1.f});
+        }
+        if(counter==90){
         this->shoot({1.f, 0.f});
         this->shoot({0.f, 1.f});
         this->shoot({-1.f, 0.f});
