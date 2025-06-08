@@ -238,7 +238,7 @@ void Game::restart(){
     this->gameRooms.emplace_back(new Room(1,2,4,14)); //14
     this->gameRooms.emplace_back(new Room(1,3,0,15)); //15
     this->gameRooms.emplace_back(new Room(1,3,1,16)); //16
-    this->gameRooms.emplace_back(new Room(3,3,2,17)); //17
+    this->gameRooms.emplace_back(new Room(5,3,2,17)); //17
     this->gameRooms.emplace_back(new Room(1,3,3,18)); //18
     this->gameRooms.emplace_back(new Room(1,3,4,19)); //19
     this->gameRooms.emplace_back(new Room(1,4,0,20)); //20
@@ -255,7 +255,7 @@ void Game::restart(){
     
 
     
-    this->active_room = 0;
+    this->active_room = 12;
     this->clock.restart();//bo inaczej sie enter sam wciska lol
 }
 void Game::init(){
@@ -498,6 +498,10 @@ void Game::updateEnemies(Room* room) {
     auto& enemies = room->getEnemies();
     auto j = enemies.begin();
     for(auto& enemy : enemies){
+        //działa tylko dla tych co strzelają
+        if(dynamic_cast<Turret*>(enemy) != NULL){
+            enemy->setCurrentEnemyBullets(this->enemyBullets);
+        }
         enemy->update(sf::Vector2f(this->player.getPosition().x+(this->player.getSize().x/2),this->player.getPosition().y+(this->player.getSize().y/2)));
         for(auto i = playerBullets.begin(); i != playerBullets.end();){
             if(isColision((*i),enemy)&&enemy->get_can_be_hit()){
@@ -520,6 +524,11 @@ void Game::updateEnemies(Room* room) {
             enemy->setCollided(true);
         }
         enemy->move(sf::Vector2f(this->player.getPosition().x+(this->player.getSize().x/2),this->player.getPosition().y+(this->player.getSize().y/2)));
+        //tez dziła tylko dla tych co strzelają
+        if(dynamic_cast<Turret*>(enemy) != NULL){
+            this->enemyBullets = enemy->getCurrentEnemyBullet();
+        }
+        
     }
 
 }
@@ -619,7 +628,7 @@ void Game::updateDoors(Room* room){
         }
     }
     if(this->player.getPosition().y<20){ //top
-                for(auto& temproom : this->rooms){
+        for(auto& temproom : this->rooms){
             if(this->rooms[this->active_room]->getX()==temproom->getX()){
                 if (this->rooms[this->active_room]->getY()+1==temproom->getY())
                 {
@@ -630,6 +639,7 @@ void Game::updateDoors(Room* room){
                     this->dootTP=false;
                     this->player.setPosition(sf::Vector2f(this->player.getPosition().x,800.f));
                     /* changing to another room */
+                    break;
                 }
                 else{
                     //this->dootTP=true;
@@ -734,15 +744,22 @@ void Game::updateEnemyBullets(){
     std::for_each(this->enemyBullets.begin(), this->enemyBullets.end(), [this](auto* i){i->update();});
 
     for(auto i = enemyBullets.begin(); i != enemyBullets.end();){
-    
+
         //checking if bullet should be deleted for now only by its range
         if((*i)->isVisible==false){
             enemyBullets.erase(i);
             
         }else{
             i++;
+        }  
+    }
+    for(auto i = enemyBullets.begin(); i != enemyBullets.end();){
+        if(isColision((*i),static_cast<Entity*>(&this->player))&&this->player.getTargetable()){
+            this->player.setHp(this->player.getHp()-(*i)->dmg);
+            enemyBullets.erase(i);
+        }else{
+            i++;
         }
-        
     }
 }
 

@@ -28,6 +28,8 @@ class Enemy:public DmgEntity{
         virtual bool get_can_be_hit();
         virtual sf::Vector2f getPosition();
         virtual sf::Vector2f getHitbox();
+        virtual void setCurrentEnemyBullets(std::vector<Bullet*> vec);
+        virtual std::vector<Bullet*> getCurrentEnemyBullet();
     private:    
         int hp;
         bool collided=false;
@@ -121,6 +123,11 @@ void Enemy::render(sf::RenderTarget* target){
 
 bool Enemy::getIsDead(){
     return this->isDead;
+}
+void Enemy::setCurrentEnemyBullets(std::vector<Bullet*> vec){}
+std::vector<Bullet*> Enemy::getCurrentEnemyBullet(){
+    std::vector<Bullet*> temp;
+    return temp;
 }
 
 #endif
