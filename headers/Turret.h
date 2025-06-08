@@ -13,6 +13,8 @@ class Turret:public Enemy{
         void move(sf::Vector2f pos);
         void update(sf::Vector2f pos);
         void shoot(sf::Vector2f direction);
+        void setCurrentEnemyBullets(std::vector<Bullet*> vec);
+        std::vector<Bullet*> getCurrentEnemyBullet();
     private:    
         float Random;
         int newx,newy;
@@ -31,6 +33,7 @@ Turret::Turret(sf::Vector2f pos){
     this->setHitboxSize({60.f, 60.f});
     this->setShapeSize({60.f, 60.f});
     this->setPosition(pos);
+    this->bullet = new RoundBullet();
 };
 
 Turret::~Turret(){
@@ -89,7 +92,12 @@ void Turret::shoot(sf::Vector2f direction){
         this->enemyBullets.emplace_back(bullet);
     
 }
-
+void Turret::setCurrentEnemyBullets(std::vector<Bullet*> vec){
+    this->enemyBullets = vec;
+}
+std::vector<Bullet*> Turret::getCurrentEnemyBullet(){
+    return this->enemyBullets;
+}
 
 
 

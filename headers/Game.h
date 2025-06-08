@@ -498,6 +498,10 @@ void Game::updateEnemies(Room* room) {
     auto& enemies = room->getEnemies();
     auto j = enemies.begin();
     for(auto& enemy : enemies){
+        //działa tylko dla tych co strzelają
+        if(dynamic_cast<Turret*>(enemy) != NULL){
+            enemy->setCurrentEnemyBullets(this->enemyBullets);
+        }
         enemy->update(sf::Vector2f(this->player.getPosition().x+(this->player.getSize().x/2),this->player.getPosition().y+(this->player.getSize().y/2)));
         for(auto i = playerBullets.begin(); i != playerBullets.end();){
             if(isColision((*i),enemy)&&enemy->get_can_be_hit()){
@@ -520,6 +524,11 @@ void Game::updateEnemies(Room* room) {
             enemy->setCollided(true);
         }
         enemy->move(sf::Vector2f(this->player.getPosition().x+(this->player.getSize().x/2),this->player.getPosition().y+(this->player.getSize().y/2)));
+        //tez dziła tylko dla tych co strzelają
+        if(dynamic_cast<Turret*>(enemy) != NULL){
+            this->enemyBullets = enemy->getCurrentEnemyBullet();
+        }
+        
     }
 
 }
@@ -734,7 +743,7 @@ void Game::updateEnemyBullets(){
     std::for_each(this->enemyBullets.begin(), this->enemyBullets.end(), [this](auto* i){i->update();});
 
     for(auto i = enemyBullets.begin(); i != enemyBullets.end();){
-    
+
         //checking if bullet should be deleted for now only by its range
         if((*i)->isVisible==false){
             enemyBullets.erase(i);
@@ -742,6 +751,7 @@ void Game::updateEnemyBullets(){
         }else{
             i++;
         }
+        
         
     }
 }
