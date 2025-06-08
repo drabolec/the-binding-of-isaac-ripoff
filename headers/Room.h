@@ -17,7 +17,11 @@
 #include "Bullet.h"
 #include "RoundBullet.h"
 #include "FastBullet.h"
+#include "Turret.h"
 #include "Dumb.h"
+#include "Spike.h"
+#include "Ram.h"
+#include "Spike2.h"
 #include "FirstWeapon.h"
 #include "ThreeBulletWeapon.h"
 #include "MiniGunWeapon.h"
@@ -95,6 +99,10 @@ Room::Room(int a,int b, int c,int d){
         this->doors.emplace_back(new Door(4));
         this->weapons.emplace_back(new FirstWeapon);
         this->weapons.at(0)->updatePos({500.f, 500.f}); //blad przy klikaniu game 
+        sf::Vector2f c;
+        c.x=1200.f;
+        c.y=500.f;
+        this->enemies.emplace_back(new Turret(c));
     }
     if(type_id==2){
         this->doors.emplace_back(new Door(1));
@@ -141,6 +149,16 @@ Room::Room(int a,int b, int c,int d){
         this->loot.at(1)->setPosition({800.f, 400.f});
         this->boosts.emplace_back(new SmallHealth);
         this->boosts.at(0)->setPosition({900.f, 400.f});
+        sf::Vector2f c;
+        c.x=1200.f;
+        c.y=500.f;
+        this->enemies.emplace_back(new Spike2(c));
+        c.y=200.f;
+        this->enemies.emplace_back(new Ram(c));
+        c.x=300.f;
+        c.y=500.f;
+        this->enemies.emplace_back(new Spike(c));
+
     }
 
 

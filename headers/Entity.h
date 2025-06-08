@@ -6,6 +6,7 @@
 #include <SFML/System.hpp>
 #include <SFML/Network.hpp>
 #include <SFML/Audio.hpp>
+#include <random>
 
 class Entity{
 public:
@@ -16,6 +17,7 @@ public:
     sf::IntRect *intrect;
     virtual void update();
     virtual void render(sf::RenderTarget* target);
+    virtual int getRandomInt(int min, int max);
     
 };
 void Entity::update(){
@@ -24,6 +26,11 @@ void Entity::update(){
 void Entity::render(sf::RenderTarget* target){
     
 }
-
+int Entity::getRandomInt(int min,int max){
+    static std::random_device rd;  // Seed
+    static std::mt19937 gen(rd()); // Mersenne Twister generator
+    std::uniform_int_distribution<> dis(min, max);
+    return dis(gen);
+};
 
 #endif
