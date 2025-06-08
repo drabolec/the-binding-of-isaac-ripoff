@@ -38,6 +38,7 @@ private:
     Item* currentWeapon;
     Bullet* currentBullet;
     std::vector<Bullet*> playerBullets;
+    std::vector<Bullet*> enemyBullets;
     std::vector<Room*> gameRooms;
     std::vector<Room*> rooms;
     std::vector<Room*> playtest;
@@ -86,6 +87,7 @@ public:
     bool isColision(Entity* e1, Entity* e2);
     void interf();
     void updatePlayerBullets();
+    void updateEnemyBullets();
     void updateLoot(Room* room);
     void updateBoosts(Room* room);
     void updateWeapons(Room* room);
@@ -269,7 +271,7 @@ void Game::update(){
     this->player.preUpdate();
 
     updatePlayerBullets();
-
+    updateEnemyBullets();
     updateWeapons(this->rooms[active_room]);
     updateBoosts(this->rooms[active_room]);
     
@@ -315,7 +317,7 @@ void Game::renderEntitys(){
     //rendering player bullets
     
     std::for_each(this->playerBullets.begin(), this->playerBullets.end(), [this](auto* i){i->render(this->window);});
-    
+    std::for_each(this->enemyBullets.begin(), this->enemyBullets.end(), [this](auto* i){i->render(this->window);});
     
     
     //rendering player
@@ -395,9 +397,11 @@ void Game::updateEnemies(Room* room) {
             this->player.changeHp(-enemy->getDmg());
             std::cout<<player.getHp()<<std::endl;
             this->player.setTargetable(false);
-        };
+            enemy->setCollided(true);
+        }
         enemy->move(sf::Vector2f(this->player.getPosition().x+(this->player.getSize().x/2),this->player.getPosition().y+(this->player.getSize().y/2)));
     }
+
 }
 
 void Game::updateWalls(Room* room){
@@ -598,9 +602,27 @@ void Game::updatePlayerBullets(){
         }
         
     }
-    
-    
+       
 }
+
+void Game::updateEnemyBullets(){
+    //updating player bullet position
+    std::for_each(this->enemyBullets.begin(), this->enemyBullets.end(), [this](auto* i){i->update();});
+
+    for(auto i = enemyBullets.begin(); i != enemyBullets.end();){
+    
+        //checking if bullet should be deleted for now only by its range
+        if((*i)->isVisible==false){
+            enemyBullets.erase(i);
+            
+        }else{
+            i++;
+        }
+        
+    }
+}
+
+
 void Game::updateLoot(Room* room){
     auto& loot = room->getLoot();
     for(auto i = loot.begin(); i != loot.end();){

@@ -17,6 +17,8 @@ class Enemy:public DmgEntity{
         virtual void update(sf::Vector2f pos);
         virtual void render(sf::RenderTarget* target);
         virtual bool getIsDead();
+        virtual void setCollided(bool a);
+        virtual bool getCollided();
         virtual void setColor(sf::Color color);
         virtual void setHitboxSize(sf::Vector2f size);
         virtual void setShapeSize(sf::Vector2f size);
@@ -28,6 +30,7 @@ class Enemy:public DmgEntity{
         virtual sf::Vector2f getHitbox();
     private:    
         int hp;
+        bool collided=false;
         bool isDead;
         bool can_be_hit=true;
         float movespeed;
@@ -56,7 +59,12 @@ void Enemy::setShapeSize(sf::Vector2f size){
 void Enemy::setColor(sf::Color color){
     this->shape.setFillColor(color);
 }
-
+void Enemy::setCollided(bool a){
+    this->collided=a;
+}
+bool Enemy::getCollided(){
+    return this->collided;
+}
 void Enemy::setPosition(float a,float b){
     sf::Vector2f c;
     c.x=a;
@@ -78,6 +86,8 @@ sf::Vector2f Enemy::getPosition(){
 sf::Vector2f Enemy::getHitbox(){
     return this->hitbox.getPosition();
 }
+
+
 
 void Enemy::move(sf::Vector2f pos){ //temporary
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::I))
