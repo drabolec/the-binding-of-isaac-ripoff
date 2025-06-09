@@ -140,10 +140,6 @@ Room::Room(int a,int b, int c,int d){
         this->doors.emplace_back(new Door(2));
         this->doors.emplace_back(new Door(3));
         this->doors.emplace_back(new Door(4));
-        this->weapons.emplace_back(new ThreeBulletWeapon);
-        this->weapons.at(0)->updatePos({500.f, 600.f});
-        this->weapons.emplace_back(new MiniGunWeapon);
-        this->weapons.at(1)->updatePos({500.f, 700.f}); 
         this->loot.emplace_back(new rbAmmo);
         this->loot.at(0)->setPosition({800.f, 300.f});        //podniesienie przestalo dzialac
         this->loot.emplace_back(new fastAmmo);
@@ -166,14 +162,74 @@ Room::Room(int a,int b, int c,int d){
         this->doors.emplace_back(new Door(2));
         this->doors.emplace_back(new Door(3));
         this->doors.emplace_back(new Door(4));
+        this->weapons.emplace_back(new MiniGunWeapon);
+        this->weapons.at(0)->updatePos({780.f, 425.f}); 
         sf::Vector2f c;
-        for(int j=0;j<20;j++){
-        c.x=getRandomInt(300,1300);
-        c.y=getRandomInt(300,600);
+        for(int j=0;j<100;j++){
+        c.x=getRandomInt(200,1350);
+        c.y=getRandomInt(200,650);
         this->enemies.emplace_back(new Spike2(c));
+        }
+    }
+    if(type_id==6){  //changing room
+        this->doors.emplace_back(new Door(1));
+        this->doors.emplace_back(new Door(2));
+        this->doors.emplace_back(new Door(3));
+        this->doors.emplace_back(new Door(4));
+        this->weapons.emplace_back(new ThreeBulletWeapon);
+        this->weapons.at(0)->updatePos({780.f, 425.f}); 
+        
+        sf::Vector2f c;
+        c.y=180;
+        for(int j=200;j<1400;j+=40){
+        c.x=j;
+        this->enemies.emplace_back(new Spike(c));
+        }
+
+        c.y=660;
+        for(int j=200;j<1400;j+=40){
+        c.x=j;
+        this->enemies.emplace_back(new Spike(c));
+        }
+
+        c.x=200;
+        for(int j=220;j<=620;j+=40){
+        c.y=j;
+        this->enemies.emplace_back(new Spike(c));
+        }
+        c.x=1360;
+        for(int j=220;j<=620;j+=40){
+        c.y=j;
+        this->enemies.emplace_back(new Spike(c));
+        }
+
+        c.y=320;
+        for(int j=400;j<1200;j+=40){
+        c.x=j;
+        this->enemies.emplace_back(new Spike(c));
+        }
+
+        c.y=520;
+        for(int j=400;j<1200;j+=40){
+        c.x=j;
+        this->enemies.emplace_back(new Spike(c));
+        }
+
+        c.x=400;
+        for(int j=360;j<=480;j+=40){
+        c.y=j;
+        this->enemies.emplace_back(new Spike(c));
+        }
+        c.x=1160;
+        for(int j=360;j<=480;j+=40){
+        c.y=j;
+        this->enemies.emplace_back(new Spike(c));
         }
 
     }
+
+
+
 
 };
 
