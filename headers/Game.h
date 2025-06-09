@@ -234,7 +234,7 @@ void Game::restart(){
     this->gameRooms.emplace_back(new Room(1,2,0,10)); //10
     this->gameRooms.emplace_back(new Room(4,2,1,11)); //11
     this->gameRooms.emplace_back(new Room(1,2,2,12)); //12
-    this->gameRooms.emplace_back(new Room(4,2,3,13)); //13
+    this->gameRooms.emplace_back(new Room(6,2,3,13)); //13
     this->gameRooms.emplace_back(new Room(1,2,4,14)); //14
     this->gameRooms.emplace_back(new Room(1,3,0,15)); //15
     this->gameRooms.emplace_back(new Room(1,3,1,16)); //16
