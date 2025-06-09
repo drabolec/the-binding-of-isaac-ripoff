@@ -47,6 +47,8 @@ class Room {
         std::vector<std::unique_ptr<Wall>>& getWalls();
         std::vector<std::unique_ptr<Door>>& getDoors();
         std::vector<Enemy*>& getEnemies();
+        sf::RectangleShape floor;
+        sf::Texture* texture;
     private:
         bool isActive=true;
         int type_id;
@@ -93,6 +95,13 @@ Room::Room(int a,int b, int c,int d){
     this->walls.emplace_back(new Wall(6));
     this->walls.emplace_back(new Wall(7));
     this->walls.emplace_back(new Wall(8));
+    this->texture = new sf::Texture("./Textures/floor.png");
+    this->texture->setRepeated(true);
+    this->floor.setPosition({0.f, 0.f});
+    this->floor.setSize({1600.f, 900.f});
+    
+    this->floor.setTexture(this->texture);
+    this->floor.setTextureRect(*(new sf::IntRect({0, 0}, {400, 225})));
     if(type_id==1){
         this->doors.emplace_back(new Door(1));
         this->doors.emplace_back(new Door(2));
@@ -259,7 +268,8 @@ void Room::update(){
 };
 
 void Room::render(sf::RenderTarget* target){
-    target->draw(this->shape);
+    target->draw(this->floor);
+    //target->draw(this->shape);
     for (const auto& enemy : enemies) {
         enemy->render(target);
     }

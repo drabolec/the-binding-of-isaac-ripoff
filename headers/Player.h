@@ -131,8 +131,8 @@ Player::Player(){
 void Player::initHp(){
     this->hpText = new sf::Text(*font);
     this->hpText->setString(std::to_string(this->getHp())+ " hp");
-    this->hpText->setFillColor(sf::Color::Black); //change later
-    this->hpText->setCharacterSize(10);
+    this->hpText->setFillColor(sf::Color::White); //change later
+    this->hpText->setCharacterSize(20);
     this->hpText->setPosition({this->shape.getPosition().x+60.f, this->shape.getPosition().y- 30.f});
 }
 Player::~Player(){
