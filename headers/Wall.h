@@ -29,37 +29,60 @@ inline Wall::Wall(int b){
     this->hitbox.setFillColor(sf::Color::Blue);
     this->wallSide=b;
     if(this->wallSide==1){
-        this->hitbox.setPosition(sf::Vector2f(850.f, 0.f));
-        this->hitbox.setSize(sf::Vector2f(750.f, 100.f));
+        this->hitbox.setPosition(sf::Vector2f(832.f, 0.f));
+        this->hitbox.setSize(sf::Vector2f(768.f, 64.f));
     }
     else if(this->wallSide==2){
-        this->hitbox.setPosition(sf::Vector2f(1500.f, 100.f));
-        this->hitbox.setSize(sf::Vector2f(100.f, 300.f));
+        this->hitbox.setPosition(sf::Vector2f(1536.f, 64.f));
+        this->hitbox.setSize(sf::Vector2f(64.f, 354.f));
     }
     else if(this->wallSide==3){
-        this->hitbox.setPosition(sf::Vector2f(1500.f, 500.f));
-        this->hitbox.setSize(sf::Vector2f(100.f, 300.f));
+        this->hitbox.setPosition(sf::Vector2f(1536.f, 482.f));
+        this->hitbox.setSize(sf::Vector2f(64.f, 354.f));
     }
     else if(this->wallSide==4){
-        this->hitbox.setPosition(sf::Vector2f(850.f, 800.f));
-        this->hitbox.setSize(sf::Vector2f(750.f, 100.f));
+        this->hitbox.setPosition(sf::Vector2f(832.f, 836.f));
+        this->hitbox.setSize(sf::Vector2f(768.f, 64.f));
     }
     else if(this->wallSide==5){
-        this->hitbox.setPosition(sf::Vector2f(0.f, 800.f));
-        this->hitbox.setSize(sf::Vector2f(750.f, 100.f));
+        this->hitbox.setPosition(sf::Vector2f(0.f, 832.f));
+        this->hitbox.setSize(sf::Vector2f(768.f, 64.f));
     }
     else if(this->wallSide==6){
-        this->hitbox.setPosition(sf::Vector2f(0.f, 100.f));
-        this->hitbox.setSize(sf::Vector2f(100.f, 300.f));
+        this->hitbox.setPosition(sf::Vector2f(0.f, 64.f));
+        this->hitbox.setSize(sf::Vector2f(64.f, 354.f));
     }
     else if(this->wallSide==7){
-        this->hitbox.setPosition(sf::Vector2f(0.f, 500.f));
-        this->hitbox.setSize(sf::Vector2f(100.f, 300.f));
+        this->hitbox.setPosition(sf::Vector2f(0.f, 482.f));
+        this->hitbox.setSize(sf::Vector2f(64.f, 354.f));
     }
     else if(this->wallSide==8){
         this->hitbox.setPosition(sf::Vector2f(0.f, 0.f));
-        this->hitbox.setSize(sf::Vector2f(750.f, 100.f));
+        this->hitbox.setSize(sf::Vector2f(768.f, 64.f));
     }
+
+    else if(this->wallSide==9){
+        this->hitbox.setPosition(sf::Vector2f(0.f, 418.f));
+        this->hitbox.setSize(sf::Vector2f(64.f, 64.f));
+    }
+
+    else if(this->wallSide==10){
+        this->hitbox.setPosition(sf::Vector2f(1536.f, 418.f));
+        this->hitbox.setSize(sf::Vector2f(64.f, 64.f));
+    }
+    else if(this->wallSide==11){
+        this->hitbox.setPosition(sf::Vector2f(768.f, 0.f));
+        this->hitbox.setSize(sf::Vector2f(64.f, 64.f));
+    }
+
+    else if(this->wallSide==12){
+        this->hitbox.setPosition(sf::Vector2f(768.f, 836.f));
+        this->hitbox.setSize(sf::Vector2f(64.f, 64.f));
+    }
+
+
+
+
 
 };
 
