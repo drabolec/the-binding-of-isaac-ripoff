@@ -30,20 +30,24 @@ class Enemy:public DmgEntity{
         virtual sf::Vector2f getHitbox();
         virtual void setCurrentEnemyBullets(std::vector<Bullet*> vec);
         virtual std::vector<Bullet*> getCurrentEnemyBullet();
+        virtual sf::RectangleShape& getShape();
     private:    
         int hp;
         bool collided=false;
         bool isDead;
         bool can_be_hit=true;
         float movespeed;
-        sf::RectangleShape shape;
+        //sf::RectangleShape shape; //nie potrzben ejuz jest e entity
+        
         
 };
-
+sf::RectangleShape& Enemy::getShape(){
+    return this->shape;
+}
 Enemy::Enemy(){
-    this->shape.setFillColor(sf::Color::Red);  //temporary
-    this->shape.setSize(sf::Vector2f(10.f, 10.f));
-    this->hitbox.setSize(sf::Vector2f(10.f, 10.f));
+    //this->shape.setFillColor(sf::Color::Red);  //temporary
+    //this->shape.setSize(sf::Vector2f(10.f, 10.f));
+    //this->hitbox.setSize(sf::Vector2f(10.f, 10.f));
     this->movespeed = 1.f;
 };
 Enemy::~Enemy(){
