@@ -6,7 +6,11 @@
 class greenDumb:public Dumb{
 public:
     greenDumb(sf::Vector2f pos);
+    ~greenDumb();
 };
+greenDumb::~greenDumb(){
+    delete this->texture;
+}
 greenDumb::greenDumb(sf::Vector2f pos){
     this->frame = 0;
     for(int i = 432; i < 500; i = i + 16){

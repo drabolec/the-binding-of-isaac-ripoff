@@ -6,7 +6,11 @@
 class redDumb:public Dumb{
 public:
     redDumb(sf::Vector2f pos);
+    ~redDumb();
 };
+redDumb::~redDumb(){
+    delete this->texture;
+}
 redDumb::redDumb(sf::Vector2f pos){
     this->frame = 0;
     for(int i = 432; i < 500; i = i + 16){
