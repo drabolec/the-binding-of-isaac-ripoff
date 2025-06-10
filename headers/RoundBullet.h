@@ -10,10 +10,15 @@ class RoundBullet:public Bullet{
         void update();
         void render(sf::RenderTarget* targe);
         void setInitPos();
+        ~RoundBullet();
         
     private:
         
 };
+RoundBullet::~RoundBullet(){
+    delete this->texture;
+    delete this->intrect;
+}
 RoundBullet::RoundBullet(){
     //setting up textrue
     this->texture = new sf::Texture("./Textures/necrobolt1_strip.png");

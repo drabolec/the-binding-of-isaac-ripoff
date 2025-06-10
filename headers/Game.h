@@ -517,16 +517,13 @@ void Game::updateEnemies(Room* room) {
         for(auto i = playerBullets.begin(); i != playerBullets.end();){
             if(isColision((*i),enemy)&&enemy->get_can_be_hit()){
                 enemy->setHp(enemy->getHp()-(*i)->dmg);
+                delete *i;
                 playerBullets.erase(i);
             }else{
                 i++;
             }
         };
-        if(enemy->getHp()<=0){
-            enemies.erase(j);
-        }else{
-            j++;
-        }
+        
         if(isColision(&player,enemy)&&this->player.getTargetable()){
             std::cout<<player.getHp()<<std::endl;
             this->player.changeHp(-enemy->getDmg());
@@ -538,6 +535,12 @@ void Game::updateEnemies(Room* room) {
         //tez dziła tylko dla tych co strzelają
         if(dynamic_cast<Turret*>(enemy) != NULL){
             this->enemyBullets = enemy->getCurrentEnemyBullet();
+        }
+        if(enemy->getHp()<=0){
+            delete *j;
+            enemies.erase(j);
+        }else{
+            j++;
         }
         
     }
@@ -801,6 +804,7 @@ void Game::updateLoot(Room* room){
             }
             currentBullet = (*i)->getType();
             this->currentWeapon->setCurrentBullet(this->currentBullet);
+            delete *i;
             loot.erase(i);
             loot.emplace_back(droped);
             
