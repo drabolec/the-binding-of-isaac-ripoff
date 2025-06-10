@@ -135,6 +135,7 @@ void Game::restart(){
     this->gameOverSound->stop();
     this->soundtrack->stop();
     this->soundtrack = new sf::Sound(*(this->menuBuffer));
+    this->soundtrack->setVolume(this->masterVolume);
     this->soundtrack->play();
     this->ismenuOpen = true;
     this->isLose = false;
@@ -272,7 +273,7 @@ void Game::init(){
     this->soundtrack = new sf::Sound(*(this->menuBuffer));
     this->gameSound = new sf::Sound(*(this->gameBuffer));
     this->gameOverSound = new sf::Sound(*(this->gameOverBuffer));
-    this->soundtrack->setVolume(this->masterVolume*0.3f);
+    this->soundtrack->setVolume(this->masterVolume);
     this->gameSound->setVolume(this->masterVolume);
     this->gameOverSound->setVolume(this->masterVolume);
 

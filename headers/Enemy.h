@@ -96,23 +96,7 @@ sf::Vector2f Enemy::getHitbox(){
 
 
 void Enemy::move(sf::Vector2f pos){ //temporary
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::I))
-    {
-        this->shape.move({0.f, -this->movespeed});
-        this->hitbox.move({0.f, -this->movespeed});
-    }if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::K))
-    {
-        this->shape.move({0.f, this->movespeed});
-        this->hitbox.move({0.f, this->movespeed});
-    }if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::J))
-    {
-        this->shape.move({-this->movespeed, 0.f});
-        this->hitbox.move({-this->movespeed, 0.f});
-    }if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::L))
-    {
-        this->shape.move({this->movespeed, 0.f});
-        this->hitbox.move({this->movespeed, 0.f});
-    }
+    
 };
 
 void Enemy::update(sf::Vector2f pos){
