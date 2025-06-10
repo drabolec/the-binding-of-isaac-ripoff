@@ -28,6 +28,9 @@
 #include "rbAmmo.h"
 #include "fastAmmo.h"
 #include "SmallHealth.h"
+#include "whiteDumb.h"
+#include "greenDumb.h"
+#include "redDumb.h"
 
 class Room {
     public:
@@ -140,9 +143,11 @@ Room::Room(int a,int b, int c,int d){
         sf::Vector2f c;
         c.x=1200.f;
         c.y=500.f;
-        this->enemies.emplace_back(new Dumb(c));
+        this->enemies.emplace_back(new whiteDumb(c));
         c.y=200.f;
-        this->enemies.emplace_back(new Dumb(c));
+        this->enemies.emplace_back(new greenDumb(c));
+        c.x=800.f;
+        this->enemies.emplace_back(new redDumb(c));
     }
     if(type_id==4){  //changing room
         this->doors.emplace_back(new Door(1));
