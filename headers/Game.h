@@ -134,6 +134,7 @@ void Game::restart(){
     this->player.setHp(100);
     this->gameOverSound->stop();
     this->soundtrack->stop();
+    this->gameSound->stop();
     this->soundtrack = new sf::Sound(*(this->menuBuffer));
     this->soundtrack->setVolume(this->masterVolume);
     this->soundtrack->play();

@@ -256,7 +256,8 @@ int Room::getRandomInt(int min,int max){
 
 
 Room::~Room(){
-
+    
+    
 };
 
 void Room::update(){
