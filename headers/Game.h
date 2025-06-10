@@ -42,11 +42,13 @@ private:
     std::vector<Bullet*> playerBullets;
     std::vector<Bullet*> enemyBullets;
     std::vector<Room*> rooms;
+    
+    
+    
     //Game font for now roboto
     sf::Font* font;
     //hp text
     sf::Text *hpText;
-
 
     float masterVolume;
     //sounds
@@ -184,7 +186,7 @@ void Game::restart(){
     for(auto el:rooms){
         delete el;
     }
-    
+
     this->rooms.clear();
     //this->gameRooms.clear();
     this->rooms.emplace_back(new Room(1,0,0,0)); //0   room making
@@ -417,7 +419,7 @@ void Game::update(){
     
 }
 void Game::render(){
-    this->window->clear(sf::Color(120, 120, 120));
+    this->window->clear(sf::Color::Black);
     
     this->renderEntitys();
     if(this->menuOpen()){
@@ -588,7 +590,7 @@ void Game::updateWalls(Room* room){
 }
 
 void Game::updateDoors(Room* room){
-    if(this->player.getPosition().x<20){ //left
+    if(this->player.getPosition().x<10){ //left
         for(auto& temproom : this->rooms){
             if(this->rooms[this->active_room]->getY()==temproom->getY()){
                 if (this->rooms[this->active_room]->getX()-1==temproom->getX())
@@ -612,7 +614,7 @@ void Game::updateDoors(Room* room){
         }
 
     }
-    if(this->player.getPosition().x>1520){ //right
+    if(this->player.getPosition().x>1530){ //right
                 for(auto& temproom : this->rooms){
             if(this->rooms[this->active_room]->getY()==temproom->getY()){
                 if (this->rooms[this->active_room]->getX()+1==temproom->getX())
@@ -638,7 +640,7 @@ void Game::updateDoors(Room* room){
             this->dootTP=false;
         }
     }
-    if(this->player.getPosition().y<20){ //top
+    if(this->player.getPosition().y<10){ //top
         for(auto& temproom : this->rooms){
             if(this->rooms[this->active_room]->getX()==temproom->getX()){
                 if (this->rooms[this->active_room]->getY()+1==temproom->getY())
@@ -663,7 +665,7 @@ void Game::updateDoors(Room* room){
             this->player.setPosition(sf::Vector2f(this->player.getPosition().x,20.f));
         }
     }
-    if(this->player.getPosition().y>820){ //bottom
+    if(this->player.getPosition().y>830){ //bottom
         for(auto& temproom : this->rooms){
             if(this->rooms[this->active_room]->getX()==temproom->getX()){
                 if (this->rooms[this->active_room]->getY()-1==temproom->getY())
@@ -740,6 +742,7 @@ void Game::updatePlayerBullets(){
     
         //checking if bullet should be deleted for now only by its range
         if((*i)->isVisible==false){
+            delete *i;
             playerBullets.erase(i);
             
         }else{
@@ -758,6 +761,7 @@ void Game::updateEnemyBullets(){
 
         //checking if bullet should be deleted for now only by its range
         if((*i)->isVisible==false){
+            delete *i;
             enemyBullets.erase(i);
             
         }else{

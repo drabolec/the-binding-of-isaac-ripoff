@@ -128,11 +128,11 @@ Room::Room(int a,int b, int c,int d){
     this->walls.emplace_back(new Wall(8));
     this->texture = new sf::Texture("./Textures/floor.png");
     this->texture->setRepeated(true);
-    this->floor.setPosition({0.f, 0.f});
-    this->floor.setSize({1600.f, 900.f});
+    this->floor.setPosition({64.f, 64.f});
+    this->floor.setSize({1472.f, 772.f});
     
     this->floor.setTexture(this->texture);
-    this->floor.setTextureRect(*(new sf::IntRect({0, 0}, {400, 225})));
+    this->floor.setTextureRect(*(new sf::IntRect({0, 0}, {368, 193})));
     if(type_id==1){
 
         this->weapons.emplace_back(new FirstWeapon);
@@ -280,7 +280,6 @@ Room::~Room(){
     
     delete texture;
     
-    std::cout << "dziala" << std::endl;
     
 };
 
