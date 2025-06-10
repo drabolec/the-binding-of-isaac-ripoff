@@ -36,7 +36,7 @@ class Room {
     public:
         Room();
         Room(int a,int b, int c,int d);
-        virtual ~Room();
+        ~Room();
         void render(sf::RenderTarget* target);
         void update();
         bool getIsActive(){ return isActive; };
@@ -90,6 +90,34 @@ Room::Room(int a,int b, int c,int d){
     this->x=b;
     this->y=c;
     this->id=d;
+
+
+    if(this->x==0){
+        this->walls.emplace_back(new Wall(9));
+    }
+    else{
+        this->doors.emplace_back(new Door(1));
+    }
+    if(this->y==0){
+        this->walls.emplace_back(new Wall(12));
+    }
+    else{
+        this->doors.emplace_back(new Door(4));
+    }
+    if(this->x==4){
+        this->walls.emplace_back(new Wall(10));
+    }
+    else{
+      this->doors.emplace_back(new Door(2));
+    }
+    if(this->y==4){
+        this->walls.emplace_back(new Wall(11));
+    }
+    else{
+      this->doors.emplace_back(new Door(3));
+    }
+
+
     this->walls.emplace_back(new Wall(1));
     this->walls.emplace_back(new Wall(2));
     this->walls.emplace_back(new Wall(3));
@@ -106,10 +134,7 @@ Room::Room(int a,int b, int c,int d){
     this->floor.setTexture(this->texture);
     this->floor.setTextureRect(*(new sf::IntRect({0, 0}, {400, 225})));
     if(type_id==1){
-        this->doors.emplace_back(new Door(1));
-        this->doors.emplace_back(new Door(2));
-        this->doors.emplace_back(new Door(3));
-        this->doors.emplace_back(new Door(4));
+
         this->weapons.emplace_back(new FirstWeapon);
         this->weapons.at(0)->updatePos({500.f, 500.f}); //blad przy klikaniu game 
         sf::Vector2f c;
@@ -118,10 +143,7 @@ Room::Room(int a,int b, int c,int d){
         this->enemies.emplace_back(new Turret(c));
     }
     if(type_id==2){
-        this->doors.emplace_back(new Door(1));
-        this->doors.emplace_back(new Door(2));
-        this->doors.emplace_back(new Door(3));
-        this->doors.emplace_back(new Door(4));
+
         this->enemies.emplace_back(new Enemy());
         this->enemies.emplace_back(new Enemy());
         this->enemies[0]->setPosition(sf::Vector2f(140.f, 40.f));
@@ -136,10 +158,7 @@ Room::Room(int a,int b, int c,int d){
         this->boosts.at(0)->setPosition({900.f, 400.f});
     }
     if(type_id==3){ //enemies
-        this->doors.emplace_back(new Door(1));
-        this->doors.emplace_back(new Door(2));
-        this->doors.emplace_back(new Door(3));
-        this->doors.emplace_back(new Door(4));
+
         sf::Vector2f c;
         c.x=1200.f;
         c.y=500.f;
@@ -150,10 +169,7 @@ Room::Room(int a,int b, int c,int d){
         this->enemies.emplace_back(new redDumb(c));
     }
     if(type_id==4){  //changing room
-        this->doors.emplace_back(new Door(1));
-        this->doors.emplace_back(new Door(2));
-        this->doors.emplace_back(new Door(3));
-        this->doors.emplace_back(new Door(4));
+
         this->loot.emplace_back(new rbAmmo);
         this->loot.at(0)->setPosition({800.f, 300.f});        //podniesienie przestalo dzialac
         this->loot.emplace_back(new fastAmmo);
@@ -172,10 +188,7 @@ Room::Room(int a,int b, int c,int d){
 
     }
     if(type_id==5){  //changing room
-        this->doors.emplace_back(new Door(1));
-        this->doors.emplace_back(new Door(2));
-        this->doors.emplace_back(new Door(3));
-        this->doors.emplace_back(new Door(4));
+
         this->weapons.emplace_back(new MiniGunWeapon);
         this->weapons.at(0)->updatePos({780.f, 425.f}); 
         sf::Vector2f c;
@@ -186,10 +199,7 @@ Room::Room(int a,int b, int c,int d){
         }
     }
     if(type_id==6){  //changing room
-        this->doors.emplace_back(new Door(1));
-        this->doors.emplace_back(new Door(2));
-        this->doors.emplace_back(new Door(3));
-        this->doors.emplace_back(new Door(4));
+
         this->weapons.emplace_back(new ThreeBulletWeapon);
         this->weapons.at(0)->updatePos({780.f, 425.f}); 
         
@@ -257,6 +267,20 @@ int Room::getRandomInt(int min,int max){
 
 Room::~Room(){
     
+    for(auto el:enemies){
+        delete el;
+    }
+    for(auto el:weapons){
+        delete el;
+    }
+    for(auto el:loot){
+        delete el;
+    }
+    
+    
+    delete texture;
+    
+    std::cout << "dziala" << std::endl;
     
 };
 

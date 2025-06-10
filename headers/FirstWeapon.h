@@ -16,6 +16,7 @@ class FirstWeapon: public Item{
         void render(sf::RenderTarget* target);
         FirstWeapon();
         const float time = 0.4f;
+        virtual ~FirstWeapon();
         
     private:
         
@@ -23,6 +24,9 @@ class FirstWeapon: public Item{
 
     
 };
+FirstWeapon::~FirstWeapon(){
+    delete this->texture;
+}
 FirstWeapon::FirstWeapon(){
     //setting texture
     this->texture = new sf::Texture("./Textures/default_weapon.png");

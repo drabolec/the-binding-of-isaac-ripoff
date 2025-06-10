@@ -9,11 +9,14 @@ class Ammo:public Entity{
 public:
     virtual void setPosition(sf::Vector2f pos);
     virtual Bullet* getType();
+    virtual ~Ammo();
 private:
 
 
 };
-
+Ammo::~Ammo(){
+    delete this->texture;
+}
 void Ammo::setPosition(sf::Vector2f pos){
 
 }

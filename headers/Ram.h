@@ -44,6 +44,7 @@ Ram::Ram(sf::Vector2f pos){
 };
 
 Ram::~Ram(){
+    
 };
 
 

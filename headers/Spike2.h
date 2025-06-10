@@ -29,6 +29,7 @@ Spike2::Spike2(sf::Vector2f pos){
 };
 
 Spike2::~Spike2(){
+    delete this->texture;
 };
 
 void Spike2::move(sf::Vector2f pos){

@@ -136,7 +136,9 @@ void Player::initHp(){
     this->hpText->setPosition({this->shape.getPosition().x+60.f, this->shape.getPosition().y- 30.f});
 }
 Player::~Player(){
-
+    delete this->hpText;
+    delete this->font;
+    delete this->texture;
 }
 void Player::setPosition(sf::Vector2f pos){
     this->shape.setPosition(pos);

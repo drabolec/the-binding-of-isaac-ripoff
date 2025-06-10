@@ -34,6 +34,7 @@ Spike::Spike(sf::Vector2f pos){
 };
 
 Spike::~Spike(){
+    delete this->texture;
 };
 
 void Spike::setIsUp(bool a){

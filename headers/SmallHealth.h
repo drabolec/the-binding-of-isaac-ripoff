@@ -11,12 +11,15 @@ public:
 
     void render(sf::RenderTarget* target);
     void update();
+    virtual ~SmallHealth();
 
 private:
     
 
 };
-
+SmallHealth::~SmallHealth(){
+    delete this->texture;
+}
 SmallHealth::SmallHealth(){
     
     //setting up hitbox

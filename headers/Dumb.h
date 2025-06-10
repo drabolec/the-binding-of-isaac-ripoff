@@ -35,6 +35,7 @@ Dumb::Dumb(sf::Vector2f pos){
 };
 
 Dumb::~Dumb(){
+    delete this->texture;
 };
 
 

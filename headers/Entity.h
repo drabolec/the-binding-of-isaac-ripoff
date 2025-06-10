@@ -18,8 +18,13 @@ public:
     virtual void update();
     virtual void render(sf::RenderTarget* target);
     virtual int getRandomInt(int min, int max);
+    virtual ~Entity();
     
 };
+Entity::~Entity(){
+    
+    
+}
 void Entity::update(){
 
 }
