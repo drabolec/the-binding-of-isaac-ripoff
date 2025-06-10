@@ -23,13 +23,6 @@ class Dumb:public Enemy{
 };
 
 Dumb::Dumb(){
-//frames
-    
-    
-
-    
-    
-    
     //this->setColor(sf::Color::Green);
     this->setHitboxSize({64.f, 64.f});
     this->setShapeSize({64.f, 64.f});
@@ -42,6 +35,7 @@ Dumb::Dumb(sf::Vector2f pos){
 };
 
 Dumb::~Dumb(){
+    delete this->texture;
 };
 
 
@@ -50,6 +44,7 @@ void Dumb::update(sf::Vector2f pos){
 };
 
 void Dumb::move(sf::Vector2f pos){
+    pos = {pos.x-20.f, pos.y-20.f};
     if(pos.x>this->getPosition().x){
         this->curFrames = this->frames;
         this->setPosition(this->getPosition().x+this->speed,this->getPosition().y);

@@ -41,14 +41,14 @@ private:
     Bullet* currentBullet;
     std::vector<Bullet*> playerBullets;
     std::vector<Bullet*> enemyBullets;
-    std::vector<Room*> gameRooms;
     std::vector<Room*> rooms;
-    std::vector<Room*> playtest;
+    
+    
+    
     //Game font for now roboto
     sf::Font* font;
     //hp text
     sf::Text *hpText;
-
 
     float masterVolume;
     //sounds
@@ -134,6 +134,8 @@ void Game::restart(){
     this->player.setHp(100);
     this->gameOverSound->stop();
     this->soundtrack->stop();
+    this->gameSound->stop();
+    delete this->soundtrack;
     this->soundtrack = new sf::Sound(*(this->menuBuffer));
     this->soundtrack->setVolume(this->masterVolume);
     this->soundtrack->play();
@@ -157,14 +159,102 @@ void Game::restart(){
 
     
     //seting default bullets
+    delete this->currentBullet;
     this->currentBullet = new RoundBullet();
 
     //setting defaul weapon
+    delete this->currentWeapon;
     this->currentWeapon = new FirstWeapon();
     this->currentWeapon->setCurrentBullet(this->currentBullet);
 
 
 
+    
+    this->timer->setPosition({1500.f, 20.f});
+    this->timer->setCharacterSize(60.f);
+    this->timer->setString(std::to_string(this->scoreSeconds));
+
+    fog.setFillColor(sf::Color(0, 0, 0, 230));
+    fog.setSize({100.f, 35.f});
+
+    this->background.setFillColor(sf::Color(0, 0, 0, 200));
+    this->background.setSize({1600.f, 900.f});
+    
+    //temporary for testing
+    
+    
+    for(auto el:rooms){
+        delete el;
+    }
+
+    this->rooms.clear();
+    //this->gameRooms.clear();
+    this->rooms.emplace_back(new Room(1,0,0,0)); //0   room making
+    this->rooms.emplace_back(new Room(1,0,1,1)); //1
+    this->rooms.emplace_back(new Room(1,1,0,2)); //2
+    this->rooms.emplace_back(new Room(1,1,1,3)); //3
+    this->rooms.emplace_back(new Room(1,0,2,4)); //4
+    this->rooms.emplace_back(new Room(1,0,3,5)); //5
+    this->rooms.emplace_back(new Room(1,0,4,6)); //6
+    this->rooms.emplace_back(new Room(3,1,2,7)); //7
+    this->rooms.emplace_back(new Room(1,1,3,8)); //8
+    this->rooms.emplace_back(new Room(1,1,4,9)); //9
+    this->rooms.emplace_back(new Room(1,2,0,10)); //10
+    this->rooms.emplace_back(new Room(4,2,1,11)); //11
+    this->rooms.emplace_back(new Room(1,2,2,12)); //12
+    this->rooms.emplace_back(new Room(6,2,3,13)); //13
+    this->rooms.emplace_back(new Room(1,2,4,14)); //14
+    this->rooms.emplace_back(new Room(1,3,0,15)); //15
+    this->rooms.emplace_back(new Room(1,3,1,16)); //16
+    this->rooms.emplace_back(new Room(5,3,2,17)); //17
+    this->rooms.emplace_back(new Room(1,3,3,18)); //18
+    this->rooms.emplace_back(new Room(1,3,4,19)); //19
+    this->rooms.emplace_back(new Room(1,4,0,20)); //20
+    this->rooms.emplace_back(new Room(1,4,1,21)); //21
+    this->rooms.emplace_back(new Room(1,4,2,22)); //22
+    this->rooms.emplace_back(new Room(1,4,3,23)); //23
+    this->rooms.emplace_back(new Room(1,4,4,24)); //24
+
+    
+    //playtest rooms
+    //this->playtest.emplace_back(new Room(1,0,0,0)); 
+    
+
+    
+    this->active_room = 12;
+    this->clock.restart();//bo inaczej sie enter sam wciska lol
+    
+}
+void Game::init(){
+    
+    this->masterVolume = 1.5f;
+    this->currentScreen = "Window";
+        //sound
+    this->buffer = new sf::SoundBuffer("./Sound/pickupweapon.wav");
+    this->pickupWeapon = new sf::Sound(*(this->buffer));
+    this->pickupWeapon->setVolume(2.f);
+
+    this->menuBuffer = new sf::SoundBuffer("./Sound/menu.mp3");
+    this->gameBuffer = new sf::SoundBuffer("./Sound/game.mp3");
+    this->gameOverBuffer = new sf::SoundBuffer("./Sound/game_over.mp3");
+    this->soundtrack = new sf::Sound(*(this->menuBuffer));
+    this->gameSound = new sf::Sound(*(this->gameBuffer));
+    this->gameOverSound = new sf::Sound(*(this->gameOverBuffer));
+    this->soundtrack->setVolume(this->masterVolume);
+    this->gameSound->setVolume(this->masterVolume);
+    this->gameOverSound->setVolume(this->masterVolume);
+
+        //seting frame limit
+    
+    this->videoMode.size = {800, 450};
+    //makes window proportional
+    this->window = new sf::RenderWindow(this->videoMode, "The binding of isaac ultimate ripoff");
+    this->window->setFramerateLimit(60);
+    sf::View view(sf::FloatRect({0.f, 0.f}, {1600.f, 900.f}));
+    this->window->setView(view);
+    
+        //setting font
+    this->font = new sf::Font("./Fonts/Roboto-Regular.ttf");
     //menu stuff
     this->menuT = new sf::Text(*(this->font));
     this->menuT->setPosition({50.f, 60.f});
@@ -210,84 +300,6 @@ void Game::restart(){
     this->highScoreTime->setCharacterSize(20.f);
 
     this->timer = new sf::Text(*(this->font));
-    this->timer->setPosition({1500.f, 20.f});
-    this->timer->setCharacterSize(60.f);
-    this->timer->setString(std::to_string(this->scoreSeconds));
-
-    fog.setFillColor(sf::Color(0, 0, 0, 230));
-    fog.setSize({100.f, 35.f});
-
-    this->background.setFillColor(sf::Color(0, 0, 0, 200));
-    this->background.setSize({1600.f, 900.f});
-    
-    //temporary for testing
-    this->gameRooms.clear();
-    this->gameRooms.emplace_back(new Room(1,0,0,0)); //0   room making
-    this->gameRooms.emplace_back(new Room(1,0,1,1)); //1
-    this->gameRooms.emplace_back(new Room(1,1,0,2)); //2
-    this->gameRooms.emplace_back(new Room(1,1,1,3)); //3
-    this->gameRooms.emplace_back(new Room(1,0,2,4)); //4
-    this->gameRooms.emplace_back(new Room(1,0,3,5)); //5
-    this->gameRooms.emplace_back(new Room(1,0,4,6)); //6
-    this->gameRooms.emplace_back(new Room(3,1,2,7)); //7
-    this->gameRooms.emplace_back(new Room(1,1,3,8)); //8
-    this->gameRooms.emplace_back(new Room(1,1,4,9)); //9
-    this->gameRooms.emplace_back(new Room(1,2,0,10)); //10
-    this->gameRooms.emplace_back(new Room(4,2,1,11)); //11
-    this->gameRooms.emplace_back(new Room(1,2,2,12)); //12
-    this->gameRooms.emplace_back(new Room(6,2,3,13)); //13
-    this->gameRooms.emplace_back(new Room(1,2,4,14)); //14
-    this->gameRooms.emplace_back(new Room(1,3,0,15)); //15
-    this->gameRooms.emplace_back(new Room(1,3,1,16)); //16
-    this->gameRooms.emplace_back(new Room(5,3,2,17)); //17
-    this->gameRooms.emplace_back(new Room(1,3,3,18)); //18
-    this->gameRooms.emplace_back(new Room(1,3,4,19)); //19
-    this->gameRooms.emplace_back(new Room(1,4,0,20)); //20
-    this->gameRooms.emplace_back(new Room(1,4,1,21)); //21
-    this->gameRooms.emplace_back(new Room(1,4,2,22)); //22
-    this->gameRooms.emplace_back(new Room(1,4,3,23)); //23
-    this->gameRooms.emplace_back(new Room(1,4,4,24)); //24
-
-
-    //playtest rooms
-    this->playtest.emplace_back(new Room(1,0,0,0)); 
-
-    this->rooms = gameRooms;
-    
-
-    
-    this->active_room = 12;
-    this->clock.restart();//bo inaczej sie enter sam wciska lol
-}
-void Game::init(){
-    this->masterVolume = 1.5f;
-    this->currentScreen = "Window";
-        //sound
-    this->buffer = new sf::SoundBuffer("./Sound/pickupweapon.wav");
-    this->pickupWeapon = new sf::Sound(*(this->buffer));
-    this->pickupWeapon->setVolume(2.f);
-
-    this->menuBuffer = new sf::SoundBuffer("./Sound/menu.mp3");
-    this->gameBuffer = new sf::SoundBuffer("./Sound/game.mp3");
-    this->gameOverBuffer = new sf::SoundBuffer("./Sound/game_over.mp3");
-    this->soundtrack = new sf::Sound(*(this->menuBuffer));
-    this->gameSound = new sf::Sound(*(this->gameBuffer));
-    this->gameOverSound = new sf::Sound(*(this->gameOverBuffer));
-    this->soundtrack->setVolume(this->masterVolume);
-    this->gameSound->setVolume(this->masterVolume);
-    this->gameOverSound->setVolume(this->masterVolume);
-
-        //seting frame limit
-    
-    this->videoMode.size = {800, 450};
-    //makes window proportional
-    this->window = new sf::RenderWindow(this->videoMode, "The binding of isaac ultimate ripoff");
-    this->window->setFramerateLimit(60);
-    sf::View view(sf::FloatRect({0.f, 0.f}, {1600.f, 900.f}));
-    this->window->setView(view);
-    
-        //setting font
-    this->font = new sf::Font("./Fonts/Roboto-Regular.ttf");
     this->restart();
 
     
@@ -407,7 +419,7 @@ void Game::update(){
     
 }
 void Game::render(){
-    this->window->clear(sf::Color(120, 120, 120));
+    this->window->clear(sf::Color::Black);
     
     this->renderEntitys();
     if(this->menuOpen()){
@@ -578,7 +590,7 @@ void Game::updateWalls(Room* room){
 }
 
 void Game::updateDoors(Room* room){
-    if(this->player.getPosition().x<20){ //left
+    if(this->player.getPosition().x<10){ //left
         for(auto& temproom : this->rooms){
             if(this->rooms[this->active_room]->getY()==temproom->getY()){
                 if (this->rooms[this->active_room]->getX()-1==temproom->getX())
@@ -602,7 +614,7 @@ void Game::updateDoors(Room* room){
         }
 
     }
-    if(this->player.getPosition().x>1520){ //right
+    if(this->player.getPosition().x>1530){ //right
                 for(auto& temproom : this->rooms){
             if(this->rooms[this->active_room]->getY()==temproom->getY()){
                 if (this->rooms[this->active_room]->getX()+1==temproom->getX())
@@ -628,7 +640,7 @@ void Game::updateDoors(Room* room){
             this->dootTP=false;
         }
     }
-    if(this->player.getPosition().y<20){ //top
+    if(this->player.getPosition().y<10){ //top
         for(auto& temproom : this->rooms){
             if(this->rooms[this->active_room]->getX()==temproom->getX()){
                 if (this->rooms[this->active_room]->getY()+1==temproom->getY())
@@ -653,7 +665,7 @@ void Game::updateDoors(Room* room){
             this->player.setPosition(sf::Vector2f(this->player.getPosition().x,20.f));
         }
     }
-    if(this->player.getPosition().y>820){ //bottom
+    if(this->player.getPosition().y>830){ //bottom
         for(auto& temproom : this->rooms){
             if(this->rooms[this->active_room]->getX()==temproom->getX()){
                 if (this->rooms[this->active_room]->getY()-1==temproom->getY())
@@ -730,6 +742,7 @@ void Game::updatePlayerBullets(){
     
         //checking if bullet should be deleted for now only by its range
         if((*i)->isVisible==false){
+            delete *i;
             playerBullets.erase(i);
             
         }else{
@@ -748,6 +761,7 @@ void Game::updateEnemyBullets(){
 
         //checking if bullet should be deleted for now only by its range
         if((*i)->isVisible==false){
+            delete *i;
             enemyBullets.erase(i);
             
         }else{
@@ -821,13 +835,13 @@ void Game::menu(){
 }
 void Game::mainMenu(){
     this->play->setString("Play");
-    this->option1->setString("Test");
-    this->option1->setPosition({50.f, 250.f});
     this->option2->setString("Settings");
-    this->option2->setPosition({50.f, 300.f});
+    this->option1->setPosition({50.f, 200.f});
+    this->option2->setPosition({50.f, 250.f});
+    this->info->setPosition({50.f, 300.f});
+    this->quit->setPosition({50.f, 350.f});
     this->option2->setFillColor(sf::Color::White);
     this->window->draw(*play);
-        this->window->draw(*option1);
         this->window->draw(*option2);
         this->window->draw(*info);
         this->window->draw(*quit);
@@ -841,7 +855,7 @@ void Game::mainMenu(){
             
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down))
         {
-            if(this->selected < 5){
+            if(this->selected < 4){
                 this->selected ++;
             }
             this->clock.restart();
@@ -854,21 +868,13 @@ void Game::mainMenu(){
         fog.setPosition({play->getPosition().x-20.f, play->getPosition().y-5.f});
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) && this->clock.getElapsedTime().asSeconds() > 0.3f)
         {
-            this->rooms = this->gameRooms;
             this->ismenuOpen = false; 
             this->gameSound->play();
             this->soundtrack->stop();
             this->clock.restart();
         }  
-    }else if(this->selected == 2){
-        fog.setPosition({option1->getPosition().x-20.f, option1->getPosition().y-5.f});
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) && this->clock.getElapsedTime().asSeconds() > 0.1f)
-        {
-            this->rooms = this->playtest;
-            this->ismenuOpen = false;
-            this->clock.restart();
-        }  
-    }else if(this->selected == 3){
+    }
+    else if(this->selected == 2){
         fog.setPosition({option2->getPosition().x-20.f, option2->getPosition().y-5.f});
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) && this->clock.getElapsedTime().asSeconds() > 0.1f)
         {
@@ -877,7 +883,7 @@ void Game::mainMenu(){
             this->tempScreen = this->currentScreen;
             this->clock.restart();
         }  
-    }else if(this->selected == 4){
+    }else if(this->selected == 3){
         fog.setPosition({info->getPosition().x-20.f, info->getPosition().y-5.f});
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) && this->clock.getElapsedTime().asSeconds() > 0.1f)
         {
@@ -885,7 +891,7 @@ void Game::mainMenu(){
             this->clock.restart();
         }  
     }
-    else if(this->selected == 5){
+    else if(this->selected == 4){
         fog.setPosition({quit->getPosition().x-20.f, quit->getPosition().y-5.f});
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) && this->clock.getElapsedTime().asSeconds() > 0.1f)
         {
@@ -902,6 +908,7 @@ void Game::mainMenu(){
 void Game::settingsMenu(){
     this->play->setString("Scrren");
     this->option1->setString("Back");
+    this->option1->setPosition({50.f, 250.f});
     
     this->option2->setString(this->tempScreen);
     this->option2->setPosition({200.f, 200.f});
@@ -969,7 +976,7 @@ void Game::settingsMenu(){
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) && this->clock.getElapsedTime().asSeconds() > 0.1f)
         {
             this->currentMenu = 0;
-            this->selected = 1;
+            this->selected = 2;
             this->clock.restart();
             
         }  

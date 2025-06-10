@@ -21,13 +21,13 @@ int Door::getDoorSide(){
 }
 
 inline Door::Door(){
-    this->shape.setFillColor(sf::Color::White);
+    this->shape.setFillColor(sf::Color::Black);
     this->shape.setSize(sf::Vector2f(200.f, 200.f));
     this->shape.setPosition(sf::Vector2f(0.f, 0.f));
 };
 
 inline Door::Door(int b){
-    this->shape.setFillColor(sf::Color::Yellow);
+    this->shape.setFillColor(sf::Color::Black);
     this->shape.setSize(sf::Vector2f(64.f, 64.f));
     this->doorSide=b;
     if(this->doorSide==1){
