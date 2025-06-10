@@ -372,5 +372,4 @@ void Player::changeState(state st){
     }
 }
 
-
 #endif

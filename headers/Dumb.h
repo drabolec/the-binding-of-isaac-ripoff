@@ -50,6 +50,7 @@ void Dumb::update(sf::Vector2f pos){
 };
 
 void Dumb::move(sf::Vector2f pos){
+    pos = {pos.x-20.f, pos.y-20.f};
     if(pos.x>this->getPosition().x){
         this->curFrames = this->frames;
         this->setPosition(this->getPosition().x+this->speed,this->getPosition().y);
