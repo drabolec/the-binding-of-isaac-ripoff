@@ -10,10 +10,15 @@ class FastBullet:public Bullet{
         void update();
         void render(sf::RenderTarget* targe);
         void setInitPos();
+        ~FastBullet();
         
     private:
         
 };
+FastBullet::~FastBullet(){
+    delete this->texture;
+    delete this->intrect;
+}
 FastBullet::FastBullet(){
     //setting up textrue
     this->texture = new sf::Texture("./Textures/necrobolt1_strip.png");
