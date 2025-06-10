@@ -11,15 +11,15 @@ int main()
     ShowWindow( hWnd, SW_HIDE );
 
     
-    Game game;
-    while (game.running())
+    Game* game = new Game();
+    while (game->running())
     {
-        if(!game.menuOpen() && !game.getEnd() && !game.getLose()){
-            game.update();
+        if(!game->menuOpen() && !game->getEnd() && !game->getLose()){
+            game->update();
         }
         
 
-        game.render();
+        game->render();
        
     }
 }
