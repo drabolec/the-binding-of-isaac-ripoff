@@ -23,13 +23,6 @@ class Dumb:public Enemy{
 };
 
 Dumb::Dumb(){
-//frames
-    
-    
-
-    
-    
-    
     //this->setColor(sf::Color::Green);
     this->setHitboxSize({64.f, 64.f});
     this->setShapeSize({64.f, 64.f});

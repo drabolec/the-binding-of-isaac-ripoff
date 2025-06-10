@@ -11,6 +11,13 @@ class Ram:public Enemy{
         void move(sf::Vector2f pos);
         void update(sf::Vector2f pos);
         void changeState(int a);
+        std::vector<sf::IntRect*> curFrames;
+        std::vector<sf::IntRect*> frames;
+        std::vector<sf::IntRect*> framesR;
+        int frame;
+        void animate();
+        sf::Clock clock;
+        float speed;
     private:  
         float gox,goy;
         float Random=100;
@@ -23,6 +30,10 @@ class Ram:public Enemy{
 Ram::Ram(){};
 
 Ram::Ram(sf::Vector2f pos){
+    //frames
+    
+
+
     this->change_can_be_hit(true);
     this->setHp(20);
     this->setDmg(20);
