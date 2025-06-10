@@ -25,9 +25,11 @@ Spike::Spike(sf::Vector2f pos){
     this->change_can_be_hit(false);
     this->setHp(20);
     this->setDmg(0);
-    this->setColor(sf::Color::Green);
-    this->setHitboxSize({40.f, 40.f});
-    this->setShapeSize({40.f, 40.f});
+    this->setHitboxSize({64.f, 64.f});
+    this->setShapeSize({64.f, 64.f});
+    this->texture = new sf::Texture("./Textures/floorall.png");
+    this->shape.setTexture(this->texture);
+    this->shape.setTextureRect(*(new sf::IntRect({0, 48}, {16, 16})));
     this->setPosition(pos);
 };
 
@@ -78,15 +80,15 @@ void Spike::update(sf::Vector2f pos){
 
 
     if(this->state==1){
-        this->setColor(sf::Color::Red);
+        this->shape.setTextureRect(*(new sf::IntRect({16, 48}, {16, 16})));
     }
     else if(this->state==2){
-        this->setColor(sf::Color::Black);
+        this->shape.setTextureRect(*(new sf::IntRect({48, 48}, {16, 16})));
         this->setDmg(50);   
     }
     else{
         this->is_up=false;
-        this->setColor(sf::Color::Green);
+        this->shape.setTextureRect(*(new sf::IntRect({0, 48}, {16, 16})));
 
         this->setDmg(0);
     }
