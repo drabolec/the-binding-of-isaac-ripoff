@@ -16,10 +16,14 @@ class rbAmmo:public Ammo{
 
         void update();
         void render(sf::RenderTarget* target);
+        ~rbAmmo();
     private:
         
 
 };
+rbAmmo::~rbAmmo(){
+    delete this->texture;
+}
 Bullet* rbAmmo::getType(){
     return this->type;
 }

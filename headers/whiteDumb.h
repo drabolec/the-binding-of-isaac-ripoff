@@ -6,7 +6,11 @@
 class whiteDumb:public Dumb{
 public:
     whiteDumb(sf::Vector2f pos);
+    ~whiteDumb();
 };
+whiteDumb::~whiteDumb(){
+    delete this->texture;
+}
 whiteDumb::whiteDumb(sf::Vector2f pos){
     this->frame = 0;
     for(int i = 432; i < 500; i = i + 16){

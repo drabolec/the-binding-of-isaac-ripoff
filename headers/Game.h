@@ -183,18 +183,36 @@ void Game::restart(){
     this->background.setSize({1600.f, 900.f});
     
     //temporary for testing
-    
-    
-    
-    //this->gameRooms.clear();
-    this->rooms = this->initrooms;
-
-    
-    //playtest rooms
-    //this->playtest.emplace_back(new Room(1,0,0,0)); 
-    
-
-    
+    for(auto el:this->rooms){
+        delete el;
+    }
+    this->rooms.clear();
+    this->rooms.emplace_back(new Room(1,0,0,0)); //0   room making
+    this->rooms.emplace_back(new Room(1,0,1,1)); //1
+    this->rooms.emplace_back(new Room(1,1,0,2)); //2
+    this->rooms.emplace_back(new Room(1,1,1,3)); //3
+    this->rooms.emplace_back(new Room(1,0,2,4)); //4
+    this->rooms.emplace_back(new Room(1,0,3,5)); //5
+    this->rooms.emplace_back(new Room(1,0,4,6)); //6
+    this->rooms.emplace_back(new Room(3,1,2,7)); //7
+    this->rooms.emplace_back(new Room(1,1,3,8)); //8
+    this->rooms.emplace_back(new Room(1,1,4,9)); //9
+    this->rooms.emplace_back(new Room(1,2,0,10)); //10
+    this->rooms.emplace_back(new Room(4,2,1,11)); //11
+    this->rooms.emplace_back(new Room(1,2,2,12)); //12
+    this->rooms.emplace_back(new Room(6,2,3,13)); //13
+    this->rooms.emplace_back(new Room(1,2,4,14)); //14
+    this->rooms.emplace_back(new Room(1,3,0,15)); //15
+    this->rooms.emplace_back(new Room(1,3,1,16)); //16
+    this->rooms.emplace_back(new Room(5,3,2,17)); //17
+    this->rooms.emplace_back(new Room(1,3,3,18)); //18
+    this->rooms.emplace_back(new Room(1,3,4,19)); //19
+    this->rooms.emplace_back(new Room(1,4,0,20)); //20
+    this->rooms.emplace_back(new Room(1,4,1,21)); //21
+    this->rooms.emplace_back(new Room(1,4,2,22)); //22
+    this->rooms.emplace_back(new Room(1,4,3,23)); //23
+    this->rooms.emplace_back(new Room(1,4,4,24)); //24
+ 
     this->active_room = 12;
     this->clock.restart();//bo inaczej sie enter sam wciska lol
     
@@ -276,31 +294,7 @@ void Game::init(){
     this->timer = new sf::Text(*(this->font));
 
     
-    this->initrooms.emplace_back(new Room(1,0,0,0)); //0   room making
-    this->initrooms.emplace_back(new Room(1,0,1,1)); //1
-    this->initrooms.emplace_back(new Room(1,1,0,2)); //2
-    this->initrooms.emplace_back(new Room(1,1,1,3)); //3
-    this->initrooms.emplace_back(new Room(1,0,2,4)); //4
-    this->initrooms.emplace_back(new Room(1,0,3,5)); //5
-    this->initrooms.emplace_back(new Room(1,0,4,6)); //6
-    this->initrooms.emplace_back(new Room(3,1,2,7)); //7
-    this->initrooms.emplace_back(new Room(1,1,3,8)); //8
-    this->initrooms.emplace_back(new Room(1,1,4,9)); //9
-    this->initrooms.emplace_back(new Room(1,2,0,10)); //10
-    this->initrooms.emplace_back(new Room(4,2,1,11)); //11
-    this->initrooms.emplace_back(new Room(1,2,2,12)); //12
-    this->initrooms.emplace_back(new Room(6,2,3,13)); //13
-    this->initrooms.emplace_back(new Room(1,2,4,14)); //14
-    this->initrooms.emplace_back(new Room(1,3,0,15)); //15
-    this->initrooms.emplace_back(new Room(1,3,1,16)); //16
-    this->initrooms.emplace_back(new Room(5,3,2,17)); //17
-    this->initrooms.emplace_back(new Room(1,3,3,18)); //18
-    this->initrooms.emplace_back(new Room(1,3,4,19)); //19
-    this->initrooms.emplace_back(new Room(1,4,0,20)); //20
-    this->initrooms.emplace_back(new Room(1,4,1,21)); //21
-    this->initrooms.emplace_back(new Room(1,4,2,22)); //22
-    this->initrooms.emplace_back(new Room(1,4,3,23)); //23
-    this->initrooms.emplace_back(new Room(1,4,4,24)); //24
+    
 
     
 

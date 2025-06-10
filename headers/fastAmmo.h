@@ -16,10 +16,14 @@ class fastAmmo:public Ammo{
 
         void update();
         void render(sf::RenderTarget* target);
+        ~fastAmmo();
     private:
         
 
 };
+fastAmmo::~fastAmmo(){
+    delete this->texture;
+}
 Bullet* fastAmmo::getType(){
     return this->type;
 }

@@ -15,7 +15,7 @@ private:
 
 };
 Ammo::~Ammo(){
-    delete this->texture;
+    
 }
 void Ammo::setPosition(sf::Vector2f pos){
 

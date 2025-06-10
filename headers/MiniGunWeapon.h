@@ -16,6 +16,7 @@ class MiniGunWeapon: public Item{
         void render(sf::RenderTarget* target);
         MiniGunWeapon();
         const float time = 0.2f;
+        ~MiniGunWeapon();
         
     private:
         
@@ -23,6 +24,9 @@ class MiniGunWeapon: public Item{
 
     
 };
+MiniGunWeapon::~MiniGunWeapon(){
+    delete this->texture;
+}
 MiniGunWeapon::MiniGunWeapon(){
     //setting texture
     this->texture = new sf::Texture("./Textures/minigun_weapon.png");

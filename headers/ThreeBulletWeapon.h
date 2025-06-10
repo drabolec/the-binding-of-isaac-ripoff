@@ -15,6 +15,7 @@ class ThreeBulletWeapon: public Item{
         void updatePos(sf::Vector2f pos);
         void render(sf::RenderTarget* target);
         ThreeBulletWeapon();
+        ~ThreeBulletWeapon();
         const float time = 0.6;
     private:
         
@@ -22,6 +23,9 @@ class ThreeBulletWeapon: public Item{
 
     
 };
+ThreeBulletWeapon::~ThreeBulletWeapon(){
+    delete this->texture;
+}
 ThreeBulletWeapon::ThreeBulletWeapon(){
     //setting texture
     this->texture = new sf::Texture("./Textures/threebullet_weapon.png");

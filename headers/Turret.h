@@ -64,6 +64,14 @@ Turret::Turret(sf::Vector2f pos){
 };
 
 Turret::~Turret(){
+    delete this->texture;
+    delete this->blinkTex;
+    for(auto el:this->blinkFrames){
+        delete el;
+    }
+    for(auto el:this->frames){
+        delete el;
+    }
 };
 
 
