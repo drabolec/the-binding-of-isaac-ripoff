@@ -33,8 +33,8 @@ greenRam::greenRam(sf::Vector2f pos){
     this->shape.setTextureRect(*(this->curFrames.at(this->frame)));
 
     this->change_can_be_hit(true);
-    this->setHp(20);
-    this->setDmg(20);
+    this->setHp(400);
+    this->setDmg(60);
     this->setHitboxSize({80.f, 80.f});
     this->setShapeSize({80.f, 80.f});
     this->setPosition(pos);
