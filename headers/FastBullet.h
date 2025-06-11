@@ -32,6 +32,7 @@ FastBullet::FastBullet(){
 
     this->speed = 20.f;
     this->range = 600.f;
+    this->dmg = 40.f;
     this->hitbox.setSize({30.f, 30.f});
     this->rangeControl = 0;
 }

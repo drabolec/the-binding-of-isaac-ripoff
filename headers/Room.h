@@ -31,6 +31,8 @@
 #include "whiteDumb.h"
 #include "greenDumb.h"
 #include "redDumb.h"
+#include "whiteRam.h"
+#include "greenRam.h"
 
 class Room {
     public:
@@ -181,7 +183,9 @@ Room::Room(int a,int b, int c,int d){
         c.y=500.f;
         this->enemies.emplace_back(new Spike2(c));
         c.y=200.f;
-        this->enemies.emplace_back(new Ram(c));
+        this->enemies.emplace_back(new whiteRam(c));
+        c.y=500.f;
+        this->enemies.emplace_back(new greenRam(c));
         c.x=300.f;
         c.y=500.f;
         this->enemies.emplace_back(new Spike(c));

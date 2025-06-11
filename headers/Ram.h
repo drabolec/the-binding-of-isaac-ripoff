@@ -14,46 +14,49 @@ class Ram:public Enemy{
         std::vector<sf::IntRect*> curFrames;
         std::vector<sf::IntRect*> frames;
         std::vector<sf::IntRect*> framesR;
+        std::vector<sf::IntRect*> idleframes;
+        std::vector<sf::IntRect*> idleframesR;
         int frame;
         void animate();
         sf::Clock clock;
         float speed;
-    private:  
+        sf::Clock animClock; 
         float gox,goy;
         float Random=100;
         int counter=0;
         bool block_move=0;
         bool attacked=0;
-        int state=0; // 0 - passive 1 - atak
+        int state; // 0 - passive 1 - atak
 };
 
 Ram::Ram(){};
 
 Ram::Ram(sf::Vector2f pos){
-    //frames
     
-
-
-    this->change_can_be_hit(true);
-    this->setHp(20);
-    this->setDmg(20);
-    this->setColor(sf::Color::Green);
-    this->setHitboxSize({40.f, 40.f});
-    this->setShapeSize({40.f, 40.f});
-    this->setPosition(pos);
 };
 
 Ram::~Ram(){
-    delete this->texture;
+    
 };
 
-
+void Ram::animate(){
+    if(this->animClock.getElapsedTime().asSeconds() > 0.1f){
+        this->animClock.restart();
+        this->frame ++;
+        if(this->frame >=4){
+            this->frame = 0;
+        }
+        this->shape.setTextureRect(*(this->curFrames.at(this->frame)));
+    }
+}
 void Ram::update(sf::Vector2f pos){
+    
+    animate();
     float x,y,chance,dist;
 
     this->attacked=this->getCollided();
     if(this->attacked){
-        this->state=2;
+        this->state=0;
     }
 
     counter++;
@@ -71,11 +74,11 @@ void Ram::update(sf::Vector2f pos){
     dist=sqrt(pow(x,2)+pow(y,2));
 
 
-    if(dist>1000){
-        this->state=0;
+    if(dist>700){
+        this->state=2;
     }
-    if(dist<=1000){
-        Random = getRandomInt(0, 100);
+    if(dist<=500){
+        Random = getRandomInt(0, 500);
         if(Random<(dist/10)){
             this->state=0;
         }
@@ -85,17 +88,24 @@ void Ram::update(sf::Vector2f pos){
     }
 
 
-    if(this->state==1){
-        this->setColor(sf::Color::Red);
+    if(this->state==1 || this->state==0){
+        if(pos.x < this->shape.getPosition().x){
+            this->curFrames = this->framesR;
+        }
+        else if(pos.x > this->shape.getPosition().x){
+            this->curFrames = this->frames;
+        }
         this->gox=pos.x;
         this->goy=pos.y;
 
     }
-    else if(this->state==0){
-        this->setColor(sf::Color::Black);      
-    }
     else{
-        this->setColor(sf::Color::Green); 
+        if(pos.x < this->shape.getPosition().x){
+            this->curFrames = this->idleframesR;
+        }
+        else if(pos.x > this->shape.getPosition().x){
+            this->curFrames = this->idleframes;
+        } 
     }
     }
 };
@@ -105,10 +115,10 @@ void Ram::changeState(int a){
 };
 
 void Ram::move(sf::Vector2f pos){
-    
+    pos = {pos.x-40.f, pos.y-40.f};
     if(this->state==2){
     }
-    if(this->state==1){
+    else if(this->state==1){
     if(pos.x>this->getPosition().x){
         this->setPosition(this->getPosition().x+5.f,this->getPosition().y);
     }
