@@ -271,15 +271,16 @@ int Room::getRandomInt(int min,int max){
 
 Room::~Room(){
     
-    for(auto el:enemies){
-        delete el;
-    }
     for(auto el:weapons){
         delete el;
     }
     for(auto el:loot){
         delete el;
     }
+    for(auto el:enemies){
+        delete el;
+    }
+    
     
     
     delete texture;
@@ -303,9 +304,7 @@ void Room::update(){
 void Room::render(sf::RenderTarget* target){
     target->draw(this->floor);
     //target->draw(this->shape);
-    for (const auto& enemy : enemies) {
-        enemy->render(target);
-    }
+    
     for (const auto& door : doors) {
         door->render(target);
     }
@@ -325,6 +324,10 @@ void Room::render(sf::RenderTarget* target){
     for (const auto& boost : boosts) {
         boost->render(target);
     }
+    for (const auto& enemy : enemies) {
+        enemy->render(target);
+    }
+    
 };
 
 

@@ -745,7 +745,7 @@ void Game::updateWeapons(Room* room){
         if(isColision(weapon, &player) && player.pressedE==true){
             //giving a player weapon on the ground and droping current weapon 
             Item* droped = currentWeapon;
-            droped->updatePos({this->player.getPosition().x+20.f, this->player.getPosition().y+80.f});
+            droped->updatePos({this->player.getPosition().x+20.f, this->player.getPosition().y+50.f});
             weapons.at(x) = droped;
             this->currentWeapon = weapon;
             //setting current bullets for new weapon
