@@ -133,6 +133,16 @@ public:
 
 };
 void Game::restart(){
+    for(auto el:this->playerBullets){
+        delete el;
+    }
+    this->playerBullets.clear();
+    for(auto el:this->enemyBullets){
+        delete el;
+    }
+    this->enemyBullets.clear();
+
+    
     this->player.setHp(100);
     this->gameOverSound->stop();
     this->soundtrack->stop();
@@ -638,6 +648,7 @@ void Game::updateDoors(Room* room){
                     for(auto el:this->enemyBullets){
                         delete el;
                     }
+                    this->enemyBullets.clear();
                     std::cout<<this->rooms[this->active_room]->getX()<<" "<<this->rooms[this->active_room]->getY()<<"\n";
                     std::cout<<"there is such a room in X axis on the right\n";
                     this->dootTP=false;
@@ -671,6 +682,7 @@ void Game::updateDoors(Room* room){
                     for(auto el:this->enemyBullets){
                         delete el;
                     }
+                    this->enemyBullets.clear();
                     std::cout<<this->rooms[this->active_room]->getX()<<" "<<this->rooms[this->active_room]->getY()<<"\n";
                     this->dootTP=false;
                     this->player.setPosition(sf::Vector2f(this->player.getPosition().x,800.f));
@@ -703,6 +715,7 @@ void Game::updateDoors(Room* room){
                     for(auto el:this->enemyBullets){
                         delete el;
                     }
+                    this->enemyBullets.clear();
                     std::cout<<this->rooms[this->active_room]->getX()<<" "<<this->rooms[this->active_room]->getY()<<"\n";
                     this->dootTP=false;
                     this->player.setPosition(sf::Vector2f(this->player.getPosition().x,30.f));
