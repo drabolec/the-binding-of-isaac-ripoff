@@ -79,6 +79,12 @@ private:
     sf::Text* nickname;
     sf::RectangleShape fog;
     sf::RectangleShape background;
+    sf::RectangleShape fade;
+    bool dark;
+    bool light;
+    sf::Clock fadeClock;
+    int fadeOpacity;
+
     bool dootTP=true;
     int currentMenu = 0;
     std::string currentScreen;
@@ -133,6 +139,10 @@ public:
 
 };
 void Game::restart(){
+    this->dark = false;
+    this->light = false;
+    this->fadeClock.restart();
+    this->fadeOpacity = 0;
     for(auto el:this->playerBullets){
         delete el;
     }
@@ -228,7 +238,13 @@ void Game::restart(){
     
 }
 void Game::init(){
+    this->fade.setFillColor(sf::Color(0, 0, 0, 0));
+    this->fade.setPosition({0.f, 0.f});
+    this->fade.setSize({1600.f, 900.f});
     
+    
+
+
     this->masterVolume = 1.5f;
     this->currentScreen = "Window";
         //sound
@@ -487,6 +503,22 @@ void Game::interf(){
     sf::RectangleShape bullet = this->currentBullet->shape;
     bullet.setPosition({300.f, 20.f});
     bullet.setScale({1.5f, 1.5f});
+    if(dark){
+        this->light = true;
+        this->dark = false;
+        this->fadeOpacity = 255;
+        
+    }
+     if(light && this->fadeClock.getElapsedTime().asSeconds() > 0.01f){
+        this->fadeClock.restart();
+        this->fadeOpacity -= 30.f;
+        if(this->fadeOpacity <=0.f){
+            this->fadeOpacity = 0;
+            this->light = false;
+        }
+        this->fade.setFillColor(sf::Color(0, 0, 0, this->fadeOpacity));
+    }
+    this->window->draw(this->fade);
     this->window->draw(bullet);
     this->window->draw(temp);
     this->window->draw(*(this->hpText));
@@ -609,6 +641,7 @@ void Game::updateDoors(Room* room){
                     std::cout<<this->rooms[this->active_room]->getX()<<" "<<this->rooms[this->active_room]->getY()<<"\n";
                     std::cout<<temproom->getId()<<"\n";
                     this->active_room=temproom->getId();
+                    this->dark = true;
                     for(auto el:this->playerBullets){
                         delete el;
                     }
@@ -641,6 +674,7 @@ void Game::updateDoors(Room* room){
                     std::cout<<this->rooms[this->active_room]->getX()<<" "<<this->rooms[this->active_room]->getY()<<"\n";
                     std::cout<<temproom->getId()<<"\n";
                     this->active_room=temproom->getId();
+                    this->dark = true;
                     for(auto el:this->playerBullets){
                         delete el;
                     }
@@ -675,6 +709,7 @@ void Game::updateDoors(Room* room){
                     std::cout<<this->rooms[this->active_room]->getX()<<" "<<this->rooms[this->active_room]->getY()<<"\n";
                     std::cout<<temproom->getId()<<"\n";
                     this->active_room=temproom->getId();
+                    this->dark = true;
                     for(auto el:this->playerBullets){
                         delete el;
                     }
@@ -708,6 +743,7 @@ void Game::updateDoors(Room* room){
                     std::cout<<this->rooms[this->active_room]->getX()<<" "<<this->rooms[this->active_room]->getY()<<"\n";
                     std::cout<<temproom->getId()<<"\n";
                     this->active_room=temproom->getId();
+                    this->dark = true;
                     for(auto el:this->playerBullets){
                         delete el;
                     }
@@ -758,24 +794,7 @@ void Game::updateWeapons(Room* room){
     
 
 
-     //updating loot for testing
-    //in the future wepons list will be taken from room object but the rest of the logic stays the same
-    /*auto& weapons = room->getWeapons();
-    for(auto i = weapons.begin(); i != weapons.end();){
-        //checking for colision and if player pressed E 
-        if(isColision(i->getLose();(), &player) && player.pressedE==true){
-            //giving a player weapon on the ground and droping current weapon 
-            std::unique_ptr<Item> droped = std::move(currentWeapon);
-            droped->updatePos({this->player.getPosition().x+20.f, this->player.getPosition().y+80.f});
-            this->currentWeapon = std::move(*i);
-            *i = std::move(droped);
-            //setting current bullets for new weapon
-            
-            this->currentWeapon->setCurrentBullet(this->currentBullet.getLose();());
-            this->pickupWeapon->play();
-            break;
-        }
-    }*/
+  
 }
 void Game::updatePlayerBullets(){
     //updating player bullet position
