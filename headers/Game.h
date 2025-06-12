@@ -139,6 +139,7 @@ public:
 
 };
 void Game::restart(){
+    this->menuT->setString("The binding of not isaac");
     this->dark = false;
     this->light = false;
     this->fadeClock.restart();
