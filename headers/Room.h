@@ -20,6 +20,7 @@
 #include "Turret.h"
 #include "Dumb.h"
 #include "Spike.h"
+#include "Boss.h"
 #include "Ram.h"
 #include "Spike2.h"
 #include "FirstWeapon.h"
@@ -33,11 +34,11 @@
 #include "redDumb.h"
 #include "whiteRam.h"
 #include "greenRam.h"
-
+#include "Player.h"
 class Room {
     public:
         Room();
-        Room(int a,int b, int c,int d);
+        Room(int a,int b, int c,int d,Player* playerc);
         ~Room();
         void render(sf::RenderTarget* target);
         void update();
@@ -45,6 +46,9 @@ class Room {
         int getId(){ return id; };
         int getX();
         int getY();
+        bool getCleared();
+        void setCleared(bool a);
+        void getPlayer(Player* playerc);
         int getRandomInt(int min,int max);
         std::vector<Item*>& getWeapons();
         std::vector<std::unique_ptr<Boost>>& getBoosts();
@@ -52,13 +56,17 @@ class Room {
         std::vector<std::unique_ptr<Wall>>& getWalls();
         std::vector<std::unique_ptr<Door>>& getDoors();
         std::vector<Enemy*>& getEnemies();
+        std::vector<Enemy*>& getSpikes();
         sf::RectangleShape floor;
         sf::Texture* texture;
     private:
         bool isActive=true;
+        bool cleared=false;
         int type_id;
+        Player* playerd=nullptr;
         sf::RectangleShape shape;
         std::vector<Enemy*> enemies;
+        std::vector<Enemy*> spikes;
         std::vector<std::unique_ptr<Door>> doors;
         std::vector<std::unique_ptr<Wall>> walls;
         std::vector<Item*> weapons;
@@ -75,6 +83,7 @@ class Room {
 std::vector<Item*>& Room::getWeapons() { return weapons; };
 std::vector<Ammo*>& Room::getLoot() { return loot; };
 std::vector<Enemy*>& Room::getEnemies() { return enemies; };
+std::vector<Enemy*>& Room::getSpikes() { return spikes; };
 std::vector<std::unique_ptr<Boost>>& Room::getBoosts() { return this->boosts; };
 std::vector<std::unique_ptr<Wall>>& Room::getWalls() { return walls; };
 std::vector<std::unique_ptr<Door>>& Room::getDoors() { return doors; };
@@ -84,7 +93,7 @@ Room::Room(){
     this->shape.setSize(sf::Vector2f(200.f, 200.f));
     this->shape.setPosition(sf::Vector2f(0.f, 0.f));
 };
-Room::Room(int a,int b, int c,int d){
+Room::Room(int a,int b, int c,int d,Player* playerc){
     this->shape.setFillColor(sf::Color::White);
     this->shape.setSize(sf::Vector2f(1600.f, 900.f));
     this->shape.setPosition(sf::Vector2f(0.f, 0.f));
@@ -92,8 +101,8 @@ Room::Room(int a,int b, int c,int d){
     this->x=b;
     this->y=c;
     this->id=d;
-
-
+    playerd=playerc;
+    /*
     if(this->x==0){
         this->walls.emplace_back(new Wall(9));
     }
@@ -118,7 +127,7 @@ Room::Room(int a,int b, int c,int d){
     else{
       this->doors.emplace_back(new Door(3));
     }
-
+    */
 
     this->walls.emplace_back(new Wall(1));
     this->walls.emplace_back(new Wall(2));
@@ -128,6 +137,10 @@ Room::Room(int a,int b, int c,int d){
     this->walls.emplace_back(new Wall(6));
     this->walls.emplace_back(new Wall(7));
     this->walls.emplace_back(new Wall(8));
+    this->walls.emplace_back(new Wall(9));
+    this->walls.emplace_back(new Wall(10));
+    this->walls.emplace_back(new Wall(11));
+    this->walls.emplace_back(new Wall(12));
     this->texture = new sf::Texture("./Textures/floor.png");
     this->texture->setRepeated(true);
     this->floor.setPosition({64.f, 64.f});
@@ -181,14 +194,14 @@ Room::Room(int a,int b, int c,int d){
         sf::Vector2f c;
         c.x=1200.f;
         c.y=500.f;
-        this->enemies.emplace_back(new Spike2(c));
+        this->spikes.emplace_back(new Spike2(c));
         c.y=200.f;
         this->enemies.emplace_back(new whiteRam(c));
         c.y=500.f;
         this->enemies.emplace_back(new greenRam(c));
         c.x=300.f;
         c.y=500.f;
-        this->enemies.emplace_back(new Spike(c));
+        this->spikes.emplace_back(new Spike(c));
 
     }
     if(type_id==5){  //changing room
@@ -199,7 +212,7 @@ Room::Room(int a,int b, int c,int d){
         for(int j=0;j<100;j++){
         c.x=getRandomInt(200,1350);
         c.y=getRandomInt(200,650);
-        this->enemies.emplace_back(new Spike2(c));
+        this->spikes.emplace_back(new Spike2(c));
         }
     }
     if(type_id==6){  //changing room
@@ -211,53 +224,86 @@ Room::Room(int a,int b, int c,int d){
         c.y=180;
         for(int j=200;j<1400;j+=40){
         c.x=j;
-        this->enemies.emplace_back(new Spike(c));
+        this->spikes.emplace_back(new Spike(c));
         }
 
         c.y=660;
         for(int j=200;j<1400;j+=40){
         c.x=j;
-        this->enemies.emplace_back(new Spike(c));
+        this->spikes.emplace_back(new Spike(c));
         }
 
         c.x=200;
         for(int j=220;j<=620;j+=40){
         c.y=j;
-        this->enemies.emplace_back(new Spike(c));
+        this->spikes.emplace_back(new Spike(c));
         }
         c.x=1360;
         for(int j=220;j<=620;j+=40){
         c.y=j;
-        this->enemies.emplace_back(new Spike(c));
+        this->spikes.emplace_back(new Spike(c));
         }
 
         c.y=320;
         for(int j=400;j<1200;j+=40){
         c.x=j;
-        this->enemies.emplace_back(new Spike(c));
+        this->spikes.emplace_back(new Spike(c));
         }
 
         c.y=520;
         for(int j=400;j<1200;j+=40){
         c.x=j;
-        this->enemies.emplace_back(new Spike(c));
+        this->spikes.emplace_back(new Spike(c));
         }
 
         c.x=400;
         for(int j=360;j<=480;j+=40){
         c.y=j;
-        this->enemies.emplace_back(new Spike(c));
+        this->spikes.emplace_back(new Spike(c));
         }
         c.x=1160;
         for(int j=360;j<=480;j+=40){
         c.y=j;
-        this->enemies.emplace_back(new Spike(c));
+        this->spikes.emplace_back(new Spike(c));
         }
 
     }
 
+    if(type_id==7){  //changing room
+
+        sf::Vector2f c;
+        c.x=704.f;
+        c.y=354.f;
+        this->spikes.emplace_back(new Spike2(c));
+        c.x=768.f;
+        c.y=354.f;
+        this->spikes.emplace_back(new Spike2(c));
+        c.x=832.f;
+        c.y=354.f;
+        this->spikes.emplace_back(new Spike2(c));
+
+        c.x=704.f;
+        c.y=482.f;
+        this->spikes.emplace_back(new Spike2(c));
+        c.x=768.f;
+        c.y=482.f;
+        this->spikes.emplace_back(new Spike2(c));
+        c.x=832.f;
+        c.y=482.f;
+        this->spikes.emplace_back(new Spike2(c));
+
+        c.x=704.f;
+        c.y=418.f;
+        this->spikes.emplace_back(new Spike2(c));
+        c.x=832.f;
+        c.y=418.f;
+        this->spikes.emplace_back(new Spike2(c));
 
 
+        if(playerd!=nullptr){
+        this->enemies.emplace_back(new Boss(sf::Vector2f(768.f,418.f),playerd));
+        }
+    }
 
 };
 
@@ -267,7 +313,12 @@ int Room::getRandomInt(int min,int max){
     std::uniform_int_distribution<> dis(min, max);
     return dis(gen);
 };
-
+void Room::setCleared(bool a){
+    this->cleared=a;
+}
+bool Room::getCleared(){
+    return this->cleared;
+}
 
 Room::~Room(){
     
@@ -280,7 +331,9 @@ Room::~Room(){
     for(auto el:enemies){
         delete el;
     }
-    
+    for(auto el:spikes){
+        delete el;
+    }
     
     
     delete texture;
@@ -327,7 +380,9 @@ void Room::render(sf::RenderTarget* target){
     for (const auto& enemy : enemies) {
         enemy->render(target);
     }
-    
+    for (const auto& enemy : spikes) {
+        enemy->render(target);
+    }
 };
 
 
