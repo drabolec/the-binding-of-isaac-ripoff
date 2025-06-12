@@ -58,9 +58,11 @@ private:
     sf::SoundBuffer *menuBuffer;
     sf::SoundBuffer *gameBuffer;
     sf::SoundBuffer *gameOverBuffer; 
+    sf::SoundBuffer *hitBuffer;
     sf::Sound *soundtrack;
     sf::Sound *gameSound;
     sf::Sound *gameOverSound;
+    sf::Sound *hitSound;
 
     bool isClosed = false;
     int x=0;
@@ -256,12 +258,15 @@ void Game::init(){
     this->menuBuffer = new sf::SoundBuffer("./Sound/menu.mp3");
     this->gameBuffer = new sf::SoundBuffer("./Sound/game.mp3");
     this->gameOverBuffer = new sf::SoundBuffer("./Sound/game_over.mp3");
+    this->hitBuffer = new sf::SoundBuffer("./Sound/hit.mp3");
     this->soundtrack = new sf::Sound(*(this->menuBuffer));
     this->gameSound = new sf::Sound(*(this->gameBuffer));
     this->gameOverSound = new sf::Sound(*(this->gameOverBuffer));
+    this->hitSound = new sf::Sound(*(this->hitBuffer));
     this->soundtrack->setVolume(this->masterVolume);
     this->gameSound->setVolume(this->masterVolume);
     this->gameOverSound->setVolume(this->masterVolume);
+    this->hitSound->setVolume(this->masterVolume);
 
         //seting frame limit
     
@@ -570,6 +575,10 @@ void Game::updateEnemies(Room* room) {
         if(isColision(&player,enemy)&&this->player.getTargetable()){
             std::cout<<player.getHp()<<std::endl;
             this->player.changeHp(-enemy->getDmg());
+            if(enemy->getDmg() > 0){
+                this->hitSound->play();
+            }
+            
             std::cout<<player.getHp()<<std::endl;
             this->player.setTargetable(false);
             enemy->setCollided(true);
@@ -834,6 +843,7 @@ void Game::updateEnemyBullets(){
     for(auto i = enemyBullets.begin(); i != enemyBullets.end();){
         if(isColision((*i),static_cast<Entity*>(&this->player))&&this->player.getTargetable()){
             this->player.setHp(this->player.getHp()-(*i)->dmg);
+            this->hitSound->play();
             enemyBullets.erase(i);
         }else{
             i++;
