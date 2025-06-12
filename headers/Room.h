@@ -377,12 +377,13 @@ void Room::render(sf::RenderTarget* target){
     for (const auto& boost : boosts) {
         boost->render(target);
     }
-    for (const auto& enemy : enemies) {
-        enemy->render(target);
-    }
     for (const auto& enemy : spikes) {
         enemy->render(target);
     }
+    for (const auto& enemy : enemies) {
+        enemy->render(target);
+    }
+
 };
 
 
