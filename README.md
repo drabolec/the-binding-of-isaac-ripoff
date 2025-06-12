@@ -20,7 +20,7 @@ The repository contains a precompiled `.exe` file that allows you to play the ga
 
 ### 1. Open the project folder in your terminal
 
-Make sure you are in the root directory of the project.
+Make sure you are in the directory of the project.
 
 ### 2. Compile the source file:
 
