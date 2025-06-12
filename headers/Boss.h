@@ -51,14 +51,13 @@ Boss::Boss(sf::Vector2f pos,Player* playerb){
     //frames
     this->playerb=playerb;
     this->frame = 0;
-    this->frames.emplace_back(new sf::IntRect({368, 230},{16, 16}));
-    this->frames.emplace_back(new sf::IntRect({384, 230},{16, 16}));
-    this->frames.emplace_back(new sf::IntRect({400, 230},{16, 16}));
-    this->frames.emplace_back(new sf::IntRect({416, 230},{16, 16}));
+    for(int i = 16; i < 144; i = i + 32){
+        this->frames.emplace_back(new sf::IntRect({i, 436}, {32, 32}));
+    }
     this->setHp(200.f);
     this->setDmg(20.f);
-    this->setHitboxSize({64.f, 64.f});
-    this->setShapeSize({64.f, 64.f});
+    this->setHitboxSize({80.f, 80.f});
+    this->setShapeSize({80.f, 80.f});
     this->setPosition(pos);
     this->bullet = new RoundBullet();
     //texture
@@ -106,6 +105,8 @@ void Boss::move(sf::Vector2f pos){
 
     if(state==0)
     {
+        this->shape.setSize({80, 80});
+            this->hitbox.setSize({80, 80});
         //this->setColor(sf::Color::Red);
         this->setPosition(768.f,418.f);
         attacked2=false;
@@ -164,6 +165,8 @@ void Boss::move(sf::Vector2f pos){
     if(state==2){
         //atak
         if(attacked2==false){
+            this->shape.setSize({160, 160});
+            this->hitbox.setSize({160, 160});
             this->setPosition(0.f,newy);
             attacked2=true;
         }
@@ -196,14 +199,13 @@ std::vector<Bullet*> Boss::getCurrentEnemyBullet(){
     return this->enemyBullets;
 }
 void Boss::animate(){
-    if(this->clock.getElapsedTime().asSeconds() > 0.3f){
+    if(this->clock.getElapsedTime().asSeconds() > 0.2f){
         this->clock.restart();
-        this->shape.setTextureRect(*(this->frames.at(this->frame)));
         this->frame ++;
-        if(this->frame >= 4){
+        if(this->frame >=4){
             this->frame = 0;
         }
-        //this->setColor(sf::Color::Green);
+        this->shape.setTextureRect(*(this->frames.at(this->frame)));
     }
     if(state){
         this->shape.setFillColor(sf::Color::White);
