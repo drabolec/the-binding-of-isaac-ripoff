@@ -555,6 +555,16 @@ void Game::updateEnemies(Room* room) {
         
     }
 
+    auto& spikes = room->getSpikes();
+    for(auto& enemy : spikes){
+        if(isColision(&player,enemy)&&this->player.getTargetable()){
+            std::cout<<player.getHp()<<std::endl;
+            this->player.changeHp(-enemy->getDmg());
+            std::cout<<player.getHp()<<std::endl;
+            this->player.setTargetable(false);
+            enemy->setCollided(true);
+        }
+    }
 }
 
 void Game::updateWalls(Room* room){
@@ -565,7 +575,38 @@ void Game::updateWalls(Room* room){
 
     sf::FloatRect playerBounds = this->player.hitbox.getGlobalBounds();
 
-    
+    if(this->rooms[this->active_room]->getEnemies().size()==0&&this->rooms[this->active_room]->getCleared()==false){
+        std::cout<<"spelniono warunki\n";
+        std::cout<<this->rooms[this->active_room]->getCleared()<<"\n";
+        int j=8;
+        if(this->rooms[this->active_room]->getX()==0){
+            j++;
+        }
+        else{
+            this->rooms[this->active_room]->getWalls().erase(walls.begin() + j);
+        }
+        if(this->rooms[this->active_room]->getX()==4){
+            j++;
+        }
+        else{
+            this->rooms[this->active_room]->getWalls().erase(walls.begin() + j);
+        }
+        if(this->rooms[this->active_room]->getY()==4){
+            j++;
+        }
+        else{
+            this->rooms[this->active_room]->getWalls().erase(walls.begin() + j);
+        }
+        if(this->rooms[this->active_room]->getY()==0){
+            j++;
+        }
+        else{
+            this->rooms[this->active_room]->getWalls().erase(walls.begin() + j);
+        }
+
+        this->rooms[this->active_room]->setCleared(true);
+    }
+
     for (auto& wall : walls) {
         sf::FloatRect wallBounds = wall->hitbox.getGlobalBounds();
         bool intersects = !(this->player.hitbox.getPosition().x + this->player.hitbox.getSize().x < wallBounds.position.x||  // Player is to the left of the wall
