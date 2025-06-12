@@ -105,6 +105,7 @@ public:
     void render();
     bool isColision(Entity* e1, Entity* e2);
     void interf();
+    int getRandomInt(int min,int max);
     void updatePlayerBullets();
     void updateEnemyBullets();
     void updateLoot(Room* room);
@@ -196,37 +197,49 @@ void Game::restart(){
     for(auto el:this->rooms){
         delete el;
     }
+
+
     this->rooms.clear();
-    this->rooms.emplace_back(new Room(1,0,0,0)); //0   room making
-    this->rooms.emplace_back(new Room(1,0,1,1)); //1
-    this->rooms.emplace_back(new Room(1,1,0,2)); //2
-    this->rooms.emplace_back(new Room(1,1,1,3)); //3
-    this->rooms.emplace_back(new Room(1,0,2,4)); //4
-    this->rooms.emplace_back(new Room(1,0,3,5)); //5
-    this->rooms.emplace_back(new Room(1,0,4,6)); //6
-    this->rooms.emplace_back(new Room(3,1,2,7)); //7
-    this->rooms.emplace_back(new Room(1,1,3,8)); //8
-    this->rooms.emplace_back(new Room(1,1,4,9)); //9
-    this->rooms.emplace_back(new Room(1,2,0,10)); //10
-    this->rooms.emplace_back(new Room(4,2,1,11)); //11
-    this->rooms.emplace_back(new Room(1,2,2,12)); //12
-    this->rooms.emplace_back(new Room(6,2,3,13)); //13
-    this->rooms.emplace_back(new Room(1,2,4,14)); //14
-    this->rooms.emplace_back(new Room(1,3,0,15)); //15
-    this->rooms.emplace_back(new Room(1,3,1,16)); //16
-    this->rooms.emplace_back(new Room(5,3,2,17)); //17
-    this->rooms.emplace_back(new Room(1,3,3,18)); //18
-    this->rooms.emplace_back(new Room(1,3,4,19)); //19
-    this->rooms.emplace_back(new Room(1,4,0,20)); //20
-    this->rooms.emplace_back(new Room(1,4,1,21)); //21
-    this->rooms.emplace_back(new Room(1,4,2,22)); //22
-    this->rooms.emplace_back(new Room(1,4,3,23)); //23
-    this->rooms.emplace_back(new Room(1,4,4,24)); //24
+
+
+    //dogadac ile jakich pokoi ma byc w tych 24
+
+    this->rooms.emplace_back(new Room(1,0,0,0,nullptr)); //0   room making
+    this->rooms.emplace_back(new Room(1,0,1,1,nullptr)); //1
+    this->rooms.emplace_back(new Room(1,1,0,2,nullptr)); //2
+    this->rooms.emplace_back(new Room(1,1,1,3,nullptr)); //3
+    this->rooms.emplace_back(new Room(1,0,2,4,nullptr)); //4
+    this->rooms.emplace_back(new Room(1,0,3,5,nullptr)); //5
+    this->rooms.emplace_back(new Room(1,0,4,6,nullptr)); //6
+    this->rooms.emplace_back(new Room(3,1,2,7,nullptr)); //7
+    this->rooms.emplace_back(new Room(1,1,3,8,nullptr)); //8
+    this->rooms.emplace_back(new Room(1,1,4,9,nullptr)); //9
+    this->rooms.emplace_back(new Room(1,2,0,10,nullptr)); //10
+    this->rooms.emplace_back(new Room(1,2,1,11,nullptr)); //11
+    this->rooms.emplace_back(new Room(7,2,2,12,&(this->player))); //12
+    this->rooms.emplace_back(new Room(6,2,3,13,nullptr)); //13
+    this->rooms.emplace_back(new Room(1,2,4,14,nullptr)); //14
+    this->rooms.emplace_back(new Room(1,3,0,15,nullptr)); //15
+    this->rooms.emplace_back(new Room(1,3,1,16,nullptr)); //16
+    this->rooms.emplace_back(new Room(5,3,2,17,nullptr)); //17
+    this->rooms.emplace_back(new Room(1,3,3,18,nullptr)); //18
+    this->rooms.emplace_back(new Room(1,3,4,19,nullptr)); //19
+    this->rooms.emplace_back(new Room(1,4,0,20,nullptr)); //20
+    this->rooms.emplace_back(new Room(1,4,1,21,nullptr)); //21
+    this->rooms.emplace_back(new Room(1,4,2,22,nullptr)); //22
+    this->rooms.emplace_back(new Room(1,4,3,23,nullptr)); //23
+    this->rooms.emplace_back(new Room(1,4,4,24,nullptr)); //24
  
-    this->active_room = 12;
+    this->active_room = 11;
     this->clock.restart();//bo inaczej sie enter sam wciska lol
     
 }
+int Game::getRandomInt(int min,int max){
+    static std::random_device rd;  // Seed
+    static std::mt19937 gen(rd()); // Mersenne Twister generator
+    std::uniform_int_distribution<> dis(min, max);
+    return dis(gen);
+};
 void Game::init(){
     
     this->masterVolume = 1.5f;
@@ -523,6 +536,11 @@ void Game::updateEnemies(Room* room) {
         if(dynamic_cast<Turret*>(enemy) != NULL){
             enemy->setCurrentEnemyBullets(this->enemyBullets);
         }
+        if(dynamic_cast<Boss*>(enemy) != NULL){
+            enemy->setCurrentEnemyBullets(this->enemyBullets);
+        }
+
+
         enemy->update(sf::Vector2f(this->player.getPosition().x+(this->player.getSize().x/2),this->player.getPosition().y+(this->player.getSize().y/2)));
         for(auto i = playerBullets.begin(); i != playerBullets.end();){
             if(isColision((*i),enemy)&&enemy->get_can_be_hit()){
@@ -544,6 +562,9 @@ void Game::updateEnemies(Room* room) {
         enemy->move(sf::Vector2f(this->player.getPosition().x+(this->player.getSize().x/2),this->player.getPosition().y+(this->player.getSize().y/2)));
         //tez dziła tylko dla tych co strzelają
         if(dynamic_cast<Turret*>(enemy) != NULL){
+            this->enemyBullets = enemy->getCurrentEnemyBullet();
+        }
+        if(dynamic_cast<Boss*>(enemy) != NULL){
             this->enemyBullets = enemy->getCurrentEnemyBullet();
         }
         if(enemy->getHp()<=0){
@@ -642,136 +663,95 @@ void Game::updateWalls(Room* room){
 }
 
 void Game::updateDoors(Room* room){
-    if(this->player.getPosition().x<10){ //left
-        for(auto& temproom : this->rooms){
-            if(this->rooms[this->active_room]->getY()==temproom->getY()){
-                if (this->rooms[this->active_room]->getX()-1==temproom->getX())
-                {
-                    std::cout<<this->rooms[this->active_room]->getX()<<" "<<this->rooms[this->active_room]->getY()<<"\n";
-                    std::cout<<temproom->getId()<<"\n";
-                    this->active_room=temproom->getId();
-                    for(auto el:this->playerBullets){
-                        delete el;
-                    }
-                    this->playerBullets.clear();
-                    for(auto el:this->enemyBullets){
-                        delete el;
-                    }
-                    this->enemyBullets.clear();
-                    std::cout<<this->rooms[this->active_room]->getX()<<" "<<this->rooms[this->active_room]->getY()<<"\n";
-                    this->dootTP=false;
-                    this->player.setPosition(sf::Vector2f(1500.f, this->player.getPosition().y));
-                    /* changing to another room */
-                }
-                else{
-                    //this->dootTP=true;
-                    std::cout<<"there is no such room in X axis on the right\n";
-                }
-            }
+
+
+    if(this->player.getPosition().x<10){
+        int d = std::count_if(this->rooms.begin(), this->rooms.end(), [&](Room* r) {
+            return r->getX() < this->rooms[this->active_room]->getX();
+        });
+        std::cout<<this->rooms[this->active_room]->getX()<<" "<<this->rooms[this->active_room]->getY()<<"\n";
+        int randomtp = getRandomInt(0,d-1);
+
+        this->active_room=this->rooms.at(randomtp)->getId();
+        for(auto el:this->playerBullets){
+            delete el;
         }
-        if(this->dootTP==true){
-            this->player.setPosition(sf::Vector2f(20.f,this->player.getPosition().y));
+        this->playerBullets.clear();
+        for(auto el:this->enemyBullets){
+            delete el;
         }
+        this->enemyBullets.clear();
+        std::cout<<this->rooms[this->active_room]->getId()<<"\n";
+        std::cout<<this->rooms[this->active_room]->getX()<<" "<<this->rooms[this->active_room]->getY()<<"\n";
+        this->player.setPosition(sf::Vector2f(1500.f, this->player.getPosition().y));
 
     }
-    if(this->player.getPosition().x>1530){ //right
-                for(auto& temproom : this->rooms){
-            if(this->rooms[this->active_room]->getY()==temproom->getY()){
-                if (this->rooms[this->active_room]->getX()+1==temproom->getX())
-                {   
-                    std::cout<<this->rooms[this->active_room]->getX()<<" "<<this->rooms[this->active_room]->getY()<<"\n";
-                    std::cout<<temproom->getId()<<"\n";
-                    this->active_room=temproom->getId();
-                    for(auto el:this->playerBullets){
-                        delete el;
-                    }
-                    this->playerBullets.clear();
-                    for(auto el:this->enemyBullets){
-                        delete el;
-                    }
-                    this->enemyBullets.clear();
-                    std::cout<<this->rooms[this->active_room]->getX()<<" "<<this->rooms[this->active_room]->getY()<<"\n";
-                    std::cout<<"there is such a room in X axis on the right\n";
-                    this->dootTP=false;
-                    this->player.setPosition(sf::Vector2f(30.f,this->player.getPosition().y));
-                    break;
-                    /* changing to another room */
-                }
-                else{
-                    //this->dootTP=true;
-                    std::cout<<"there is no such room in X axis on the right\n";
-                }
-            }
-        }
-        if(this->dootTP==true){
-            this->player.setPosition(sf::Vector2f(1520.f,this->player.getPosition().y));
-            this->dootTP=false;
-        }
-    }
-    if(this->player.getPosition().y<10){ //top
-        for(auto& temproom : this->rooms){
-            if(this->rooms[this->active_room]->getX()==temproom->getX()){
-                if (this->rooms[this->active_room]->getY()+1==temproom->getY())
-                {
-                    std::cout<<this->rooms[this->active_room]->getX()<<" "<<this->rooms[this->active_room]->getY()<<"\n";
-                    std::cout<<temproom->getId()<<"\n";
-                    this->active_room=temproom->getId();
-                    for(auto el:this->playerBullets){
-                        delete el;
-                    }
-                    this->playerBullets.clear();
-                    for(auto el:this->enemyBullets){
-                        delete el;
-                    }
-                    this->enemyBullets.clear();
-                    std::cout<<this->rooms[this->active_room]->getX()<<" "<<this->rooms[this->active_room]->getY()<<"\n";
-                    this->dootTP=false;
-                    this->player.setPosition(sf::Vector2f(this->player.getPosition().x,800.f));
-                    /* changing to another room */
-                    break;
-                }
-                else{
-                    //this->dootTP=true;
-                    std::cout<<"there is no such room in Y axis on the top\n";
-                }
-            }
 
+        if(this->player.getPosition().x>1530){
+        int d = std::count_if(this->rooms.begin(), this->rooms.end(), [&](Room* r) {
+            return r->getX() > this->rooms[this->active_room]->getX();
+        });
+        std::cout<<this->rooms[this->active_room]->getX()<<" "<<this->rooms[this->active_room]->getY()<<"\n";
+        int randomtp = getRandomInt(0,d-1);
+
+        this->active_room=this->rooms.at(randomtp)->getId();
+        for(auto el:this->playerBullets){
+            delete el;
         }
-        if(this->dootTP==true){
-            this->player.setPosition(sf::Vector2f(this->player.getPosition().x,20.f));
+        this->playerBullets.clear();
+        for(auto el:this->enemyBullets){
+            delete el;
         }
+        this->enemyBullets.clear();
+        std::cout<<this->rooms[this->active_room]->getId()<<"\n";
+        std::cout<<this->rooms[this->active_room]->getX()<<" "<<this->rooms[this->active_room]->getY()<<"\n";
+        this->player.setPosition(sf::Vector2f(30.f,this->player.getPosition().y));
+
     }
-    if(this->player.getPosition().y>830){ //bottom
-        for(auto& temproom : this->rooms){
-            if(this->rooms[this->active_room]->getX()==temproom->getX()){
-                if (this->rooms[this->active_room]->getY()-1==temproom->getY())
-                {
-                    std::cout<<this->rooms[this->active_room]->getX()<<" "<<this->rooms[this->active_room]->getY()<<"\n";
-                    std::cout<<temproom->getId()<<"\n";
-                    this->active_room=temproom->getId();
-                    for(auto el:this->playerBullets){
-                        delete el;
-                    }
-                    this->playerBullets.clear();
-                    for(auto el:this->enemyBullets){
-                        delete el;
-                    }
-                    this->enemyBullets.clear();
-                    std::cout<<this->rooms[this->active_room]->getX()<<" "<<this->rooms[this->active_room]->getY()<<"\n";
-                    this->dootTP=false;
-                    this->player.setPosition(sf::Vector2f(this->player.getPosition().x,30.f));
-                    /* changing to another room */
-                }
-                else{
-                    //this->dootTP=true;
-                    std::cout<<"there is no such room in Y axis on the Bottom\n";
-                }
-            }
+
+        if(this->player.getPosition().y>830){
+        int d = std::count_if(this->rooms.begin(), this->rooms.end(), [&](Room* r) {
+            return r->getY() > this->rooms[this->active_room]->getY();
+        });
+        std::cout<<this->rooms[this->active_room]->getX()<<" "<<this->rooms[this->active_room]->getY()<<"\n";
+        int randomtp = getRandomInt(0,d-1);
+
+        this->active_room=this->rooms.at(randomtp)->getId();
+        for(auto el:this->playerBullets){
+            delete el;
         }
-        if(this->dootTP==true){
-            this->player.setPosition(sf::Vector2f(this->player.getPosition().x,820.f));
+        this->playerBullets.clear();
+        for(auto el:this->enemyBullets){
+            delete el;
         }
+        this->enemyBullets.clear();
+        std::cout<<this->rooms[this->active_room]->getId()<<"\n";
+        std::cout<<this->rooms[this->active_room]->getX()<<" "<<this->rooms[this->active_room]->getY()<<"\n";
+        this->player.setPosition(sf::Vector2f(this->player.getPosition().x,20.f));
+
     }
+        if(this->player.getPosition().y<10){
+        int d = std::count_if(this->rooms.begin(), this->rooms.end(), [&](Room* r) {
+            return r->getY() < this->rooms[this->active_room]->getY();
+        });
+        std::cout<<this->rooms[this->active_room]->getX()<<" "<<this->rooms[this->active_room]->getY()<<"\n";
+        int randomtp = getRandomInt(0,d-1);
+
+        this->active_room=this->rooms.at(randomtp)->getId();
+        for(auto el:this->playerBullets){
+            delete el;
+        }
+        this->playerBullets.clear();
+        for(auto el:this->enemyBullets){
+            delete el;
+        }
+        this->enemyBullets.clear();
+        std::cout<<this->rooms[this->active_room]->getId()<<"\n";
+        std::cout<<this->rooms[this->active_room]->getX()<<" "<<this->rooms[this->active_room]->getY()<<"\n";
+        this->player.setPosition(sf::Vector2f(this->player.getPosition().x,820.f));
+
+    }
+   
 }
 
 void Game::updateWeapons(Room* room){

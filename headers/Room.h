@@ -20,6 +20,7 @@
 #include "Turret.h"
 #include "Dumb.h"
 #include "Spike.h"
+#include "Boss.h"
 #include "Ram.h"
 #include "Spike2.h"
 #include "FirstWeapon.h"
@@ -33,11 +34,11 @@
 #include "redDumb.h"
 #include "whiteRam.h"
 #include "greenRam.h"
-
+#include "Player.h"
 class Room {
     public:
         Room();
-        Room(int a,int b, int c,int d);
+        Room(int a,int b, int c,int d,Player* playerc);
         ~Room();
         void render(sf::RenderTarget* target);
         void update();
@@ -47,6 +48,7 @@ class Room {
         int getY();
         bool getCleared();
         void setCleared(bool a);
+        void getPlayer(Player* playerc);
         int getRandomInt(int min,int max);
         std::vector<Item*>& getWeapons();
         std::vector<std::unique_ptr<Boost>>& getBoosts();
@@ -61,6 +63,7 @@ class Room {
         bool isActive=true;
         bool cleared=false;
         int type_id;
+        Player* playerd=nullptr;
         sf::RectangleShape shape;
         std::vector<Enemy*> enemies;
         std::vector<Enemy*> spikes;
@@ -90,7 +93,7 @@ Room::Room(){
     this->shape.setSize(sf::Vector2f(200.f, 200.f));
     this->shape.setPosition(sf::Vector2f(0.f, 0.f));
 };
-Room::Room(int a,int b, int c,int d){
+Room::Room(int a,int b, int c,int d,Player* playerc){
     this->shape.setFillColor(sf::Color::White);
     this->shape.setSize(sf::Vector2f(1600.f, 900.f));
     this->shape.setPosition(sf::Vector2f(0.f, 0.f));
@@ -98,7 +101,7 @@ Room::Room(int a,int b, int c,int d){
     this->x=b;
     this->y=c;
     this->id=d;
-
+    playerd=playerc;
     /*
     if(this->x==0){
         this->walls.emplace_back(new Wall(9));
@@ -266,8 +269,41 @@ Room::Room(int a,int b, int c,int d){
 
     }
 
+    if(type_id==7){  //changing room
+
+        sf::Vector2f c;
+        c.x=704.f;
+        c.y=354.f;
+        this->spikes.emplace_back(new Spike2(c));
+        c.x=768.f;
+        c.y=354.f;
+        this->spikes.emplace_back(new Spike2(c));
+        c.x=832.f;
+        c.y=354.f;
+        this->spikes.emplace_back(new Spike2(c));
+
+        c.x=704.f;
+        c.y=482.f;
+        this->spikes.emplace_back(new Spike2(c));
+        c.x=768.f;
+        c.y=482.f;
+        this->spikes.emplace_back(new Spike2(c));
+        c.x=832.f;
+        c.y=482.f;
+        this->spikes.emplace_back(new Spike2(c));
+
+        c.x=704.f;
+        c.y=418.f;
+        this->spikes.emplace_back(new Spike2(c));
+        c.x=832.f;
+        c.y=418.f;
+        this->spikes.emplace_back(new Spike2(c));
 
 
+        if(playerd!=nullptr){
+        this->enemies.emplace_back(new Boss(sf::Vector2f(768.f,418.f),playerd));
+        }
+    }
 
 };
 
