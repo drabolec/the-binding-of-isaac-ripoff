@@ -73,7 +73,7 @@ private:
     bool isClosed = false;
     int x=0;
     int y=0;
-    int active_room=12;
+    int active_room;
     //menu stuf
     bool ismenuOpen;
     int selected = 1;
@@ -208,14 +208,14 @@ void Game::restart(){
 
 
     
-    this->timer->setPosition({1500.f, 20.f});
+    this->timer->setPosition({1500.f, 10.f});
     this->timer->setCharacterSize(40.f);
     this->timer->setString(std::to_string(this->scoreSeconds));
 
     fog.setFillColor(sf::Color(0, 0, 0, 230));
     fog.setSize({100.f, 35.f});
 
-    this->background.setFillColor(sf::Color(0, 0, 0, 200));
+    this->background.setFillColor(sf::Color(0, 0, 0, 150));
     this->background.setSize({1600.f, 900.f});
     
     //temporary for testing
@@ -304,7 +304,7 @@ void Game::init(){
 
 
     this->masterVolume = 1.f;
-    this->currentScreen = "Window";
+    this->currentScreen = "Fullscreen";
         //sound
     this->buffer = new sf::SoundBuffer("./Sound/pickupweapon.wav");
     this->pickupWeapon = new sf::Sound(*(this->buffer));
@@ -325,6 +325,7 @@ void Game::init(){
 
     this->bossBuffer = new sf::SoundBuffer("./Sound/boss_fight.mp3");
     this->bossSound = new sf::Sound(*(this->bossBuffer));
+    this->bossSound->setVolume(this->masterVolume);
 
     this->winBuffer =  new sf::SoundBuffer("./Sound/win.mp3");
     this->winSound = new sf::Sound(*(this->winBuffer));
@@ -333,7 +334,7 @@ void Game::init(){
     
     this->videoMode.size = {800, 450};
     //makes window proportional
-    this->window = new sf::RenderWindow(this->videoMode, "The binding of isaac ultimate ripoff");
+    this->window = new sf::RenderWindow(sf::VideoMode::getFullscreenModes()[0], "The binding of isaac ultimate ripoff", sf::Style::None);
     this->window->setFramerateLimit(60);
     sf::View view(sf::FloatRect({0.f, 0.f}, {1600.f, 900.f}));
     this->window->setView(view);
@@ -423,33 +424,20 @@ void Game::events(){
                     this->soundtrack->stop();
                     if(this->ismenuOpen=true){
                         this->gameSound->pause();
+                        this->bossSound->pause();
                     }else{
-                        this->gameSound->play();
+                        if(active_room == 12){
+                            this->bossSound->play();
+                        }else{
+                            this->gameSound->play();
+                        }
+                        
                     }
                     
                     
                 }
                 
             }
-            /*
-            if(const auto* keyPressed = this->event->getIf<sf::Event::KeyPressed>()){
-                //turns of on escape change later
-                if(keyPressed->scancode == sf::Keyboard::Scan::O){
-                    this->isLose = true;
-                    this->gameSound->pause();
-                    this->gameOverSound->play();
-                }
-                
-            }
-            if(const auto* keyPressed = this->event->getIf<sf::Event::KeyPressed>()){
-                //turns of on escape change later
-                if(keyPressed->scancode == sf::Keyboard::Scan::P){
-                    this->isEnd = true;
-                }
-                
-
-            }
-            */
             
             if(this->getEnd()){
                 if(const auto* keyPressed = this->event->getIf<sf::Event::KeyPressed>() ){
@@ -519,7 +507,15 @@ void Game::update(){
 }
 void Game::render(){
     this->window->clear(sf::Color::Black);
-    
+    //zabijanko gracza
+    if(this->player.getHp() <= 0 && this->isLose == false){
+        this->player.setHp(0);
+        this->player.update();
+        this->isLose = true;
+        this->bossSound->pause();
+        this->gameSound->stop();
+        this->gameOverSound->play();
+    }
     this->renderEntitys();
     if(this->menuOpen()){
         this->menu();
@@ -530,13 +526,7 @@ void Game::render(){
     if(this->getLose()){
         this->lose();
     }
-    //zabijanko gracza
-    if(this->player.getHp() <= 0 && this->isLose == false){
-        this->isLose = true;
-        this->bossSound->pause();
-        this->gameSound->stop();
-        this->gameOverSound->play();
-    }
+    
     this->window->display();
 
 }
@@ -655,7 +645,6 @@ void Game::updateEnemies(Room* room) {
                 this->hitSound->play();
             }
             
-            std::cout<<player.getHp()<<std::endl;
             this->player.setTargetable(false);
             enemy->setCollided(true);
         }
@@ -679,12 +668,10 @@ void Game::updateEnemies(Room* room) {
     auto& spikes = room->getSpikes();
     for(auto& enemy : spikes){
         if(isColision(&player,enemy)&&this->player.getTargetable()&&enemy->getState()==2){
-            std::cout<<player.getHp()<<std::endl;
             this->player.changeHp(-enemy->getDmg());
             if(enemy->getDmg() > 0){
                 this->hitSound->play();
             }
-            std::cout<<player.getHp()<<std::endl;
             this->player.setTargetable(false);
             enemy->setCollided(true);
         }
@@ -703,8 +690,6 @@ void Game::updateWalls(Room* room){
     sf::FloatRect playerBounds = this->player.hitbox.getGlobalBounds();
     
     if(this->rooms[this->active_room]->getEnemies().size()==0&&this->rooms[this->active_room]->getCleared()==false){
-        std::cout<<"spelniono warunki\n";
-        std::cout<<this->rooms[this->active_room]->getCleared()<<"\n";
         int j=8;
         if(this->rooms[this->active_room]->getId()==12){//hardcoding :3
             this->isEnd = true;
@@ -789,7 +774,6 @@ void Game::updateDoors(Room* room){
         int d = std::count_if(this->rooms.begin(), this->rooms.end(), [&](Room* r) {
             return r->getX() < this->rooms[this->active_room]->getX();
         });
-        std::cout<<this->rooms[this->active_room]->getX()<<" "<<this->rooms[this->active_room]->getY()<<"\n";
         int randomtp = getRandomInt(0,d-1);
         int j=0;
         for(auto el: this->rooms){
@@ -843,8 +827,6 @@ void Game::updateDoors(Room* room){
         }
         this->dark = true;
         this->enemyBullets.clear();
-        std::cout<<this->rooms[this->active_room]->getId()<<"\n";
-        std::cout<<this->rooms[this->active_room]->getX()<<" "<<this->rooms[this->active_room]->getY()<<"\n";
         this->player.setPosition(sf::Vector2f(1500.f, this->player.getPosition().y));
 
     }
@@ -853,7 +835,6 @@ void Game::updateDoors(Room* room){
         int d = std::count_if(this->rooms.begin(), this->rooms.end(), [&](Room* r) {
             return r->getX() > this->rooms[this->active_room]->getX();
         });
-        std::cout<<this->rooms[this->active_room]->getX()<<" "<<this->rooms[this->active_room]->getY()<<"\n";
         int randomtp = getRandomInt(0,d-1);
         int j=0;
         for(auto el: this->rooms){
@@ -906,8 +887,6 @@ void Game::updateDoors(Room* room){
         }
         this->dark = true;
         this->enemyBullets.clear();
-        std::cout<<this->rooms[this->active_room]->getId()<<"\n";
-        std::cout<<this->rooms[this->active_room]->getX()<<" "<<this->rooms[this->active_room]->getY()<<"\n";
         this->player.setPosition(sf::Vector2f(30.f,this->player.getPosition().y));
 
     }
@@ -916,7 +895,6 @@ void Game::updateDoors(Room* room){
         int d = std::count_if(this->rooms.begin(), this->rooms.end(), [&](Room* r) {
             return r->getY() < this->rooms[this->active_room]->getY();
         });
-        std::cout<<this->rooms[this->active_room]->getX()<<" "<<this->rooms[this->active_room]->getY()<<"\n";
         int randomtp = getRandomInt(0,d-1);
 int j=0;
         for(auto el: this->rooms){
@@ -969,8 +947,6 @@ int j=0;
         }
         this->dark = true;
         this->enemyBullets.clear();
-        std::cout<<this->rooms[this->active_room]->getId()<<"\n";
-        std::cout<<this->rooms[this->active_room]->getX()<<" "<<this->rooms[this->active_room]->getY()<<"\n";
         this->player.setPosition(sf::Vector2f(this->player.getPosition().x,64.f));
 
     }
@@ -978,7 +954,6 @@ int j=0;
         int d = std::count_if(this->rooms.begin(), this->rooms.end(), [&](Room* r) {
             return r->getY() > this->rooms[this->active_room]->getY();
         });
-        std::cout<<this->rooms[this->active_room]->getX()<<" "<<this->rooms[this->active_room]->getY()<<"\n";
         int randomtp = getRandomInt(0,d-1);
         int j=0;
         for(auto el: this->rooms){
@@ -1034,8 +1009,6 @@ int j=0;
         }
         this->dark = true;
         this->enemyBullets.clear();
-        std::cout<<this->rooms[this->active_room]->getId()<<"\n";
-        std::cout<<this->rooms[this->active_room]->getX()<<" "<<this->rooms[this->active_room]->getY()<<"\n";
         this->player.setPosition(sf::Vector2f(this->player.getPosition().x,772.f));
 
     }
@@ -1207,14 +1180,19 @@ void Game::mainMenu(){
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) && this->clock.getElapsedTime().asSeconds() > 0.3f)
         {
             this->ismenuOpen = false; 
-            this->gameSound->play();
+            if(this->active_room == 12){
+                this->bossSound->play();
+            }else{
+                this->gameSound->play();
+            }
+            
             this->soundtrack->stop();
             this->clock.restart();
         }  
     }
     else if(this->selected == 2){
         fog.setPosition({option2->getPosition().x-20.f, option2->getPosition().y-5.f});
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) && this->clock.getElapsedTime().asSeconds() > 0.1f)
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) && this->clock.getElapsedTime().asSeconds() > 0.3f)
         {
             this->currentMenu = 1;
             this->selected = 1;
@@ -1223,7 +1201,7 @@ void Game::mainMenu(){
         }  
     }else if(this->selected == 3){
         fog.setPosition({info->getPosition().x-20.f, info->getPosition().y-5.f});
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) && this->clock.getElapsedTime().asSeconds() > 0.1f)
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) && this->clock.getElapsedTime().asSeconds() > 0.3f)
         {
             this->currentMenu = 2;
             this->clock.restart();
@@ -1231,7 +1209,7 @@ void Game::mainMenu(){
     }
     else if(this->selected == 4){
         fog.setPosition({quit->getPosition().x-20.f, quit->getPosition().y-5.f});
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) && this->clock.getElapsedTime().asSeconds() > 0.1f)
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) && this->clock.getElapsedTime().asSeconds() > 0.3f)
         {
             this->ismenuOpen = false;
             this->isClosed = true;
@@ -1244,7 +1222,7 @@ void Game::mainMenu(){
 
 }
 void Game::settingsMenu(){
-    this->play->setString("Scrren");
+    this->play->setString("Screen");
     this->option1->setString("Back");
     this->option1->setPosition({50.f, 250.f});
     
@@ -1289,7 +1267,7 @@ void Game::settingsMenu(){
             }
             this->clock.restart();
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) && this->clock.getElapsedTime().asSeconds() > 0.2f)
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) && this->clock.getElapsedTime().asSeconds() > 0.3f)
         {
             if(this->tempScreen == "Fullscreen"){
                 delete this->window;
@@ -1311,7 +1289,7 @@ void Game::settingsMenu(){
         }    
     }else if(this->selected == 2){
         fog.setPosition({option1->getPosition().x-20.f, option1->getPosition().y-5.f});
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) && this->clock.getElapsedTime().asSeconds() > 0.1f)
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) && this->clock.getElapsedTime().asSeconds() > 0.3f)
         {
             this->currentMenu = 0;
             this->selected = 2;
@@ -1373,7 +1351,6 @@ void Game::end(){
         }
 }
 void Game::lose(){
-    this->player.setHp(0);
     this->events();
     this->menuT->setString("You lose");
     this->timer->setPosition({50.f, 150.f});

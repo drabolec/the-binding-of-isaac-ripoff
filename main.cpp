@@ -7,8 +7,7 @@
 int main()
 {
     //needed to hide console window
-    HWND hWnd = GetConsoleWindow();
-    ShowWindow( hWnd, SW_HIDE );
+    FreeConsole();
 
     
     Game* game = new Game();

@@ -130,10 +130,10 @@ Player::Player(){
 //this spageti code fixes that 
 void Player::initHp(){
     this->hpText = new sf::Text(*font);
-    this->hpText->setString(std::to_string(this->getHp())+ " hp");
     this->hpText->setFillColor(sf::Color::White); //change later
     this->hpText->setCharacterSize(20);
-    this->hpText->setPosition({this->shape.getPosition().x+60.f, this->shape.getPosition().y- 30.f});
+    this->hpText->setPosition({this->shape.getPosition().x+45.f, this->shape.getPosition().y- 15.f});
+    this->hpText->setString(std::to_string(this->getHp())+ " hp");
 }
 Player::~Player(){
     delete this->hpText;
@@ -235,20 +235,7 @@ void Player::update(){
     //setting state as idle in case of no moving
     
     
-    //mvoes and check for other actions
-    /*
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) && this->collidesUp){
-        this->shape.setPosition(originalPos);  // Don't allow the move
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S) && this->collidesDown){
-        this->shape.setPosition(originalPos);  // Don't allow the move
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D) && this->collidesRight){
-        this->shape.setPosition(originalPos);  // Don't allow the move
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A) && this->collidesLeft){
-        this->shape.setPosition(originalPos);  // Don't allow the move
-    }*/
+    
     //animating
     this->animation();
 
