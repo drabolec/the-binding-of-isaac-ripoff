@@ -14,7 +14,7 @@
 
 ## How to Play
 
-The repository contains a precompiled `.exe` file that allows you to play the game right away — no installation or setup required.
+[Here](https://mega.nz/file/vwBxlZZC#fW8a1laHALsKUOsJyPNfB5chmsUNmIx2mOMNXm13uAk) is a precompiled `.exe` file that allows you to play the game right away — no installation or setup required.
 
 ## Compilation Guide
 
