@@ -51,7 +51,7 @@ Turret::Turret(sf::Vector2f pos){
     this->frames.emplace_back(new sf::IntRect({384, 230},{16, 16}));
     this->frames.emplace_back(new sf::IntRect({400, 230},{16, 16}));
     this->frames.emplace_back(new sf::IntRect({416, 230},{16, 16}));
-    this->setHp(20.f);
+    this->setHp(200.f);
     this->setDmg(20.f);
     this->setHitboxSize({64.f, 64.f});
     this->setShapeSize({64.f, 64.f});

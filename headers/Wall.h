@@ -55,13 +55,13 @@ inline Wall::Wall(int b){
         this->hitbox.setTextureRect(*(new sf::IntRect({16, 0},{-16, 104})));
     }
     else if(this->wallSide==4){
-        this->hitbox.setPosition(sf::Vector2f(832.f, 836.f));
+        this->hitbox.setPosition(sf::Vector2f(832.f, 837.f));
         this->hitbox.setSize(sf::Vector2f(704.f, 64.f));
         this->hitbox.setTexture(this->uptex);
         this->hitbox.setTextureRect(*(new sf::IntRect({0, 16},{176, -16})));
     }
     else if(this->wallSide==5){
-        this->hitbox.setPosition(sf::Vector2f(64.f, 832.f));
+        this->hitbox.setPosition(sf::Vector2f(64.f, 836.f));
         this->hitbox.setSize(sf::Vector2f(704.f, 64.f));
         this->hitbox.setTexture(this->uptex);
         this->hitbox.setTextureRect(*(new sf::IntRect({0, 16},{176, -16})));
@@ -87,30 +87,30 @@ inline Wall::Wall(int b){
     }
 
     else if(this->wallSide==9){
-        this->hitbox.setPosition(sf::Vector2f(0.f, 418.f));
-        this->hitbox.setSize(sf::Vector2f(64.f, 64.f));
+        this->hitbox.setPosition(sf::Vector2f(1.f, 0.f));
+        this->hitbox.setSize(sf::Vector2f(64.f, 900.f));
         this->hitbox.setTexture(this->texture);
-        this->hitbox.setTextureRect(*(new sf::IntRect({0, 0},{16, 16})));
+        this->hitbox.setTextureRect(*(new sf::IntRect({0, 0},{16, 225})));
     }
 
     else if(this->wallSide==10){
-        this->hitbox.setPosition(sf::Vector2f(1536.f, 418.f));
-        this->hitbox.setSize(sf::Vector2f(64.f, 64.f));
+        this->hitbox.setPosition(sf::Vector2f(1534.f, 0.f));
+        this->hitbox.setSize(sf::Vector2f(64.f, 900.f));
         this->hitbox.setTexture(this->texture);
-        this->hitbox.setTextureRect(*(new sf::IntRect({16, 0},{-16, 16})));
+        this->hitbox.setTextureRect(*(new sf::IntRect({16, 0},{-16, 255})));
     }
     else if(this->wallSide==11){
-        this->hitbox.setPosition(sf::Vector2f(768.f, 0.f));
-        this->hitbox.setSize(sf::Vector2f(64.f, 64.f));
+        this->hitbox.setPosition(sf::Vector2f(64.f, 0.f));
+        this->hitbox.setSize(sf::Vector2f(1472.f, 64.f));
         this->hitbox.setTexture(this->uptex);
-        this->hitbox.setTextureRect(*(new sf::IntRect({0, 0},{16, 16})));
+        this->hitbox.setTextureRect(*(new sf::IntRect({0, 0},{368, 16})));
     }
 
     else if(this->wallSide==12){
-        this->hitbox.setPosition(sf::Vector2f(768.f, 836.f));
-        this->hitbox.setSize(sf::Vector2f(64.f, 64.f));
+        this->hitbox.setPosition(sf::Vector2f(64.f, 834.f));
+        this->hitbox.setSize(sf::Vector2f(1472.f, 64.f));
         this->hitbox.setTexture(this->uptex);
-        this->hitbox.setTextureRect(*(new sf::IntRect({0, 16},{16, -16})));
+        this->hitbox.setTextureRect(*(new sf::IntRect({0, 16},{368, -16})));
     }
 
 

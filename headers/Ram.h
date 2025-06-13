@@ -27,6 +27,8 @@ class Ram:public Enemy{
         bool block_move=0;
         bool attacked=0;
         int state; // 0 - passive 1 - atak
+        bool wait;
+        int rcount=0;
 };
 
 Ram::Ram(){};
@@ -56,35 +58,53 @@ void Ram::update(sf::Vector2f pos){
 
     this->attacked=this->getCollided();
     if(this->attacked){
-        this->state=0;
+        this->counter = 61;
+        
+        
     }
 
+    rcount++;
     counter++;
-    if(counter>30){
-        if(this->state==2){
-            this->state=0;
+    if(rcount > 20){
+        Random = getRandomInt(0, 600);
+        rcount = 0;
+    }
+    if(counter>60){
+        
+        if(this->attacked){
+            
+            this->state=2;
+            this->attacked = false;
+            this->setCollided(false);
+            wait = true;
+            
+        }else if(wait){
+            wait = false;
         }
         counter=0;
     }
 
     if(counter==0){
-    x=abs(pos.x-(this->getPosition().x+20.f));
-    y=abs(pos.y-(this->getPosition().y+20.f));
+        x=abs(pos.x-(this->getPosition().x+20.f));
+        y=abs(pos.y-(this->getPosition().y+20.f));
 
-    dist=sqrt(pow(x,2)+pow(y,2));
+        dist=sqrt(pow(x,2)+pow(y,2));
 
 
-    if(dist>700){
+    if(dist>700 && !wait){
         this->state=2;
     }
-    if(dist<=500){
-        Random = getRandomInt(0, 500);
-        if(Random<(dist/10)){
-            this->state=0;
-        }
-        else{
+    if(dist<=500 && !wait){
+        
+        
+        //Random = getRandomInt(0, 300);
+        if(dist<Random){
             this->state=1;
         }
+        else{
+            this->state=0;
+        }
+        
     }
 
 

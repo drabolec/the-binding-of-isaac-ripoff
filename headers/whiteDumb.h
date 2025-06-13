@@ -23,7 +23,7 @@ whiteDumb::whiteDumb(sf::Vector2f pos){
     this->texture = new sf::Texture("./Textures/all.png");
     this->shape.setTexture(texture);
     this->setPosition(pos);
-    this->speed = 3.f;
+    this->speed = 2.5f;
     this->setHp(100);
     this->setDmg(20.f);
 }

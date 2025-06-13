@@ -12,6 +12,7 @@ class Spike:public Enemy{
         void update(sf::Vector2f pos);
         void setIsUp(bool a);
         void changeState(int a);
+        int getState();
     private:  
         int Random=100;
         int counter=0;
@@ -21,10 +22,14 @@ class Spike:public Enemy{
 
 Spike::Spike(){};
 
+int Spike::getState(){
+    return state;
+}
+
 Spike::Spike(sf::Vector2f pos){
     this->change_can_be_hit(false);
     this->setHp(20);
-    this->setDmg(0);
+    this->setDmg(10);
     this->setHitboxSize({64.f, 64.f});
     this->setShapeSize({64.f, 64.f});
     this->texture = new sf::Texture("./Textures/floorall.png");
@@ -85,7 +90,7 @@ void Spike::update(sf::Vector2f pos){
     }
     else if(this->state==2){
         this->shape.setTextureRect(*(new sf::IntRect({48, 48}, {16, 16})));
-        this->setDmg(50);   
+        this->setDmg(20);   
     }
     else{
         this->is_up=false;

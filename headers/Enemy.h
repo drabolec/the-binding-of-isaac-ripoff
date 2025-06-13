@@ -27,6 +27,7 @@ class Enemy:public DmgEntity{
         virtual void change_can_be_hit(bool a);
         virtual bool get_can_be_hit();
         virtual sf::Vector2f getPosition();
+        virtual int getState();
         virtual sf::Vector2f getHitbox();
         virtual void setCurrentEnemyBullets(std::vector<Bullet*> vec);
         virtual std::vector<Bullet*> getCurrentEnemyBullet();
@@ -40,6 +41,9 @@ class Enemy:public DmgEntity{
         //sf::RectangleShape shape; //nie potrzben ejuz jest e entity
         
         
+};
+int Enemy::getState(){
+    return 0;
 };
 sf::RectangleShape& Enemy::getShape(){
     return this->shape;

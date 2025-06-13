@@ -15,6 +15,7 @@ class MiniGunWeapon: public Item{
         void updatePos(sf::Vector2f pos);
         void render(sf::RenderTarget* target);
         MiniGunWeapon();
+        MiniGunWeapon(sf::Vector2f pos);
         const float time = 0.2f;
         ~MiniGunWeapon();
         
@@ -39,6 +40,24 @@ MiniGunWeapon::MiniGunWeapon(){
     
     this->hitbox.setSize({80.f,20.f});
     this->hitbox.setPosition(this->shape.getPosition());
+
+    
+}
+MiniGunWeapon::MiniGunWeapon(sf::Vector2f pos){
+    //setting texture
+    this->texture = new sf::Texture("./Textures/minigun_weapon.png");
+    //setting intrect
+    this->intrect = new sf::IntRect({0, 0},{64, 18});
+    //setting shape
+    this->shape.setTextureRect(*intrect);
+    this->shape.setTexture(texture);
+    this->shape.setSize({80.f, 20.f});
+    
+    this->hitbox.setSize({80.f,20.f});
+    this->hitbox.setPosition(this->shape.getPosition());
+    
+    this->shape.setPosition(pos);
+    this->hitbox.setPosition(pos);
 
     
 }

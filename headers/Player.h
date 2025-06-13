@@ -113,7 +113,7 @@ Player::Player(){
     this->counter = 10;
     this->setHp(100);
     //setting hitbox size
-    this->hitbox.setSize({40.f, 40.f});
+    this->hitbox.setSize({30.f, 35.f});
     this->hitbox.setPosition({this->shape.getPosition().x+40.f, this->shape.getPosition().y+40.f});
     //setting up intrect and texture
     this->intrect = new sf::IntRect({0, 0}, {32, 32});
@@ -253,7 +253,7 @@ void Player::update(){
     this->animation();
 
     //setting hitbox position to match player position
-    this->hitbox.setPosition({this->shape.getPosition().x+40.f, this->shape.getPosition().y+40.f});
+    this->hitbox.setPosition({this->shape.getPosition().x+45.f, this->shape.getPosition().y+50.f});
 
     //updating hp text box
     this->hpText->setPosition({this->shape.getPosition().x+45.f, this->shape.getPosition().y- 15.f});

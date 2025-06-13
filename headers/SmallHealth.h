@@ -6,7 +6,7 @@
 class SmallHealth: public Boost{
 
 public:
-    SmallHealth();
+    SmallHealth(sf::Vector2f pos);
     void setPosition(sf::Vector2f pos);
 
     void render(sf::RenderTarget* target);
@@ -20,7 +20,7 @@ private:
 SmallHealth::~SmallHealth(){
     delete this->texture;
 }
-SmallHealth::SmallHealth(){
+SmallHealth::SmallHealth(sf::Vector2f pos){
     
     //setting up hitbox
     this->hitbox.setSize({40.f, 40.f});
@@ -35,6 +35,9 @@ SmallHealth::SmallHealth(){
     this->shape.setSize({40.f, 40.f});
     this->shape.setTextureRect(*intrect);
     this->shape.setTexture(texture);
+    pos.x +=8.f;
+    pos.y+=8.f;
+    this->setPosition(pos);
 
 
 }

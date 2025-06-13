@@ -50,7 +50,7 @@ private:
     sf::Font* font;
     //hp text
     sf::Text *hpText;
-
+    sf::Text *bossText;
     float masterVolume;
     //sounds
     sf::SoundBuffer *buffer;
@@ -63,7 +63,7 @@ private:
     sf::Sound *gameSound;
     sf::Sound *gameOverSound;
     sf::Sound *hitSound;
-
+    std::string where_boss="NULL";
     bool isClosed = false;
     int x=0;
     int y=0;
@@ -177,10 +177,13 @@ void Game::restart(){
     this->hpText->setPosition({20.f, 20.f});
     this->hpText->setCharacterSize(20.f);
     //seting game window parameters
-    
+    this->bossText = new sf::Text(*font); 
+    this->bossText->setPosition({1400.f, 10.f});
+    this->bossText->setCharacterSize(40.f);
 
     //seting defaul player parameter
-    this->player.setPosition({100.f, 100.f});
+    //this->player.setPosition({800.f, 450.f});
+    this->player.setPosition({200.f, 450.f});
     this->player.setFont(this->font);
     this->player.initHp();
 
@@ -224,28 +227,59 @@ void Game::restart(){
     this->rooms.emplace_back(new Room(1,1,0,2,nullptr)); //2
     this->rooms.emplace_back(new Room(1,1,1,3,nullptr)); //3
     this->rooms.emplace_back(new Room(1,0,2,4,nullptr)); //4
-    this->rooms.emplace_back(new Room(1,0,3,5,nullptr)); //5
+    this->rooms.emplace_back(new Room(4,0,3,5,nullptr)); //5
     this->rooms.emplace_back(new Room(1,0,4,6,nullptr)); //6
     this->rooms.emplace_back(new Room(3,1,2,7,nullptr)); //7
     this->rooms.emplace_back(new Room(1,1,3,8,nullptr)); //8
     this->rooms.emplace_back(new Room(1,1,4,9,nullptr)); //9
     this->rooms.emplace_back(new Room(1,2,0,10,nullptr)); //10
-    this->rooms.emplace_back(new Room(1,2,1,11,nullptr)); //11
+    this->rooms.emplace_back(new Room(2,2,1,11,nullptr)); //11 //empty starting room
     this->rooms.emplace_back(new Room(7,2,2,12,&(this->player))); //12
     this->rooms.emplace_back(new Room(6,2,3,13,nullptr)); //13
-    this->rooms.emplace_back(new Room(1,2,4,14,nullptr)); //14
+    this->rooms.emplace_back(new Room(4,2,4,14,nullptr)); //14
     this->rooms.emplace_back(new Room(1,3,0,15,nullptr)); //15
-    this->rooms.emplace_back(new Room(1,3,1,16,nullptr)); //16
+    this->rooms.emplace_back(new Room(3,3,1,16,nullptr)); //16
     this->rooms.emplace_back(new Room(5,3,2,17,nullptr)); //17
     this->rooms.emplace_back(new Room(1,3,3,18,nullptr)); //18
-    this->rooms.emplace_back(new Room(1,3,4,19,nullptr)); //19
+    this->rooms.emplace_back(new Room(3,3,4,19,nullptr)); //19
     this->rooms.emplace_back(new Room(1,4,0,20,nullptr)); //20
     this->rooms.emplace_back(new Room(1,4,1,21,nullptr)); //21
-    this->rooms.emplace_back(new Room(1,4,2,22,nullptr)); //22
+    this->rooms.emplace_back(new Room(3,4,2,22,nullptr)); //22
     this->rooms.emplace_back(new Room(1,4,3,23,nullptr)); //23
     this->rooms.emplace_back(new Room(1,4,4,24,nullptr)); //24
  
-    this->active_room = 11;
+    //this->active_room = 11;
+    this->active_room = 17;
+    if(this->rooms[active_room]->getX()<2){
+            if(this->rooms[active_room]->getY()<2){
+                where_boss="NE";
+            }
+            else if(this->rooms[active_room]->getY()>2){
+                where_boss="SE";
+            }
+            else{
+                where_boss="E";
+            }
+        }
+        else if(this->rooms[active_room]->getX()>2){
+            if(this->rooms[active_room]->getY()<2){
+                where_boss="NW";
+            }
+            else if(this->rooms[active_room]->getY()>2){
+                where_boss="SW";
+            }
+            else{
+                where_boss="W";
+            }
+        }
+        else{
+            if(this->rooms[active_room]->getY()<2){
+                where_boss="N";
+            }
+            else if(this->rooms[active_room]->getY()>2){
+                where_boss="S";
+            }
+        }
     this->clock.restart();//bo inaczej sie enter sam wciska lol
     
 }
@@ -519,6 +553,7 @@ bool Game::isColision(Entity* e1, Entity* e2){
 }
 void Game::interf(){
     this->hpText->setString(std::to_string(this->player.getHp()) + " hp");
+    this->bossText->setString(where_boss);
     this->timer->setString(std::to_string(this->scoreSeconds));
 
     sf::RectangleShape temp = this->currentWeapon->shape;
@@ -546,6 +581,7 @@ void Game::interf(){
     this->window->draw(bullet);
     this->window->draw(temp);
     this->window->draw(*(this->hpText));
+    this->window->draw(*(this->bossText));
     this->window->draw(*(this->timer));
 }
 
@@ -625,19 +661,22 @@ void Game::updateEnemies(Room* room) {
 
     auto& spikes = room->getSpikes();
     for(auto& enemy : spikes){
-        if(isColision(&player,enemy)&&this->player.getTargetable()){
+        if(isColision(&player,enemy)&&this->player.getTargetable()&&enemy->getState()==2){
             std::cout<<player.getHp()<<std::endl;
             this->player.changeHp(-enemy->getDmg());
             std::cout<<player.getHp()<<std::endl;
             this->player.setTargetable(false);
             enemy->setCollided(true);
         }
+        enemy->update(this->player.getPosition());
     }
 }
 
 void Game::updateWalls(Room* room){
     auto& walls = room->getWalls();
-
+    if(this->rooms[this->active_room]->getId()==12){//hardcoding :3
+        where_boss="";
+    }
     // Reset all collision flags before checking new collisions
     this->player.resetCollisions();
 
@@ -680,10 +719,13 @@ void Game::updateWalls(Room* room){
 
     for (auto& wall : walls) {
         sf::FloatRect wallBounds = wall->hitbox.getGlobalBounds();
-        bool intersects = !(this->player.hitbox.getPosition().x + this->player.hitbox.getSize().x < wallBounds.position.x||  // Player is to the left of the wall
-                            this->player.hitbox.getPosition().x > wallBounds.position.x + wallBounds.size.x || // Player is to the right of the wall
-                            this->player.hitbox.getPosition().y + this->player.hitbox.getSize().y  < wallBounds.position.y|| // Player is above the wall
-                            this->player.hitbox.getPosition().y  > wallBounds.position.y + wallBounds.size.y); 
+        bool intersects;
+        if(wall->hitbox.getGlobalBounds().findIntersection(player.hitbox.getGlobalBounds())){
+            intersects = true;
+        }else{
+            intersects = false;
+        }
+        
 
         if (intersects) {
             float dx = (this->player.hitbox.getPosition().x+this->player.hitbox.getSize().x / 2) - (wallBounds.position.x + wallBounds.size.x / 2);
@@ -726,6 +768,36 @@ void Game::updateDoors(Room* room){
             if(el->getX() < this->rooms[this->active_room]->getX()){
                 if(j==randomtp){
                     this->active_room=el->getId();
+                            if(this->rooms[active_room]->getX()<2){
+            if(this->rooms[active_room]->getY()<2){
+                where_boss="NE";
+            }
+            else if(this->rooms[active_room]->getY()>2){
+                where_boss="SE";
+            }
+            else{
+                where_boss="E";
+            }
+        }
+        else if(this->rooms[active_room]->getX()>2){
+            if(this->rooms[active_room]->getY()<2){
+                where_boss="NW";
+            }
+            else if(this->rooms[active_room]->getY()>2){
+                where_boss="SW";
+            }
+            else{
+                where_boss="W";
+            }
+        }
+        else{
+            if(this->rooms[active_room]->getY()<2){
+                where_boss="N";
+            }
+            else if(this->rooms[active_room]->getY()>2){
+                where_boss="S";
+            }
+        }
                     break;
                 }
                 else{
@@ -760,6 +832,36 @@ void Game::updateDoors(Room* room){
             if(el->getX() > this->rooms[this->active_room]->getX()){
                 if(j==randomtp){
                     this->active_room=el->getId();
+                            if(this->rooms[active_room]->getX()<2){
+            if(this->rooms[active_room]->getY()<2){
+                where_boss="NE";
+            }
+            else if(this->rooms[active_room]->getY()>2){
+                where_boss="SE";
+            }
+            else{
+                where_boss="E";
+            }
+        }
+        else if(this->rooms[active_room]->getX()>2){
+            if(this->rooms[active_room]->getY()<2){
+                where_boss="NW";
+            }
+            else if(this->rooms[active_room]->getY()>2){
+                where_boss="SW";
+            }
+            else{
+                where_boss="W";
+            }
+        }
+        else{
+            if(this->rooms[active_room]->getY()<2){
+                where_boss="N";
+            }
+            else if(this->rooms[active_room]->getY()>2){
+                where_boss="S";
+            }
+        }
                     break;
                 }
                 else{
@@ -793,6 +895,36 @@ int j=0;
             if(el->getY() < this->rooms[this->active_room]->getY()){
                 if(j==randomtp){
                     this->active_room=el->getId();
+                            if(this->rooms[active_room]->getX()<2){
+            if(this->rooms[active_room]->getY()<2){
+                where_boss="NE";
+            }
+            else if(this->rooms[active_room]->getY()>2){
+                where_boss="SE";
+            }
+            else{
+                where_boss="E";
+            }
+        }
+        else if(this->rooms[active_room]->getX()>2){
+            if(this->rooms[active_room]->getY()<2){
+                where_boss="NW";
+            }
+            else if(this->rooms[active_room]->getY()>2){
+                where_boss="SW";
+            }
+            else{
+                where_boss="W";
+            }
+        }
+        else{
+            if(this->rooms[active_room]->getY()<2){
+                where_boss="N";
+            }
+            else if(this->rooms[active_room]->getY()>2){
+                where_boss="S";
+            }
+        }
                     break;
                 }
                 else{
@@ -814,7 +946,7 @@ int j=0;
         this->player.setPosition(sf::Vector2f(this->player.getPosition().x,64.f));
 
     }
-        if(this->player.getPosition().y<10){
+        if(this->player.getPosition().y<0){
         int d = std::count_if(this->rooms.begin(), this->rooms.end(), [&](Room* r) {
             return r->getY() > this->rooms[this->active_room]->getY();
         });
@@ -825,6 +957,39 @@ int j=0;
             if(el->getY() > this->rooms[this->active_room]->getY()){
                 if(j==randomtp){
                     this->active_room=el->getId();
+                            if(this->rooms[active_room]->getX()<2){
+            if(this->rooms[active_room]->getY()<2){
+                where_boss="NE";
+            }
+            else if(this->rooms[active_room]->getY()>2){
+                where_boss="SE";
+            }
+            else{
+                where_boss="E";
+            }
+        }
+        else if(this->rooms[active_room]->getX()>2){
+            if(this->rooms[active_room]->getY()<2){
+                where_boss="NW";
+            }
+            else if(this->rooms[active_room]->getY()>2){
+                where_boss="SW";
+            }
+            else{
+                where_boss="W";
+            }
+        }
+        else{
+            if(this->rooms[active_room]->getY()<2){
+                where_boss="N";
+            }
+            else if(this->rooms[active_room]->getY()>2){
+                where_boss="S";
+            }
+        }
+
+
+
                     break;
                 }
                 else{
@@ -846,7 +1011,7 @@ int j=0;
         this->player.setPosition(sf::Vector2f(this->player.getPosition().x,772.f));
 
     }
-   
+
 }
 
 void Game::updateWeapons(Room* room){
