@@ -152,77 +152,44 @@ Room::Room(int a,int b, int c,int d,Player* playerc){
     if(type_id==1){
         sf::Vector2f c;
 
-        c.x=2;
-        c.y=2;
-        c = c*64.f;
-        this->spikes.emplace_back(new Spike(c));
-
-        c.x=4;
-        c.y=3;
-        c = c*64.f;
-        this->spikes.emplace_back(new Spike(c));
-
-        c.x=22;
-        c.y=2;
-        c = c*64.f;
-        this->spikes.emplace_back(new Spike(c));
-
-        c.x=20;
-        c.y=3;
-        c = c*64.f;
-        this->spikes.emplace_back(new Spike(c));
-
-        c.x=2;
-        c.y=10;
-        c = c*64.f;
-        this->spikes.emplace_back(new Spike(c));
-
-        c.x=4;
-        c.y=11;
-        c = c*64.f;
-        this->spikes.emplace_back(new Spike(c));
-
-        c.x=23;
-        c.y=11;
-        c = c*64.f;
-        this->spikes.emplace_back(new Spike(c));
-
-        c.x=21;
-        c.y=12;
-        c = c*64.f;
-        this->spikes.emplace_back(new Spike(c));
-
-        c.x=12;
-        c.y=7;
-        c = c*64.f;
-        this->spikes.emplace_back(new Spike2(c));
-
-        c.x=13;
-        c.y=9;
-        c = c*64.f;
-        this->spikes.emplace_back(new Spike2(c));
-
-        c.x=15;
-        c.y=6;
-        c = c*64.f;
-        this->spikes.emplace_back(new Spike2(c));
+        for(int j =0; j<20; j++){
+            c.x=getRandomInt(2,22);
+            c.y=getRandomInt(2,11);
+            c = c*64.f;
+            this->spikes.emplace_back(new Spike(c));
+        }
 
         
-
-        c.x=12.f;
-        c.y=7.f;
-        c = c*64.f;
-        this->enemies.emplace_back(new whiteDumb(c));
-
-        c.x=23.f;
-        c.y=2.f;
-        c = c*64.f;
-        this->enemies.emplace_back(new whiteDumb(c));
-
-        c.x=3.f;
-        c.y=12.f;
-        c = c*64.f;
-        this->enemies.emplace_back(new whiteDumb(c));
+        if(getRandomInt(0,10)==10){
+            c.x=getRandomInt(2,22);
+            c.y=getRandomInt(2,11);
+            c = c*64.f;
+            this->loot.emplace_back(new fastAmmo(c));
+        }
+        if(getRandomInt(0,10)==10){
+            c.x=getRandomInt(2,22);
+            c.y=getRandomInt(2,11);
+            c = c*64.f;
+            this->weapons.emplace_back(new MiniGunWeapon(c));
+        }
+        if(getRandomInt(0,10)==10){
+            c.x=getRandomInt(2,22);
+            c.y=getRandomInt(2,11);
+            c = c*64.f;
+            this->weapons.emplace_back(new ThreeBulletWeapon(c));
+        }
+        if(getRandomInt(0,5)==10){
+            c.x=getRandomInt(2,22);
+            c.y=getRandomInt(2,11);
+            c = c*64.f;
+            this->enemies.emplace_back(new whiteRam(c));
+        }
+        for(int j =0; j<getRandomInt(2, 7); j++){
+            c.x=getRandomInt(2,22);
+            c.y=getRandomInt(2,11);
+            c = c*64.f;
+            this->enemies.emplace_back(new whiteDumb(c));
+        }
 
         c.x=12.f;
         c.y=8.f;
@@ -313,48 +280,48 @@ Room::Room(int a,int b, int c,int d,Player* playerc){
 
         
 
-        c.x=12.f;
-        c.y=7.f;
+        c.x=getRandomInt(2,22);
+        c.y=getRandomInt(2,11);
         c = c*64.f;
         this->enemies.emplace_back(new Turret(c));
 
-        c.x=12.f;
-        c.y=7.f;
+        c.x=getRandomInt(2,22);
+        c.y=getRandomInt(2,11);
         c = c*64.f;
         this->enemies.emplace_back(new whiteDumb(c));
 
-        c.x=12.f;
-        c.y=8.f;
+        c.x=getRandomInt(2,22);
+        c.y=getRandomInt(2,11);
         c = c*64.f;
         this->enemies.emplace_back(new greenDumb(c));
 
-        c.x=9.f;
-        c.y=6.f;
+        c.x=getRandomInt(2,22);
+        c.y=getRandomInt(2,11);
         c = c*64.f;
         this->enemies.emplace_back(new greenDumb(c));
 
-        c.x=23.f;
-        c.y=2.f;
+        c.x=getRandomInt(2,22);
+        c.y=getRandomInt(2,11);
         c = c*64.f;
         this->enemies.emplace_back(new whiteDumb(c));
 
-        c.x=3.f;
-        c.y=12.f;
+        c.x=getRandomInt(2,22);
+        c.y=getRandomInt(2,11);
         c = c*64.f;
         this->enemies.emplace_back(new whiteDumb(c));
 
-        c.x=12.f;
-        c.y=8.f;
+        c.x=getRandomInt(2,22);
+        c.y=getRandomInt(2,11);
         c = c*64.f;
         this->boosts.emplace_back(new SmallHealth(c));
 
-        c.x=11.f;
-        c.y=9.f;
+        c.x=getRandomInt(2,22);
+        c.y=getRandomInt(2,11);
         c = c*64.f;
         this->boosts.emplace_back(new SmallHealth(c));
 
-        c.x=16.f;
-        c.y=6.f;
+        c.x=getRandomInt(2,22);
+        c.y=getRandomInt(2,11);
         c = c*64.f;
         this->boosts.emplace_back(new SmallHealth(c));
 
@@ -506,23 +473,23 @@ Room::Room(int a,int b, int c,int d,Player* playerc){
 
 
 
-        c.x=12;
-        c.y=7;
+        c.x=getRandomInt(2,22);
+        c.y=getRandomInt(2,11);
         c = c*64.f;
         this->enemies.emplace_back(new whiteRam(c));
 
-        c.x=21;
-        c.y=11;
+        c.x=getRandomInt(2,22);
+        c.y=getRandomInt(2,11);
         c = c*64.f;
         this->enemies.emplace_back(new whiteDumb(c));
 
-        c.x=4;
-        c.y=4;
+        c.x=getRandomInt(2,22);
+        c.y=getRandomInt(2,11);
         c = c*64.f;
         this->enemies.emplace_back(new whiteDumb(c));
 
-        c.x=3;
-        c.y=12;
+        c.x=getRandomInt(2,22);
+        c.y=getRandomInt(2,11);
         c = c*64.f;
         this->enemies.emplace_back(new whiteDumb(c));
 
@@ -628,86 +595,166 @@ Room::Room(int a,int b, int c,int d,Player* playerc){
         this->weapons.at(0)->updatePos({780.f, 425.f}); 
         
         sf::Vector2f c;
-        c.y=180;
-        for(int j=200;j<1400;j+=40){
+        
+        for(int j=3;j<22;j++){
+        c.y=3;
         c.x=j;
+        c = c*64.f;
         this->spikes.emplace_back(new Spike(c));
         }
 
-        c.y=660;
-        for(int j=200;j<1400;j+=40){
+        
+        for(int j=3;j<22;j++){
+        c.y=10;
         c.x=j;
+        c = c*64.f;
         this->spikes.emplace_back(new Spike(c));
         }
 
-        c.x=200;
-        for(int j=220;j<=620;j+=40){
+        
+        for(int j=4;j<=9;j++){
+        c.x=3;
         c.y=j;
+        c = c*64.f;
         this->spikes.emplace_back(new Spike(c));
         }
-        c.x=1360;
-        for(int j=220;j<=620;j+=40){
+        
+        for(int j=4;j<=9;j++){
+        c.x=21;
         c.y=j;
+        c = c*64.f;
         this->spikes.emplace_back(new Spike(c));
         }
 
-        c.y=320;
-        for(int j=400;j<1200;j+=40){
+        for(int j=6;j<19;j++){
+        c.y=5;
         c.x=j;
+        c = c*64.f;
         this->spikes.emplace_back(new Spike(c));
         }
 
-        c.y=520;
-        for(int j=400;j<1200;j+=40){
+        
+        for(int j=6;j<19;j++){
+        c.y=8;
         c.x=j;
+        c = c*64.f;
         this->spikes.emplace_back(new Spike(c));
         }
 
-        c.x=400;
-        for(int j=360;j<=480;j+=40){
+        
+        for(int j=5;j<=8;j++){
+        c.x=5;
         c.y=j;
+        c = c*64.f;
         this->spikes.emplace_back(new Spike(c));
         }
-        c.x=1160;
-        for(int j=360;j<=480;j+=40){
+        
+        for(int j=5;j<=8;j++){
+        c.x=19;
         c.y=j;
+        c = c*64.f;
         this->spikes.emplace_back(new Spike(c));
         }
+        for(int j=0;j<1;j++){
+        c.x=getRandomInt(2,22);
+        c.y=getRandomInt(2,11);
+        c = c*64.f;
+        this->enemies.emplace_back(new Turret(c));
+        }
+        for(int j=0;j<1;j++){
+        c.x=getRandomInt(2,22);
+        c.y=getRandomInt(2,11);
+        c = c*64.f;
+        this->enemies.emplace_back(new redDumb(c));
+        }
+        c.x=getRandomInt(2,22);
+        c.y=getRandomInt(2,11);
+        c = c*64.f;
+        this->enemies.emplace_back(new greenRam(c));
+        for(int j=0;j<6;j++){
+        c.x=getRandomInt(2,22);
+        c.y=getRandomInt(2,11);
+        c = c*64.f;
+        this->boosts.emplace_back(new SmallHealth(c));
+        }
+        c.x=getRandomInt(2,22);
+        c.y=getRandomInt(2,11);
+        c = c*64.f;
+        this->loot.emplace_back(new fastAmmo(c));
+       
+
 
     }
 
     if(type_id==7){  //boss room
 
         sf::Vector2f c;
-        c.x=704.f;
-        c.y=354.f;
+        c.x=11.f;
+        c.y=6.f;
+        c= c*64.f;
         this->spikes.emplace_back(new Spike2(c));
-        c.x=768.f;
-        c.y=354.f;
+        c.x=11.f;
+        c.y=7.f;
+        c= c*64.f;
         this->spikes.emplace_back(new Spike2(c));
-        c.x=832.f;
-        c.y=354.f;
-        this->spikes.emplace_back(new Spike2(c));
-
-        c.x=704.f;
-        c.y=482.f;
-        this->spikes.emplace_back(new Spike2(c));
-        c.x=768.f;
-        c.y=482.f;
-        this->spikes.emplace_back(new Spike2(c));
-        c.x=832.f;
-        c.y=482.f;
+        c.x=11.f;
+        c.y=8.f;
+        c= c*64.f;
         this->spikes.emplace_back(new Spike2(c));
 
-        c.x=704.f;
-        c.y=418.f;
+        c.x=12.f;
+        c.y=8.f;
+        c= c*64.f;
         this->spikes.emplace_back(new Spike2(c));
-        c.x=832.f;
-        c.y=418.f;
+        c.x=13.f;
+        c.y=8.f;
+        c= c*64.f;
+        this->spikes.emplace_back(new Spike2(c));
+        c.x=13.f;
+        c.y=7.f;
+        c= c*64.f;
         this->spikes.emplace_back(new Spike2(c));
 
+        c.x=13.f;
+        c.y=6.f;
+        c= c*64.f;
+        this->spikes.emplace_back(new Spike2(c));
+        c.x=12.f;
+        c.y=6.f;
+        c= c*64.f;
+        this->spikes.emplace_back(new Spike2(c));
 
+        
+
+        for(int j =0; j<10; j++){
+            c.x=getRandomInt(11,13);
+            c.y=getRandomInt(9,11);
+            c = c*64.f;
+            this->spikes.emplace_back(new Spike(c));
+        }
+        for(int j =0; j<10; j++){
+            c.x=getRandomInt(11,13);
+            c.y=getRandomInt(2,5);
+            c = c*64.f;
+            this->spikes.emplace_back(new Spike(c));
+        }
+        for(int j =0; j<20; j++){
+            c.x=getRandomInt(14,21);
+            c.y=getRandomInt(2,11);
+            c = c*64.f;
+            this->spikes.emplace_back(new Spike(c));
+        }
+        for(int j =0; j<20; j++){
+            c.x=getRandomInt(3,10);
+            c.y=getRandomInt(2,11);
+            c = c*64.f;
+            this->spikes.emplace_back(new Spike(c));
+        }
+        
         if(playerd!=nullptr){
+            c.x=12.f;
+        c.y=7.f;
+        c= c*64.f;
         this->enemies.emplace_back(new Boss(sf::Vector2f(768.f,418.f),playerd));
         }
     }

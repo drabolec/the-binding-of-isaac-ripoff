@@ -63,6 +63,12 @@ private:
     sf::Sound *gameSound;
     sf::Sound *gameOverSound;
     sf::Sound *hitSound;
+
+    sf::SoundBuffer *bossBuffer;
+    sf::Sound *bossSound;
+
+    sf::SoundBuffer *winBuffer;
+    sf::Sound *winSound;
     std::string where_boss="NULL";
     bool isClosed = false;
     int x=0;
@@ -144,6 +150,8 @@ public:
 
 };
 void Game::restart(){
+    this->bossSound->stop();
+    this->winSound->stop();
     this->menuT->setString("The binding of not isaac");
     this->dark = false;
     this->light = false;
@@ -182,8 +190,7 @@ void Game::restart(){
     this->bossText->setCharacterSize(40.f);
 
     //seting defaul player parameter
-    //this->player.setPosition({800.f, 450.f});
-    this->player.setPosition({200.f, 450.f});
+    this->player.setPosition({800.f, 450.f});
     this->player.setFont(this->font);
     this->player.initHp();
 
@@ -202,7 +209,7 @@ void Game::restart(){
 
     
     this->timer->setPosition({1500.f, 20.f});
-    this->timer->setCharacterSize(60.f);
+    this->timer->setCharacterSize(40.f);
     this->timer->setString(std::to_string(this->scoreSeconds));
 
     fog.setFillColor(sf::Color(0, 0, 0, 230));
@@ -224,13 +231,13 @@ void Game::restart(){
 
     this->rooms.emplace_back(new Room(1,0,0,0,nullptr)); //0   room making
     this->rooms.emplace_back(new Room(1,0,1,1,nullptr)); //1
-    this->rooms.emplace_back(new Room(1,1,0,2,nullptr)); //2
+    this->rooms.emplace_back(new Room(6,1,0,2,nullptr)); //2
     this->rooms.emplace_back(new Room(1,1,1,3,nullptr)); //3
     this->rooms.emplace_back(new Room(1,0,2,4,nullptr)); //4
     this->rooms.emplace_back(new Room(4,0,3,5,nullptr)); //5
     this->rooms.emplace_back(new Room(1,0,4,6,nullptr)); //6
     this->rooms.emplace_back(new Room(3,1,2,7,nullptr)); //7
-    this->rooms.emplace_back(new Room(1,1,3,8,nullptr)); //8
+    this->rooms.emplace_back(new Room(6,1,3,8,nullptr)); //8
     this->rooms.emplace_back(new Room(1,1,4,9,nullptr)); //9
     this->rooms.emplace_back(new Room(1,2,0,10,nullptr)); //10
     this->rooms.emplace_back(new Room(2,2,1,11,nullptr)); //11 //empty starting room
@@ -245,11 +252,10 @@ void Game::restart(){
     this->rooms.emplace_back(new Room(1,4,0,20,nullptr)); //20
     this->rooms.emplace_back(new Room(1,4,1,21,nullptr)); //21
     this->rooms.emplace_back(new Room(3,4,2,22,nullptr)); //22
-    this->rooms.emplace_back(new Room(1,4,3,23,nullptr)); //23
+    this->rooms.emplace_back(new Room(6,4,3,23,nullptr)); //23
     this->rooms.emplace_back(new Room(1,4,4,24,nullptr)); //24
  
-    //this->active_room = 11;
-    this->active_room = 17;
+    this->active_room = 11;
     if(this->rooms[active_room]->getX()<2){
             if(this->rooms[active_room]->getY()<2){
                 where_boss="NE";
@@ -297,7 +303,7 @@ void Game::init(){
     
 
 
-    this->masterVolume = 1.5f;
+    this->masterVolume = 1.f;
     this->currentScreen = "Window";
         //sound
     this->buffer = new sf::SoundBuffer("./Sound/pickupweapon.wav");
@@ -317,6 +323,12 @@ void Game::init(){
     this->gameOverSound->setVolume(this->masterVolume);
     this->hitSound->setVolume(this->masterVolume);
 
+    this->bossBuffer = new sf::SoundBuffer("./Sound/boss_fight.mp3");
+    this->bossSound = new sf::Sound(*(this->bossBuffer));
+
+    this->winBuffer =  new sf::SoundBuffer("./Sound/win.mp3");
+    this->winSound = new sf::Sound(*(this->winBuffer));
+    this->winSound->setVolume(this->masterVolume);
         //seting frame limit
     
     this->videoMode.size = {800, 450};
@@ -496,6 +508,11 @@ void Game::update(){
     if(this->gameSound->getStatus()==sf::Sound::Status::Stopped){
         this->gameSound->play();
     }
+    if(this->bossSound->getStatus()==sf::Sound::Status::Stopped && this->active_room == 12){
+        this->gameSound->pause();
+        this->bossSound->setVolume(this->masterVolume);
+        this->bossSound->play();
+    }
     
     this->scoreFrames ++;
     
@@ -516,6 +533,7 @@ void Game::render(){
     //zabijanko gracza
     if(this->player.getHp() <= 0 && this->isLose == false){
         this->isLose = true;
+        this->bossSound->pause();
         this->gameSound->stop();
         this->gameOverSound->play();
     }
@@ -632,7 +650,6 @@ void Game::updateEnemies(Room* room) {
         };
         
         if(isColision(&player,enemy)&&this->player.getTargetable()){
-            std::cout<<player.getHp()<<std::endl;
             this->player.changeHp(-enemy->getDmg());
             if(enemy->getDmg() > 0){
                 this->hitSound->play();
@@ -664,6 +681,9 @@ void Game::updateEnemies(Room* room) {
         if(isColision(&player,enemy)&&this->player.getTargetable()&&enemy->getState()==2){
             std::cout<<player.getHp()<<std::endl;
             this->player.changeHp(-enemy->getDmg());
+            if(enemy->getDmg() > 0){
+                this->hitSound->play();
+            }
             std::cout<<player.getHp()<<std::endl;
             this->player.setTargetable(false);
             enemy->setCollided(true);
@@ -688,6 +708,8 @@ void Game::updateWalls(Room* room){
         int j=8;
         if(this->rooms[this->active_room]->getId()==12){//hardcoding :3
             this->isEnd = true;
+            this->bossSound->pause();
+            this->winSound->play();
         }
         if(this->rooms[this->active_room]->getX()==0){
             j++;
@@ -717,10 +739,14 @@ void Game::updateWalls(Room* room){
         this->rooms[this->active_room]->setCleared(true);
     }
 
-    for (auto& wall : walls) {
-        sf::FloatRect wallBounds = wall->hitbox.getGlobalBounds();
+    bool wasInter = false;
+    for (int i = walls.size()-1; i >=0; i--) {
+        if(i == walls.size()-5 && wasInter){
+            break;
+        }
+        sf::FloatRect wallBounds = walls.at(i)->hitbox.getGlobalBounds();
         bool intersects;
-        if(wall->hitbox.getGlobalBounds().findIntersection(player.hitbox.getGlobalBounds())){
+        if(walls.at(i)->hitbox.getGlobalBounds().findIntersection(player.hitbox.getGlobalBounds())){
             intersects = true;
         }else{
             intersects = false;
@@ -728,6 +754,7 @@ void Game::updateWalls(Room* room){
         
 
         if (intersects) {
+            wasInter = true;
             float dx = (this->player.hitbox.getPosition().x+this->player.hitbox.getSize().x / 2) - (wallBounds.position.x + wallBounds.size.x / 2);
             float dy = (this->player.hitbox.getPosition().y +this->player.hitbox.getSize().y / 2) - (wallBounds.position.y + wallBounds.size.y / 2);
 
@@ -751,13 +778,14 @@ void Game::updateWalls(Room* room){
                 }
             }
         }
+        
     }
 }
 
 void Game::updateDoors(Room* room){
 
 
-    if(this->player.getPosition().x<10){
+    if(this->player.getPosition().x<0){
         int d = std::count_if(this->rooms.begin(), this->rooms.end(), [&](Room* r) {
             return r->getX() < this->rooms[this->active_room]->getX();
         });
@@ -1011,6 +1039,7 @@ int j=0;
         this->player.setPosition(sf::Vector2f(this->player.getPosition().x,772.f));
 
     }
+    
 
 }
 
@@ -1297,7 +1326,7 @@ void Game::settingsMenu(){
 }
 void Game::infoMenu(){
 
-    this->play->setString("MOVEMENT\n\nW - move forevard\nS = move backward\nA - move left\nR - move right\nE - use\nArrow Up - shoot up\nArrow Down - shoot down\nArrow Left - shoot left\nArrow Right - shoot right\n");
+    this->play->setString("MOVEMENT\n\nW - move forevard\nS - move backward\nA - move left\nR - move right\nE - use\nArrow Up - shoot up\nArrow Down - shoot down\nArrow Left - shoot left\nArrow Right - shoot right\n");
     this->option1->setString("Back");
     this->play->setScale({1.2f, 1.2f});
     
@@ -1344,6 +1373,7 @@ void Game::end(){
         }
 }
 void Game::lose(){
+    this->player.setHp(0);
     this->events();
     this->menuT->setString("You lose");
     this->timer->setPosition({50.f, 150.f});

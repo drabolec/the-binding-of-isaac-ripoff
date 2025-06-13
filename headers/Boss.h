@@ -54,7 +54,7 @@ Boss::Boss(sf::Vector2f pos,Player* playerb){
     for(int i = 16; i < 144; i = i + 32){
         this->frames.emplace_back(new sf::IntRect({i, 436}, {32, 32}));
     }
-    this->setHp(200.f);
+    this->setHp(1200.f);
     this->setDmg(20.f);
     this->setHitboxSize({80.f, 80.f});
     this->setShapeSize({80.f, 80.f});

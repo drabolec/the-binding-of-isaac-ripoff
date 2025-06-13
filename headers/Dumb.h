@@ -45,24 +45,16 @@ void Dumb::update(sf::Vector2f pos){
 
 void Dumb::move(sf::Vector2f pos){
     pos = {pos.x-20.f, pos.y-20.f};
-    if(pos.x>this->getPosition().x){
+    sf::Vector2f dir = {pos.x-this->getPosition().x, pos.y-this->getPosition().y};
+    dir = dir/(float)(sqrt(dir.x*dir.x+dir.y*dir.y));
+    this->shape.move(dir*this->speed);
+    this->hitbox.setPosition(this->shape.getPosition());
+    if(this->getPosition().x<pos.x){
         this->curFrames = this->frames;
-        this->setPosition(this->getPosition().x+this->speed,this->getPosition().y);
-    }
-    if(pos.x<this->getPosition().x){
+    }else{
         this->curFrames = this->framesR;
-        this->setPosition(this->getPosition().x-this->speed,this->getPosition().y);
-        
-
     }
-    if(pos.y>this->getPosition().y){
-        
-        this->setPosition(this->getPosition().x,this->getPosition().y+this->speed);
-    }
-    if(pos.y<this->getPosition().y){
-        
-        this->setPosition(this->getPosition().x,this->getPosition().y-this->speed);
-    }
+    
 };
 void Dumb::animate(){
     if(this->clock.getElapsedTime().asSeconds() > 0.1f){

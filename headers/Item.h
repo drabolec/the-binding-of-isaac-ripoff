@@ -10,6 +10,7 @@
 class Item: public Entity{
     public:
         Item();
+        virtual ~Item();
         virtual void shoot(sf::Vector2f direction);
         virtual void setCurrentBullet(Bullet* bullet);
         virtual Bullet* getCuurentBullet();
@@ -23,9 +24,19 @@ class Item: public Entity{
         virtual void updatePos(sf::Vector2f pos);
         void render(sf::RenderTarget* target);
         sf::Clock clock;
-};
-Item::Item(){
 
+        sf::SoundBuffer* shootBuffer;
+        sf::Sound* shootSound;
+
+};
+Item::~Item(){
+    delete this->shootBuffer;
+    delete this->shootSound;
+}
+Item::Item(){
+    this->shootBuffer = new sf::SoundBuffer("./Sound/shoot.mp3");
+    this->shootSound = new sf::Sound(*(this->shootBuffer));
+    this->shootSound->setVolume(2.f);
 }
 void Item::update(){
 
@@ -59,6 +70,7 @@ void Item::shoot(sf::Vector2f direction){
         }else if(dynamic_cast<FastBullet*>(this->bullet)!=NULL){
             bullet = new FastBullet;
         }
+        this->shootSound->play();
         bullet->direction = direction;
         bullet->initPos = this->playerPos;
         bullet->setInitPos();

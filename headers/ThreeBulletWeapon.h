@@ -15,6 +15,7 @@ class ThreeBulletWeapon: public Item{
         void updatePos(sf::Vector2f pos);
         void render(sf::RenderTarget* target);
         ThreeBulletWeapon();
+        ThreeBulletWeapon(sf::Vector2f pos);
         ~ThreeBulletWeapon();
         const float time = 0.6;
     private:
@@ -38,6 +39,23 @@ ThreeBulletWeapon::ThreeBulletWeapon(){
     
     this->hitbox.setSize({80.f,20.f});
     this->hitbox.setPosition(this->shape.getPosition());
+
+}
+ThreeBulletWeapon::ThreeBulletWeapon(sf::Vector2f pos){
+    //setting texture
+    this->texture = new sf::Texture("./Textures/threebullet_weapon.png");
+    //setting intrect
+    this->intrect = new sf::IntRect({0, 0},{64, 18});
+    //setting shape
+    this->shape.setTextureRect(*intrect);
+    this->shape.setTexture(texture);
+    this->shape.setSize({80.f, 20.f});
+    
+    this->hitbox.setSize({80.f,20.f});
+    this->hitbox.setPosition(pos);
+    this->shape.setPosition(pos);
+
+    
 
 }
 void ThreeBulletWeapon::update(){

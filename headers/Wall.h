@@ -94,20 +94,20 @@ inline Wall::Wall(int b){
     }
 
     else if(this->wallSide==10){
-        this->hitbox.setPosition(sf::Vector2f(1534.f, 0.f));
+        this->hitbox.setPosition(sf::Vector2f(1535.f, 0.f));
         this->hitbox.setSize(sf::Vector2f(64.f, 900.f));
         this->hitbox.setTexture(this->texture);
         this->hitbox.setTextureRect(*(new sf::IntRect({16, 0},{-16, 255})));
     }
     else if(this->wallSide==11){
-        this->hitbox.setPosition(sf::Vector2f(64.f, 0.f));
+        this->hitbox.setPosition(sf::Vector2f(64.f, 1.f));
         this->hitbox.setSize(sf::Vector2f(1472.f, 64.f));
         this->hitbox.setTexture(this->uptex);
         this->hitbox.setTextureRect(*(new sf::IntRect({0, 0},{368, 16})));
     }
 
     else if(this->wallSide==12){
-        this->hitbox.setPosition(sf::Vector2f(64.f, 834.f));
+        this->hitbox.setPosition(sf::Vector2f(64.f, 835.f));
         this->hitbox.setSize(sf::Vector2f(1472.f, 64.f));
         this->hitbox.setTexture(this->uptex);
         this->hitbox.setTextureRect(*(new sf::IntRect({0, 16},{368, -16})));
