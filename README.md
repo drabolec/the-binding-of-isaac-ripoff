@@ -23,12 +23,6 @@
 Make sure you are in the directory of the project.
 
 ### 2. Compile the source file:
-
-### 1. Open the project folder in your terminal
-
-Make sure you are in the root directory of the project.
-
-### 2. Compile the source file:
 ```console
 g++ -c main.cpp -I"./SFML-3.0.0/include"
 ```
